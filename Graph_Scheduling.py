@@ -95,8 +95,7 @@ class InOrderSchedule:
         self.assigned = None
         self.exception_lessons = exception_lessons
         self.zoj_fard = None
-        self.whole_assigned_lessons = 0
-        
+      
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
         if len(self.schedule[day][time]) > 0:
@@ -146,7 +145,6 @@ class InOrderSchedule:
         if assign == True:
             self.schedule[day][time].append(lesson)        
             self.assigned = True
-            self.whole_assigned_lessons += 1
             
         else:
             self.assigned = False
@@ -223,14 +221,6 @@ class InOrderSchedule:
                 if self.assigned == False:
                     print("could not find place for ",lesson , ": 1 vahedi")
                         
-        # if self.whole_assigned_lessons < 39 :
-        #     self.whole_assigned_lessons = 0
-        #     self.assign_lessons()
-        #     self.schedule = {day: {time: [] for time in self.times} for day in self.days}
-        #     self.assigned = False
-        #     self.zoj_fard = None
-        #     self.whole_assigned_lessons = 0 
-            
     def print_schedule(self):
         for day, day_schedule in self.schedule.items():
             print(day)
