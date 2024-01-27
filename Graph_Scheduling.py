@@ -1,5 +1,5 @@
 import random
-
+import copy
 class Graph:
     def __init__(self, edges):
         self.edges = edges
@@ -40,20 +40,20 @@ class Graph:
 
     # backtracking
     def color_graph_b(self):
-        # تعداد رنگ‌ها را مشخص می‌کنیم
+        
         num_colors = len(self.adj_dict)
 
-        # رنگ هر node را مشخص می‌کنیم
+        
         node_colors = {node: None for node in self.adj_dict}
 
-        # تابع کمکی برای بررسی امکان رنگ‌آمیزی یک node با یک رنگ خاص
+        
         def is_valid_color(node, color):
             for neighbor in self.adj_dict[node]:
                 if node_colors[neighbor] == color:
                     return False
             return True
 
-        # تابع بازگشتی برای رنگ‌آمیزی گراف
+        
         def color_node(node, color):
             if color > num_colors:
                 return False
@@ -72,7 +72,7 @@ class Graph:
 
             return False
 
-        # شروع رنگ‌آمیزی از node اول
+        
         color_node(next(iter(self.adj_dict)), num_colors)
 
         output_dict = {}
@@ -86,18 +86,41 @@ class Graph:
                 
 
 class InOrderSchedule:
-    def __init__(self, lessons, vahed, days, times , exception_lessons = None):
-        self.lessons = lessons
-        self.days = days
-        self.times = times
+    def __init__(self, colors, vahed, teachers , all_teachers_limit_states):
+        self.days = [
+            "shanbe",
+            "1 shanbe",
+            "2 shanbe",
+            "3 shanbe",
+            "4 shanbe",
+        ]
+        self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
         self.schedule = {day: {time: [] for time in self.times} for day in self.days}
+        self.best_schedule = {day: {time: [] for time in self.times} for day in self.days}
         self.vahed = vahed
         self.assigned = None
-        self.exception_lessons = exception_lessons
+        self.teachers = teachers
+        self.all_teachers_limit_states = all_teachers_limit_states
         self.zoj_fard = None
-      
+        
+        colors = dict(sorted(colors.items(), key=lambda item: len(item[1]), reverse=True))
+        score_of_colors = {}
+        for number, list in colors.items():
+            score = 0
+            for lesson in list:
+                s = vahed[lesson]
+                if vahed[lesson] == 4:
+                    s = s - 1
+                score += s
+            score_of_colors[number] = score
+            
+        self.lessons = {
+            k: colors[k] for k in sorted(score_of_colors, key=score_of_colors.get, reverse=True)
+        }
+        
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
+        teachers = self.teachers
         if len(self.schedule[day][time]) > 0:
             check_list = []
             assigned_lessons = self.schedule[day][time]
@@ -105,7 +128,7 @@ class InOrderSchedule:
                 _append = False
                 for course in group_lessons:
                     if course in assigned_lesson:
-                        if ((assigned_lesson[-2:] == '_f' or assigned_lesson[-2:] == '_z') and (lesson[-2:] == '_f' or lesson[-2:] == '_z')):
+                        if ((assigned_lesson[-2:] == '_f' or assigned_lesson[-2:] == '_z') and (lesson[-2:] == '_f' or lesson[-2:] == '_z') and (teachers[lesson[:-2]] != teachers[assigned_lesson[:-2]])):
                             lesson = lesson[:-2] + assigned_lesson[-2:]
                         _append = True
                         break
@@ -133,96 +156,169 @@ class InOrderSchedule:
                     else:
                         assign = False
                         break
-            # print(day , time , lesson ,group_lessons , course ,"-->", assigned_lesson , assign )
 
             for assigned_lesson in self.schedule[day][time]:
                 if lesson in assigned_lesson or assigned_lesson in lesson:
                     assign = False
                     break
+            
+            
         else:
             assign = True
-            
+        
         if assign == True:
             self.schedule[day][time].append(lesson)        
             self.assigned = True
-            
         else:
             self.assigned = False
         
 
     def assign_lessons(self):
         
-        ex_lessons = []
-        if self.exception_lessons != None:
-            for key , value in self.exception_lessons.items():
-                ex_lessons.append(key)
-                self.schedule[value[0]][value[1]] = [key]
+        teachers = self.teachers
+        all_teachers_limit_states = self.all_teachers_limit_states 
+        score = 0
+        temp_best_schedule = {day: {time: [] for time in self.times} for day in self.days}
         
-        for color_of_lesson , group_lessons in self.lessons.items():
-            for lesson in group_lessons:
-                lesson_vahed = self.vahed[lesson]
-                for day in self.days:
-                    for time in self.times:
-                        as_lesson = True                        
-                        for ex in ex_lessons:
-                            if lesson == ex[:-2]:
-                                as_lesson = False
-                                break
-                        if as_lesson:  
-                            if lesson_vahed == 3:
-                                if self.assigned == True and self.zoj_fard != None:
-                                    self.zoj_fard = random.choice(["z", "f"])
-                                elif (self.assigned == False or self.assigned == None) and self.zoj_fard == None:
-                                    self.zoj_fard = random.choice(["z", "f"])
-                                    
-                                self.assign_lesson(f"{lesson}_{self.zoj_fard}", group_lessons, day, time)
-                              
-                        if self.assigned == True:
-                            break
-                    if self.assigned == True:
-                        break
-                if self.assigned == False:
-                    print("could not find place for ",lesson , ": 3 vahedi")
-                    
-                        
-
-        for color_of_lesson , group_lessons in self.lessons.items():
-            for lesson in group_lessons:
-                lesson_vahed = self.vahed[lesson]
-                for day in self.days:
-                    for time in self.times:
-                        number = 0    
-                                    
-                        for ex in ex_lessons:
-                            if lesson == ex or lesson == ex[:-2]:
-                                number += 1
-                                
-                        if number < 2:
-                            if lesson_vahed == 4:
-                                    self.assign_lesson(lesson, group_lessons, day, time)
-                            
-                        if self.assigned == True:
-                            break
-                    if self.assigned == True:
-                        break
-                if self.assigned == False:
-                    print("could not find place for ",lesson , ": 4 vahedi")
-                
-        for color_of_lesson , group_lessons in self.lessons.items():
-            for lesson in group_lessons:
-                if lesson not in ex_lessons:
+        for teacher_limit_state in all_teachers_limit_states:
+            _score = 0
+            self.schedule = {day: {time: [] for time in self.times} for day in self.days}
+            for color_of_lesson , group_lessons in self.lessons.items():
+                for lesson in group_lessons:
+                    lesson_vahed = self.vahed[lesson]
                     for day in self.days:
                         for time in self.times:
-                            self.assign_lesson(lesson, group_lessons, day, time)
+                            
+                            teacher = teachers[lesson]
+                            
+                            if teacher not in teacher_limit_state:
+                                teacher_can = True
+                                pass
+                            else:
+                                if len(teacher_limit_state[teacher]) == 2:
+                                    if teacher_limit_state[teacher] != [day , time]:
+                                        if self.assigned == True:
+                                            self.assigned = False
+                                        teacher_can = False
+                                elif len(teacher_limit_state[teacher]) == 1:
+                                    if teacher_limit_state[teacher] != [day]:
+                                        if self.assigned == True:
+                                            self.assigned = False
+                                        teacher_can = False
+                                        
+                                if teacher_limit_state[teacher] == [day , time]:
+                                    teacher_can = True
+                                    
+                            if teacher_can:
+                                if lesson_vahed == 3:
+                                    if self.assigned == True and self.zoj_fard != None:
+                                        self.zoj_fard = random.choice(["z", "f"])
+                                    elif (self.assigned == False or self.assigned == None) and self.zoj_fard == None:
+                                        self.zoj_fard = random.choice(["z", "f"])
+                                        
+                                    self.assign_lesson(f"{lesson}_{self.zoj_fard}", group_lessons, day, time)
+                            
+                            if self.assigned == True:
+                                break       
+                        if self.assigned == True:
+                            break
+
+            for color_of_lesson , group_lessons in self.lessons.items():
+                for lesson in group_lessons:
+                    lesson_vahed = self.vahed[lesson]
+                    for day in self.days:
+                        for time in self.times:
+                        
+                            teacher = teachers[lesson]
+                            if teacher not in teacher_limit_state:
+                                teacher_can = True
+                                pass
+                            else:
+                                if len(teacher_limit_state[teacher]) == 2:
+                                    if teacher_limit_state[teacher] != [day , time]:
+                                        if self.assigned == True:
+                                            self.assigned = False
+                                        teacher_can = False
+                                elif len(teacher_limit_state[teacher]) == 1:
+                                    if teacher_limit_state[teacher] != [day]:
+                                        if self.assigned == True:
+                                            self.assigned = False
+                                        teacher_can = False
+                                        
+                                if teacher_limit_state[teacher] == [day , time]:
+                                    teacher_can = True
+
+                            if teacher_can:
+                                if lesson_vahed == 4:
+                                    self.assign_lesson(lesson, group_lessons, day, time)
+                                
                             if self.assigned == True:
                                 break
                         if self.assigned == True:
                             break
-                if self.assigned == False:
-                    print("could not find place for ",lesson , ": 1 vahedi")
+            
+            for day, day_schedule in self.schedule.items():            
+                _score += len(day_schedule) ** 2
+
+            if _score > score:
+                temp_best_schedule = copy.deepcopy(self.schedule)
+                score = _score
+        
+        self.schedule = temp_best_schedule
+        self.best_schedule = copy.deepcopy(temp_best_schedule)
+        
+        pre_not_assigned_lessons = float('inf') 
+        for teacher_limit_state in all_teachers_limit_states:
+            self.schedule = copy.deepcopy(temp_best_schedule)   
+            not_assigned_lessons = []
+            
+            for color_of_lesson , group_lessons in self.lessons.items():
+                for lesson in group_lessons:
+                    lesson_vahed = self.vahed[lesson]
+                    
+                    for day in self.days:
+                        for time in self.times:
+                            
+                            teacher = teachers[lesson]
+                            
+                            if teacher not in teacher_limit_state:
+                                teacher_can = True
+                                pass
+                            else:
+                                if len(teacher_limit_state[teacher]) == 2:
+                                    if teacher_limit_state[teacher] != [day , time]:
+                                        if self.assigned == True:
+                                            self.assigned = False
+                                        teacher_can = False
+                                elif len(teacher_limit_state[teacher]) == 1:
+                                    if teacher_limit_state[teacher] != [day]:
+                                        if self.assigned == True:
+                                            self.assigned = False
+                                        teacher_can = False
+                                        
+                                if teacher_limit_state[teacher] == [day , time]:
+                                    teacher_can = True
+                                
+                            if teacher_can:
+                                self.assign_lesson(lesson, group_lessons, day, time)
+                           
+                            if self.assigned == True:
+                                break
+                        if self.assigned == True:
+                            break
                         
+                    if self.assigned == False:
+                        not_assigned_lessons.append(f"{lesson}")
+        
+            if len(not_assigned_lessons) == 0 or len(not_assigned_lessons) < pre_not_assigned_lessons:
+                self.best_schedule = copy.deepcopy(self.schedule)
+                pre_not_assigned_lessons = len(not_assigned_lessons)
+            else:
+                pre_not_assigned_lessons = len(not_assigned_lessons)             
+            
+
     def print_schedule(self):
-        for day, day_schedule in self.schedule.items():
+        for day, day_schedule in self.best_schedule.items():
             print(day)
             for time, lessons in day_schedule.items():
                 lessons_with_out_pipe = []
