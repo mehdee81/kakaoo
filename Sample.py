@@ -241,7 +241,7 @@ for key, value in vahed.items():
 teachers = {
     "|mabani|": "|a|",
     "|kargah_computer|": "|b|",
-    "|fizik_1|": "|c|",
+    "|fizik_1|": "|b|",
     "|riazi_1|": "|d|",
     "|kargah_omomi|": "|e|",
     "|zaban_omomi|": "|f|",
@@ -263,7 +263,8 @@ teachers = {
     "|bio|": "|v|",
 }
 teachers_limit_time = {
-    "|r|": [["4 shanbe", "17:30"], ["4 shanbe", "15:30"]],
+    "|r|": [["4 shanbe"]],
+    "|b|": [["4 shanbe"]],
 }
 my_graph = Graph(courses)
 colors = my_graph.color_graph_h()
@@ -286,7 +287,7 @@ s = InOrderSchedule(colors, vahed, teachers , all_teachers_limit_states)
 s.assign_lessons()
 s.print_schedule()
 
-G = nx.Graph(graph)
-plt.figure(figsize=(10, 5))
-nx.draw(G, with_labels=True)
-plt.show()
+# G = nx.Graph(graph)
+# plt.figure(figsize=(10, 5))
+# nx.draw(G, with_labels=True)
+# plt.show()
