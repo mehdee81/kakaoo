@@ -22,6 +22,7 @@
         {% endfor %}
     </form>
 </div>
+
 <div class="container">
     <p>Link Professor to Course</p>
     <button type="button" class="btn btn-primary" onclick="getSelectedCourses()">Get Selected Courses</button>
@@ -42,8 +43,25 @@
                 </select>
             </div>
         </div>
-        </select>
+        <button type="button" class="btn btn-dark mt-3" onclick="addRow()">Add to Table</button>
     </form>
+
+    <table id="coursesTable" class="table">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Professor</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically added here -->
+        </tbody>
+    </table>
+    <br>
+    <br>
+    
+    <button type="button" class="btn btn-success" id="get-data-btn" class="btn btn-primary">Get Data</button>
 </div>
 {% endif %}
 
@@ -69,20 +87,5 @@
 </div>
 
 <script>
-    function getSelectedCourses() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-        const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
-
-        // Create options for the select input
-        const selectInput = document.getElementById('selectedCourses');
-        selectInput.innerHTML = ''; // Clear existing options
-
-        selectedCourses.forEach(course => {
-            const option = document.createElement('option');
-            option.value = course;
-            option.textContent = course;
-            selectInput.appendChild(option);
-        });
-    }
 </script>
 {% endblock %}

@@ -1,5 +1,6 @@
 import random
 import copy
+import itertools
 class Graph:
     def __init__(self, edges):
         self.edges = edges
@@ -86,7 +87,7 @@ class Graph:
                 
 
 class InOrderSchedule:
-    def __init__(self, colors, vahed, teachers , all_teachers_limit_states):
+    def __init__(self, colors, vahed, teachers , professors_limit_time):
         self.days = [
             "shanbe",
             "1 shanbe",
@@ -100,8 +101,19 @@ class InOrderSchedule:
         self.vahed = vahed
         self.assigned = None
         self.teachers = teachers
-        self.all_teachers_limit_states = all_teachers_limit_states
         self.zoj_fard = None
+        
+        self.professors_limit_time = professors_limit_time
+        all_professors_limit_states = []
+        combinations = itertools.product(*professors_limit_time.values())
+        for i, combination in enumerate(combinations, 1):
+            _limit_states = {}
+            for teacher, time in zip(professors_limit_time.keys(), combination):
+                _limit_states[teacher] = time
+            all_professors_limit_states.append(_limit_states)
+                
+        self.all_professors_limit_states = all_professors_limit_states
+        print(self.all_professors_limit_states)
         
         colors = dict(sorted(colors.items(), key=lambda item: len(item[1]), reverse=True))
         score_of_colors = {}
@@ -177,7 +189,7 @@ class InOrderSchedule:
     def assign_lessons(self):
         teachers = self.teachers
         lessons_with_no_time = []
-        for teachers_limit_state in self.all_teachers_limit_states:
+        for teachers_limit_state in self.all_professors_limit_states:
             _lessons_with_no_time = []
             self.schedule = {day: {time: [] for time in self.times} for day in self.days}
             for color_of_lesson , group_lessons in self.lessons.items():
