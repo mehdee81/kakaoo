@@ -1,13 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block page_body %}
 
-    
-    <div>hello world</div>
-</body>
-</html>
+<div class="p-5 alert alert-info shadow-lg position-relative">
+    <h1 class="fs-3 fw-bold text-dark">Scheduler Application</h1>
+    <p class="text-dark">This is a simple scheduler application made with Python.</p>
+    <button type="button" class="btn btn-light position-absolute bottom-0 end-0 translate-middle">Learn more</button>
+</div>
+
+{% if courses %}
+<div class="container">
+    <form action="#">
+        {% csrf_token %}
+        {% for course in courses %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="course_{{ course.id }}" name="selected_courses"
+                value="{{ course.course }}">
+            <label class="form-check-label" for="course_{{ course.id }}">
+                {{ course.course }}
+            </label>
+        </div>
+        {% endfor %}
+    </form>
+</div>
+<div class="container">
+    <p>Link Professor to Course</p>
+    <button type="button" class="btn btn-primary" onclick="getSelectedCourses()">Get Selected Courses</button>
+    <br>
+    <br>
+    <form id="selectedCoursesForm">
+        <div class="row">
+            <div class="col">
+                <label for="selectedCourses">Courses</label>
+                <select class="form-select" id="selectedCourses" aria-label="Default select example"></select>
+            </div>
+            <div class="col">
+                <label for="Professors">Professors</label>
+                <select name="selected_professor" id="Professors" class="form-select">
+                    {% for prof in professors %}
+                        <option value="{{ prof.name }}">{{ prof.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        </select>
+    </form>
+</div>
+{% endif %}
+
+<div class="links">
+    <div class="grid gap-3">
+        <div class="row">
+            <div class="col p-2">
+                <a href="#" class="btn btn-primary btn-lg w-75">Professors</a>
+            </div>
+            <div class="col p-2">
+                <a href="#" class="btn btn-primary btn-lg w-75">Courses</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col p-2">
+                <a href="#" class="btn btn-primary btn-lg w-75">Pre Requirements</a>
+            </div>
+            <div class="col p-2">
+                <a href="#" class="btn btn-primary btn-lg w-75">Schedule</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getSelectedCourses() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+        // Create options for the select input
+        const selectInput = document.getElementById('selectedCourses');
+        selectInput.innerHTML = ''; // Clear existing options
+
+        selectedCourses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course;
+            option.textContent = course;
+            selectInput.appendChild(option);
+        });
+    }
+</script>
+{% endblock %}

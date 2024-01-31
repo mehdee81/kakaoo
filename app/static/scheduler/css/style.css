@@ -1,0 +1,12 @@
+
+.links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 250px;
+}
+
+.grid {
+    width: 100%;
+    max-width: 600px; 
+}
