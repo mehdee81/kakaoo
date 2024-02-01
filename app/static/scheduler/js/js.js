@@ -1,3 +1,18 @@
+function getSelectedCourses() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+    // Create options for the select input
+    const selectInput = document.getElementById('selectedCourses');
+    selectInput.innerHTML = ''; // Clear existing options
+
+    selectedCourses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = course;
+        option.textContent = course;
+        selectInput.appendChild(option);
+    });
+}
 
 function addRow() {
     const selectedProfessor = document.getElementById('Professors').value;
@@ -14,61 +29,47 @@ function addRow() {
     // Append the row to the table
     document.getElementById('coursesTable').getElementsByTagName('tbody')[0].appendChild(newRow);
 }
-
 function removeRow(button) {
     const rowToRemove = button.closest('tr');
     rowToRemove.remove();
 }
-function getSelectedCourses() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    const selectedCourses = Array.from(checkboxes).map(checkbox => checkbox.value);
 
-    // Create options for the select input
-    const selectInput = document.getElementById('selectedCourses');
-    selectInput.innerHTML = ''; // Clear existing options
+document.getElementById('get-data-btn').addEventListener('click', function () {
+    // Create a list to store selected courses
+    let selected_courses = [];
 
-    selectedCourses.forEach(course => {
-        const option = document.createElement('option');
-        option.value = course;
-        option.textContent = course;
-        selectInput.appendChild(option);
+    // Create a dictionary to store linked courses and professors
+    let linked_courses_to_professors = {};
+
+    // Get all checkboxes
+    let checkboxes = document.querySelectorAll('.form-check-input');
+
+    // Loop through all checkboxes
+    for (let i = 0; i < checkboxes.length; i++) {
+        // If checkbox is checked, add course to the list
+        if (checkboxes[i].checked) {
+            selected_courses.push(checkboxes[i].value);
+        }
+    }
+
+    // Get all rows in the table
+    let rows = document.querySelectorAll('#coursesTable tbody tr');
+
+    // Loop through all rows
+    for (let i = 0; i < rows.length; i++) {
+        // Get course and professor from the row
+        let course = rows[i].querySelectorAll('td')[0].innerText;
+        let professor = rows[i].querySelectorAll('td')[1].innerText;
+
+        // Add course and professor to the dictionary
+        linked_courses_to_professors[course] = professor;
+    }
+
+    var all_courses_linked = selected_courses.every(function (course) {
+        return linked_courses_to_professors.hasOwnProperty(course);
     });
-    
 
-    
-
-
-    document.getElementById('get-data-btn').addEventListener('click', function() {
-        // Create a list to store selected courses
-        let selected_courses = [];
-    
-        // Create a dictionary to store linked courses and professors
-        let linked_courses_to_professors = {};
-    
-        // Get all checkboxes
-        let checkboxes = document.querySelectorAll('.form-check-input');
-    
-        // Loop through all checkboxes
-        for(let i = 0; i < checkboxes.length; i++) {
-            // If checkbox is checked, add course to the list
-            if(checkboxes[i].checked) {
-                selected_courses.push(checkboxes[i].value);
-            }
-        }
-    
-        // Get all rows in the table
-        let rows = document.querySelectorAll('#coursesTable tbody tr');
-    
-        // Loop through all rows
-        for(let i = 0; i < rows.length; i++) {
-            // Get course and professor from the row
-            let course = rows[i].querySelectorAll('td')[0].innerText;
-            let professor = rows[i].querySelectorAll('td')[1].innerText;
-    
-            // Add course and professor to the dictionary
-            linked_courses_to_professors[course] = professor;
-        }
-    
+    if (all_courses_linked) {
         // Send data to server
         fetch('http://127.0.0.1:8000/schedule/', {
             method: 'POST',
@@ -81,6 +82,13 @@ function getSelectedCourses() {
                 linked_courses_to_professors: linked_courses_to_professors
             })
         });
-    });
-    
-}
+    } else {
+        var not_linked_courses = selected_courses.filter(function (course) {
+            return !linked_courses_to_professors.hasOwnProperty(course);
+        });
+
+        not_linked_courses.forEach(function (course) {
+            alert(course + " is not linked to a professor");
+        });
+    }
+});

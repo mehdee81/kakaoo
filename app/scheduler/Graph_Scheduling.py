@@ -138,12 +138,18 @@ class InOrderSchedule:
             for assigned_lesson in assigned_lessons:
                 _append = False
                 for course in group_lessons:
-                    if course in assigned_lesson:
+                    if course in assigned_lesson: # اگر هم گروهی بودند
                         if ((assigned_lesson[-2:] == '_f' or assigned_lesson[-2:] == '_z') and (lesson[-2:] == '_f' or lesson[-2:] == '_z') and (teachers[lesson[:-2]] != teachers[assigned_lesson[:-2]])):
                             lesson = lesson[:-2] + assigned_lesson[-2:]
                         _append = True
                         if ((assigned_lesson[-2:] != '_f' and assigned_lesson[-2:] != '_z') and (lesson[-2:] != '_f' and lesson[-2:] != '_z') and (teachers[lesson] == teachers[assigned_lesson])):
                             _append = False
+                        if ((assigned_lesson[-2:] == '_f' or assigned_lesson[-2:] == '_z') and (lesson[-2:] == '_f' or lesson[-2:] == '_z') and (teachers[lesson[:-2]] == teachers[assigned_lesson[:-2]])):
+                            if assigned_lesson[-2:] == "_f":
+                                lesson = lesson[:-2] + "_z"
+                            else:
+                                lesson = lesson[:-2] + "_f"
+                            _append = True
                         break
                     if ((assigned_lesson[-2:] == '_f' or assigned_lesson[-2:] == '_z') and (lesson[-2:] == '_f' or lesson[-2:] == '_z')):
                             if assigned_lesson[-2:] == "_f":
