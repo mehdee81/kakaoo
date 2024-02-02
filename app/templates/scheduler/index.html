@@ -21,13 +21,11 @@
         </div>
         {% endfor %}
     </form>
-</div>
 
-<div class="container">
-    <p>Link Professor to Course</p>
     <button type="button" class="btn btn-primary" onclick="getSelectedCourses()">Get Selected Courses</button>
     <br>
     <br>
+    <h3>Link Professor to Course</h3>
     <form id="selectedCoursesForm">
         <div class="row">
             <div class="col">
@@ -46,7 +44,7 @@
         <button type="button" class="btn btn-dark mt-3" onclick="addRow()">Link Course to Professor</button>
     </form>
 
-    <table id="coursesTable" class="table">
+    <table id="linkedcoursesTable" class="table">
         <thead>
             <tr>
                 <th>Course</th>
@@ -61,6 +59,44 @@
     <br>
     <br>
     
+    <br>
+    <h3>Limit Professors Time</h3>
+    <form id="limit_professors">
+        <div class="row">
+            <div class="col">
+                <label for="select_prof_for_limit">Professors</label>
+                <select name="select_prof_for_limit" id="select_prof_for_limit" class="form-select">
+                    {% for prof in professors %}
+                        <option value="{{ prof.name }}">{{ prof.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <label for="select_time_for_limit">Time</label>
+                <select class="form-select" id="select_time_for_limit" aria-label="Default select example">
+                    <option value="shanbe">shanbe</option>
+                    <option value="1 shanbe">1 shanbe</option>
+                    <option value="2 shanbe">2 shanbe</option>
+                    <option value="3 shanbe">3 shanbe</option>
+                    <option value="4 shanbe">4 shanbe</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" class="btn btn-dark mt-3" onclick="addRow_limit_prof()">Limit Professor</button>
+    </form>
+
+    <table id="limited_professors" class="table">
+        <thead>
+            <tr>
+                <th>Professor</th>
+                <th>Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically added here -->
+        </tbody>
+    </table>
     <button type="button" class="btn btn-success" id="get-data-btn" class="btn btn-primary">Schedule</button>
 </div>
 {% endif %}

@@ -25,6 +25,7 @@ def schedule(request):
         data = json.loads(request.body)
         selected_courses = data.get("selected_courses")  # list
         linked_courses_to_professors = data.get("linked_courses_to_professors")  # dic
+        limited_professors = data.get("limited_professors")  # dic
 
         verified_linked_courses_to_professors = {}
         for l_c, l_p in linked_courses_to_professors.items():
@@ -44,7 +45,7 @@ def schedule(request):
                         and ((f"|{course}|", f"|{ch_course}|") not in edges)
                     ):
                         edges.append((f"|{course}|", f"|{ch_course}|"))
-
+        
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
 
@@ -53,12 +54,8 @@ def schedule(request):
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[f"|{course}|"] = unit[0]
 
-        professors_limit_time = {
-            "|r|": [["4 shanbe"], ["3 shanbe"]],
-            "|d|": [["1 shanbe"]],
-        }
         s = InOrderSchedule(
-            colors, units, verified_linked_courses_to_professors, professors_limit_time
+            colors, units, verified_linked_courses_to_professors, limited_professors
         )
         s.assign_lessons()
         s.print_schedule()
