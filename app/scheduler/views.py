@@ -58,8 +58,27 @@ def schedule(request):
             colors, units, verified_linked_courses_to_professors, limited_professors
         )
         s.assign_lessons()
-        s.print_schedule()
-
+        request.session.clear()
+        request.session['schedule'] = s.schedule
+        request.session['selected_courses'] = selected_courses
+        request.session['lessons_with_no_time'] = s.lessons_with_no_time
         return JsonResponse({"status": "ok"})
 
-
+    
+def show_schedule(request):
+    schedule = request.session['schedule']
+    selected_courses = request.session['selected_courses']
+    lessons_with_no_time = request.session['lessons_with_no_time']
+    clear_schedule = {}
+    clear_lessons_with_no_time = []
+    for day, day_schedule in schedule.items():
+        _day_schedule = {}
+        for time, lessons in day_schedule.items():
+            lessons_with_out_pipe = []
+            for lesson in lessons:
+                lessons_with_out_pipe.append(lesson.replace("|" , ""))
+            _day_schedule[time] = lessons_with_out_pipe
+        clear_schedule[day] = _day_schedule 
+    for course in lessons_with_no_time:
+        clear_lessons_with_no_time.append(course.replace("|",""))
+    return render(request, "scheduler/show_schedule.html" , {"selected_courses": selected_courses , "schedule": clear_schedule , "lessons_with_no_time": clear_lessons_with_no_time})

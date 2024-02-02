@@ -102,7 +102,7 @@ class InOrderSchedule:
         self.assigned = None
         self.teachers = teachers
         self.zoj_fard = None
-        
+        self.lessons_with_no_time = []
         self.professors_limit_time = professors_limit_time
         all_professors_limit_states = []
         combinations = itertools.product(*professors_limit_time.values())
@@ -194,7 +194,6 @@ class InOrderSchedule:
 
     def assign_lessons(self):
         teachers = self.teachers
-        lessons_with_no_time = []
         for teachers_limit_state in self.all_professors_limit_states:
             _lessons_with_no_time = []
             self.schedule = {day: {time: [] for time in self.times} for day in self.days}
@@ -293,11 +292,11 @@ class InOrderSchedule:
                 self.best_schedule = self.schedule
                 break
             else:
-                if len(_lessons_with_no_time) <= len(lessons_with_no_time) or len(lessons_with_no_time) == 0:
+                if len(_lessons_with_no_time) <= len(self.lessons_with_no_time) or len(self.lessons_with_no_time) == 0:
                     self.best_schedule = self.schedule
-                    lessons_with_no_time = _lessons_with_no_time
-            
-            print(lessons_with_no_time)
+                    self.lessons_with_no_time = _lessons_with_no_time
+        
+        self.lessons_with_no_time = _lessons_with_no_time
         
     def print_schedule(self):
         for day, day_schedule in self.best_schedule.items():

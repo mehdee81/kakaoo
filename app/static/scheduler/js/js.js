@@ -123,9 +123,8 @@ $('#get-data-btn').click(function () {
 
     if (all_courses_linked) {
         // Send data to server
-        var currentUrl = window.location.href;
         $.ajax({
-            url: currentUrl + '/schedule/',
+            url: 'http://127.0.0.1:8000/schedule/',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,7 +134,12 @@ $('#get-data-btn').click(function () {
                 selected_courses: selected_courses,
                 linked_courses_to_professors: linked_courses_to_professors,
                 limited_professors: limited_professors
-            })
+            }),
+            success: function(data) {
+                if (data.status == "ok") {
+                    window.location.href = "http://127.0.0.1:8000/show_schedule/";
+                }
+            }
         });
     } else {
         var not_linked_courses = selected_courses.filter(function (course) {
