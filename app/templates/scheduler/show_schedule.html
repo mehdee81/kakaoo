@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% block page_body %}
-
-
 <div class="container p-3">
     <table class="table table-dark table-striped table-bordered">
         <thead>
@@ -26,9 +24,11 @@
         </tbody>
     </table>
     <br>
-    <h3>Lessons with no time</h3>
-    {% for item in lessons_with_no_time %}
+    {% if lessons_with_no_time %}
+        <h3>Lessons with no time</h3>
+        {% for item in lessons_with_no_time %}
         <h4>{{ item }}</h4>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

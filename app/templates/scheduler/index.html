@@ -1,12 +1,6 @@
 {% extends "base.html" %}
 {% block page_body %}
 
-<div class="p-5 alert alert-info shadow-lg position-relative">
-    <h1 class="fs-3 fw-bold text-dark">Scheduler Application</h1>
-    <p class="text-dark">This is a simple scheduler application made with Python.</p>
-    <button type="button" class="btn btn-light position-absolute bottom-0 end-0 translate-middle">Learn more</button>
-</div>
-
 {% if courses %}
 <div class="container">
     <form action="#">
@@ -25,6 +19,7 @@
     <button type="button" class="btn btn-primary" onclick="getSelectedCourses()">Get Selected Courses</button>
     <br>
     <br>
+    <div id="hr_div"></div>
     <h3>Link Professor to Course</h3>
     <form id="selectedCoursesForm">
         <div class="row">
@@ -36,7 +31,7 @@
                 <label for="Professors">Professors</label>
                 <select name="selected_professor" id="Professors" class="form-select">
                     {% for prof in professors %}
-                        <option value="{{ prof.name }}">{{ prof.name }}</option>
+                    <option value="{{ prof.name }}">{{ prof.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -58,8 +53,7 @@
     </table>
     <br>
     <br>
-    
-    <br>
+    <div id="hr_div"></div>
     <h3>Limit Professors Time</h3>
     <form id="limit_professors">
         <div class="row">
@@ -67,7 +61,7 @@
                 <label for="select_prof_for_limit">Professors</label>
                 <select name="select_prof_for_limit" id="select_prof_for_limit" class="form-select">
                     {% for prof in professors %}
-                        <option value="{{ prof.name }}">{{ prof.name }}</option>
+                    <option value="{{ prof.name }}">{{ prof.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -99,29 +93,24 @@
     </table>
     <button type="button" class="btn btn-success" id="get-data-btn" class="btn btn-primary">Schedule</button>
 </div>
-{% endif %}
-
-<div class="links">
-    <div class="grid gap-3">
-        <div class="row">
-            <div class="col p-2">
-                <a href="#" class="btn btn-primary btn-lg w-75">Professors</a>
-            </div>
-            <div class="col p-2">
-                <a href="#" class="btn btn-primary btn-lg w-75">Courses</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col p-2">
-                <a href="#" class="btn btn-primary btn-lg w-75">Pre Requirements</a>
-            </div>
-            <div class="col p-2">
-                <a href="#" class="btn btn-primary btn-lg w-75">Schedule</a>
-            </div>
-        </div>
+{% else %}
+<div class="container p-5">
+    <div class="text-danger">
+        <b>
+            step 1) Go to the courses page and add some course.
+            <br>
+            step 2) Go to the professors Page and add some professor.
+            <br>
+            step 3) Go to the pre requirements page and link courses.
+            <br>
+            step 4) Come back here.
+        </b>
     </div>
 </div>
+{% endif %}
 
-<script>
-</script>
+<br>
+<br>
+<br>
+<br>
 {% endblock %}

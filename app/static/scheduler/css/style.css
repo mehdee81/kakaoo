@@ -10,3 +10,30 @@
     width: 100%;
     max-width: 600px; 
 }
+
+#hr_div {
+    height: 3px !important;
+    background-color: rgb(0, 191, 255);
+    border-radius: 10px;
+    border: 1px solid rgb(0, 191, 255);
+    margin-bottom: 10px;
+}
+ul{
+    padding: 0 !important;
+    margin: 0 !important;
+}
+ul li{
+    display: inline !important;
+    margin: 4px;
+    
+}
+ul li a{
+    text-decoration: none;
+    color: black;
+    font-weight: 400;
+}
+ul li :hover {
+    transition: 0.8s;
+    color: rgb(255, 0, 191);
+    font-weight: 600;
+}

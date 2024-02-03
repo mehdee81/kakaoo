@@ -82,3 +82,8 @@ def show_schedule(request):
     for course in lessons_with_no_time:
         clear_lessons_with_no_time.append(course.replace("|",""))
     return render(request, "scheduler/show_schedule.html" , {"selected_courses": selected_courses , "schedule": clear_schedule , "lessons_with_no_time": clear_lessons_with_no_time})
+
+
+
+def learn_more(request):
+    return render(request , "scheduler/learn_more.html")
