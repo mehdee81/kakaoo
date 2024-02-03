@@ -1,4 +1,3 @@
-
 .links {
     display: flex;
     justify-content: center;
@@ -8,7 +7,7 @@
 
 .grid {
     width: 100%;
-    max-width: 600px; 
+    max-width: 600px;
 }
 
 #hr_div {
@@ -18,22 +17,61 @@
     border: 1px solid rgb(0, 191, 255);
     margin-bottom: 10px;
 }
-ul{
+
+ul {
     padding: 0 !important;
     margin: 0 !important;
 }
-ul li{
+
+ul li {
     display: inline !important;
     margin: 4px;
-    
+
 }
-ul li a{
+
+ul li a {
     text-decoration: none;
     color: black;
     font-weight: 400;
 }
+
 ul li :hover {
     transition: 0.8s;
     color: rgb(255, 0, 191);
     font-weight: 600;
+}
+
+#learn-more-container {
+    width: 80%;
+    margin: auto;
+}
+
+#learn-more-project-title {
+    text-align: center;
+    color: #333;
+}
+
+#learn-more-contact-info {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.learn-more-page-description {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.learn-more-page-description h2 {
+    color: #444;
+}
+
+.learn-more-page-description p {
+    color: #666;
+}
+
+#all_courses_form {
+    overflow: auto;
+    height: 300px !important;
 }

@@ -3,7 +3,9 @@
 
 {% if courses %}
 <div class="container">
-    <form action="#">
+    <b>All Courses</b>
+    <hr>
+    <form action="#" id="all_courses_form">
         {% csrf_token %}
         {% for course in courses %}
         <div class="form-check">

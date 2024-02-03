@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Courses, Professors, SameTime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -6,9 +6,8 @@ import json
 from django.db.models import Q
 from .Graph_Scheduling import Graph, InOrderSchedule
 
+
 # Create your views here.
-
-
 def index(request):
     all_professors = Professors.objects.values("name")
     courses = Courses.objects.values("course", "unit")
@@ -45,7 +44,7 @@ def schedule(request):
                         and ((f"|{course}|", f"|{ch_course}|") not in edges)
                     ):
                         edges.append((f"|{course}|", f"|{ch_course}|"))
-        
+
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
 
@@ -59,16 +58,16 @@ def schedule(request):
         )
         s.assign_lessons()
         request.session.clear()
-        request.session['schedule'] = s.schedule
-        request.session['selected_courses'] = selected_courses
-        request.session['lessons_with_no_time'] = s.lessons_with_no_time
+        request.session["schedule"] = s.schedule
+        request.session["selected_courses"] = selected_courses
+        request.session["lessons_with_no_time"] = s.lessons_with_no_time
         return JsonResponse({"status": "ok"})
 
-    
+
 def show_schedule(request):
-    schedule = request.session['schedule']
-    selected_courses = request.session['selected_courses']
-    lessons_with_no_time = request.session['lessons_with_no_time']
+    schedule = request.session["schedule"]
+    selected_courses = request.session["selected_courses"]
+    lessons_with_no_time = request.session["lessons_with_no_time"]
     clear_schedule = {}
     clear_lessons_with_no_time = []
     for day, day_schedule in schedule.items():
@@ -76,14 +75,65 @@ def show_schedule(request):
         for time, lessons in day_schedule.items():
             lessons_with_out_pipe = []
             for lesson in lessons:
-                lessons_with_out_pipe.append(lesson.replace("|" , ""))
+                lessons_with_out_pipe.append(lesson.replace("|", ""))
             _day_schedule[time] = lessons_with_out_pipe
-        clear_schedule[day] = _day_schedule 
+        clear_schedule[day] = _day_schedule
     for course in lessons_with_no_time:
-        clear_lessons_with_no_time.append(course.replace("|",""))
-    return render(request, "scheduler/show_schedule.html" , {"selected_courses": selected_courses , "schedule": clear_schedule , "lessons_with_no_time": clear_lessons_with_no_time})
-
+        clear_lessons_with_no_time.append(course.replace("|", ""))
+    return render(
+        request,
+        "scheduler/show_schedule.html",
+        {
+            "selected_courses": selected_courses,
+            "schedule": clear_schedule,
+            "lessons_with_no_time": clear_lessons_with_no_time,
+        },
+    )
 
 
 def learn_more(request):
-    return render(request , "scheduler/learn_more.html")
+    return render(request, "scheduler/learn_more.html")
+
+
+def courses(request):
+    courses = Courses.objects.values("id", "course", "unit")
+    return render(request, "scheduler/courses.html", {"courses": courses})
+
+
+def add_course(request):
+    if request.method == "POST":
+        course_name = request.POST.get("course_name")
+        course_unit = request.POST.get("Course_unit")
+        course = Courses(course=course_name, unit=course_unit)
+        course.save()
+        return redirect("courses")
+    else:
+        return redirect("courses")
+
+
+def delete_course(request, course_id, course_name):
+    course = Courses.objects.get(id=course_id)
+    course.delete()
+    sametimes = SameTime.objects.filter(
+        Q(course_1=course_name) | Q(course_2=course_name)
+    )
+    sametimes.delete()
+    return redirect("courses")
+
+
+def update_unit(request):
+    if request.method == "POST":
+        course_id = request.POST.get("course_id")
+        new_unit_value = request.POST.get("Course_unit")
+        course = Courses.objects.get(id=course_id)
+        course.unit = new_unit_value  # Replace with the actual new unit value
+        course.save()
+        return redirect("courses")
+
+
+def add_group(request):
+    if request.method == "POST":
+        
+        # It will be completed here
+        
+        return redirect("courses")
