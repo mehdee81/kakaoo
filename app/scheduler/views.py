@@ -133,7 +133,29 @@ def update_unit(request):
 
 def add_group(request):
     if request.method == "POST":
-        
-        # It will be completed here
-        
-        return redirect("courses")
+        course_name = request.POST.get("course_name")
+        Course_goup_number = request.POST.get("Course_goup_number")
+        main_course = Courses.objects.get(course=course_name)
+        course = Courses.objects.filter(course=f"{course_name}_g{Course_goup_number}").all()
+        if len(course) == 0:
+            
+            add_course = Courses(course=f"{course_name}_g{Course_goup_number}", unit = main_course.unit)
+            add_course.save()
+            
+            sametimes = SameTime.objects.filter(
+                Q(course_1=course_name) | Q(course_2=course_name)
+            )
+
+            linked_courses = []
+            for sametime in sametimes:
+                if sametime.course_1 != course_name:
+                    linked_courses.append(sametime.course_1)
+                if sametime.course_2 != course_name:
+                    linked_courses.append(sametime.course_2)
+            linked_courses.append(course_name)
+            
+            for l_c in linked_courses:
+                add_course = SameTime(course_1=f"{course_name}_g{Course_goup_number}", course_2=l_c)
+                add_course.save()
+                
+    return redirect("courses")
