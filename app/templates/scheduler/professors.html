@@ -2,6 +2,7 @@
 {% block page_body %}
 <div class="container p-lg-5">
     <div class="row">
+        {% if professors %}
         <div class="col-12 col-lg">
             <table class="table table-striped table-bordered">
                 <thead>
@@ -24,6 +25,7 @@
                 </tbody>
             </table>
         </div>
+        {% endif %}
         <div class="col-12 col-lg">
             <h3>Add Professor</h3>
             <hr>

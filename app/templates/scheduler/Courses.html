@@ -3,6 +3,7 @@
 
 <div class="container p-lg-5">
     <div class="row">
+        {% if courses %}
         <div class="col-12 col-lg">
             <table class="table table-striped table-bordered">
                 <thead>
@@ -20,13 +21,15 @@
                         <td>{{ course.course }}</td>
                         <td>{{ course.unit}}</td>
                         <td>
-                            <a href="{% url 'delete_course' course.id course.course %}" class="btn btn-danger m-1">Delete</a>
+                            <a href="{% url 'delete_course' course.id course.course %}"
+                                class="btn btn-danger m-1">Delete</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        {% endif %}
         <div class="col-12 col-lg">
             <h3>Add Course</h3>
             <hr>
@@ -34,7 +37,8 @@
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="course_name" class="form-label">Course name</label>
-                    <input type="text" class="form-control" id="course_name" name="course_name" aria-describedby="courseHelp" required>
+                    <input type="text" class="form-control" id="course_name" name="course_name"
+                        aria-describedby="courseHelp" required>
                 </div>
                 <div class="mb-3">
                     <label for="Course_unit" class="form-label">Unit</label>
@@ -48,6 +52,7 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
 
+            {% if courses %}
             <h3>Update Units of a Course</h3>
             <hr>
             <form method="POST" action="{% url 'update_unit' %}">
@@ -56,7 +61,7 @@
                     <label for="course_id" class="form-label">Course name</label>
                     <select id="course_id" name="course_id" class="form-select">
                         {% for course in courses %}
-                            <option value={{ course.id }}>{{ course.course }}</option>
+                        <option value={{ course.id }}>{{ course.course }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -71,7 +76,8 @@
                 </div>
                 <p class="text-danger p-2">
                     <b>
-                        Note that if you change the number of units of a course, the number of units of other groups of the same course will not change.
+                        Note that if you change the number of units of a course, the number of units of other groups of
+                        the same course will not change.
                     </b>
                 </p>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -85,17 +91,18 @@
                     <label for="course_name" class="form-label">Course name</label>
                     <select id="course_name" name="course_name" class="form-select">
                         {% for course in courses %}
-                            <option value={{ course.course }}>{{ course.course }}</option>
+                        <option value={{ course.course }}>{{ course.course }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="Course_goup_number" class="form-label">Course goup number</label>
-                    <input type="number" class="form-control" id="Course_goup_number" name="Course_goup_number" aria-describedby="courseHelp" required>
+                    <input type="number" class="form-control" id="Course_goup_number" name="Course_goup_number"
+                        aria-describedby="courseHelp" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
-
+            {% endif %}
         </div>
     </div>
 </div>
