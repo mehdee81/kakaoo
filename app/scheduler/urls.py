@@ -17,5 +17,8 @@ urlpatterns = [
     path('add_group' , views.add_group , name="add_group"),
     path('professors' , views.professors , name="professors"),
     path('add_professor' , views.add_professor , name="add_professor"),
-    path('delete_professor/<int:professor_id>' , views.delete_professor , name="delete_professor")
+    path('delete_professor/<int:professor_id>' , views.delete_professor , name="delete_professor"),
+    path('pre_requirements' , views.sametimes , name="sametimes"),
+    path('delete_sametime/<int:sametime_id>' , views.delete_sametime , name="delete_sametime"),
+    path('add_sametime' , views.add_sametime , name="add_sametime"),
 ]

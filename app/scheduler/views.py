@@ -181,6 +181,29 @@ def delete_professor(request, professor_id):
 def add_professor(request):
     if request.method == "POST":
         prof_name = request.POST.get("professor_name")
-        prof = Professors(name = prof_name)
+        prof = Professors(name=prof_name)
         prof.save()
     return redirect("professors")
+
+
+def sametimes(request):
+    courses = Courses.objects.values("id", "course", "unit")
+    sametimes = SameTime.objects.values("id", "course_1", "course_2")
+    return render(
+        request,
+        "scheduler/sametimes.html",
+        {"courses": courses, "sametimes": sametimes},
+    )
+    
+def delete_sametime(request, sametime_id):
+    sametime = SameTime.objects.get(id=sametime_id)
+    sametime.delete()
+    return redirect("sametimes")
+
+def add_sametime(request):
+    if request.method == "POST":
+        course_1 = request.POST.get("sametime_course_1")
+        course_2 = request.POST.get("sametime_course_2")
+        sametime = SameTime(course_1=course_1 , course_2=course_2)
+        sametime.save()
+    return redirect("sametimes")

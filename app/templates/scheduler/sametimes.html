@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block page_body %}
+<div class="container p-lg-5">
+    <div class="row">
+        <div class="col-12 col-lg">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Course 1</th>
+                        <th>Course 2</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sametime in sametimes %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ sametime.course_1 }}</td>
+                        <td>{{ sametime.course_2 }}</td>
+                        <td>
+                            <a href="{% url 'delete_sametime' sametime.id %}" class="btn btn-danger m-1">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 col-lg">
+            <h3>Add Permission to hold simultaneously</h3>
+            <hr>
+            <form method="POST" action="{% url 'add_sametime' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="sametime_course_1" class="form-label">Course 1</label>
+                    <select id="sametime_course_1" name="sametime_course_1" class="form-select">
+                        {% for course in courses %}
+                        <option value={{course.course}}>{{course.course}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="sametime_course_2" class="form-label">Course 2</label>
+                    <select id="sametime_course_2" name="sametime_course_2" class="form-select">
+                        {% for course in courses %}
+                        <option value={{course.course}}>{{course.course}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
