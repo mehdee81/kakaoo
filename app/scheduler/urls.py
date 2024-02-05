@@ -14,5 +14,8 @@ urlpatterns = [
         name="delete_course",
     ),
     path("update_unit", views.update_unit, name="update_unit"),
-    path('add_group' , views.add_group , name="add_group")
+    path('add_group' , views.add_group , name="add_group"),
+    path('professors' , views.professors , name="professors"),
+    path('add_professor' , views.add_professor , name="add_professor"),
+    path('delete_professor/<int:professor_id>' , views.delete_professor , name="delete_professor")
 ]
