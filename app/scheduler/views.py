@@ -57,7 +57,6 @@ def schedule(request):
             colors, units, verified_linked_courses_to_professors, limited_professors
         )
         s.assign_lessons()
-        request.session.clear()
         request.session["schedule"] = s.schedule
         request.session["selected_courses"] = selected_courses
         request.session["lessons_with_no_time"] = s.lessons_with_no_time
@@ -68,6 +67,7 @@ def show_schedule(request):
     schedule = request.session["schedule"]
     selected_courses = request.session["selected_courses"]
     lessons_with_no_time = request.session["lessons_with_no_time"]
+    request.session.clear()
     clear_schedule = {}
     clear_lessons_with_no_time = []
     for day, day_schedule in schedule.items():
