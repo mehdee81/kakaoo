@@ -3,7 +3,7 @@
 
 # University Course Scheduler
 
-University Course Scheduler is a Django-based web application designed to facilitate the scheduling of university courses for a specific major throughout the week. Users can add courses and professors, link them together, and schedule them accordingly.
+kakaoo is a Django-based web application designed to facilitate the scheduling of university courses for a specific major throughout the week. Users can add courses and professors, link them together, and schedule them accordingly.
 
 ## Features
 
