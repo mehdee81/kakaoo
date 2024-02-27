@@ -12,19 +12,23 @@ function getSelectedCourses() {
     });
 }
 // -----------------------------------------------------
+// link professors to courses
 function addRow() {
     var selectedProfessor = $('#Professors').val();
     var selectedCourse = $('#selectedCourses').val();
 
-    // Create a new row
-    var newRow = $('<tr>').html(`
-        <td>${selectedCourse}</td>
-        <td>${selectedProfessor}</td>
-        <td><button class='btn btn-danger' id='remove_linked_course'>Remove</button></td>
-    `);
+    // Check if selectedCourse is not null
+    if (selectedCourse) {
+        // Create a new row
+        var newRow = $('<tr>').html(`
+            <td>${selectedCourse}</td>
+            <td>${selectedProfessor}</td>
+            <td><button class='btn btn-danger' id='remove_linked_course'>Remove</button></td>
+        `);
 
-    // Append the row to the table
-    $('#linkedcoursesTable tbody').append(newRow);
+        // Append the row to the table
+        $('#linkedcoursesTable tbody').append(newRow);
+    }
 }
 $(document).on('click', '#remove_linked_course', function () {
     $(this).closest('tr').remove();

@@ -75,3 +75,10 @@ ul li :hover {
     overflow: auto;
     height: 300px !important;
 }
+
+
+#developer{
+    text-decoration: none;
+    color: black;
+    font-weight: 400;
+}

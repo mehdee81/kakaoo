@@ -1,5 +1,6 @@
 <!-- {% load static %} -->
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,28 +8,32 @@
     <title>
         {% block page_title %}{% endblock %}
     </title>
-    
+
     <link rel="stylesheet" href="{% static 'scheduler/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'scheduler/css/style.css' %}">
 </head>
 
 <body>
 
-<div class="p-5 alert alert-info shadow-lg position-relative">
-    <h1 class="fs-3 fw-bold text-dark">Scheduler Application</h1>
-    <p class="text-dark">This is a simple scheduler application made with Python.</p>
-    <ul>
-        <li><a href="http://127.0.0.1:8000/">Scheduler</a></li>
-        <li><a href="http://127.0.0.1:8000/courses">Courses</a></li>
-        <li><a href="http://127.0.0.1:8000/professors">Professors</a></li>
-        <li><a href="http://127.0.0.1:8000/pre_requirements">Pre Requirements</a></li>
-    </ul>
-    <br>
-    <a href="http://127.0.0.1:8000/learn_more" class="btn btn-light position-absolute bottom-0 end-0 translate-middle">Learn more</a>
-</div>
+    <div class="p-5 alert alert-info shadow-lg position-relative">
+        <h1 class="fs-3 fw-bold text-dark">Scheduler Application</h1>
+        <p class="text-dark">This is a simple scheduler application made with Python.</p>
+        <p class="text-dark" id="developer">Developer: <a target="_blank"
+                href="https://www.linkedin.com/in/mehdee81/">Mahdi Momeni</a></p>
+        <ul>
+            <li><a href="http://127.0.0.1:8000/">Scheduler</a></li>
+            <li><a href="http://127.0.0.1:8000/courses">Courses</a></li>
+            <li><a href="http://127.0.0.1:8000/professors">Professors</a></li>
+            <li><a href="http://127.0.0.1:8000/pre_requirements">Pre Requirements</a></li>
+        </ul>
+        <br>
+        <a href="http://127.0.0.1:8000/learn_more"
+            class="btn btn-light position-absolute bottom-0 end-0 translate-middle">Learn more</a>
+    </div>
     {% block page_body %}{% endblock %}
 </body>
 
 <script src="{% static 'scheduler/js/jquery.js' %}"></script>
 <script src="{% static 'scheduler/js/js.js' %}"></script>
+
 </html>
