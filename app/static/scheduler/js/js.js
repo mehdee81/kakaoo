@@ -17,17 +17,19 @@ function addRow() {
     var selectedProfessor = $('#Professors').val();
     var selectedCourse = $('#selectedCourses').val();
 
-    // Check if selectedCourse is not null
-    if (selectedCourse) {
-        // Create a new row
-        var newRow = $('<tr>').html(`
+    // Check if selectedCourse and selectedProfessor is not null
+    if (selectedProfessor) {
+        if (selectedCourse) {
+            // Create a new row
+            var newRow = $('<tr>').html(`
             <td>${selectedCourse}</td>
             <td>${selectedProfessor}</td>
             <td><button class='btn btn-danger' id='remove_linked_course'>Remove</button></td>
         `);
 
-        // Append the row to the table
-        $('#linkedcoursesTable tbody').append(newRow);
+            // Append the row to the table
+            $('#linkedcoursesTable tbody').append(newRow);
+        }
     }
 }
 $(document).on('click', '#remove_linked_course', function () {
@@ -47,11 +49,11 @@ function addRow_limit_prof() {
         // Add course and professor to the dictionary
         linked_courses_to_professors.push(professor);
     });
-    
+
     var selectedProfessor = $('#select_prof_for_limit').val();
     var selectedTime = $('#select_time_for_limit').val();
 
-    if (linked_courses_to_professors.includes(selectedProfessor)){
+    if (linked_courses_to_professors.includes(selectedProfessor)) {
         // Create a new row
         var newRow = $('<tr>').html(`
             <td>${selectedProfessor}</td>
@@ -61,7 +63,7 @@ function addRow_limit_prof() {
 
         // Append the row to the table
         $('#limited_professors tbody').append(newRow);
-    }else{
+    } else {
         alert(selectedProfessor + " has not Course.")
     }
 }
@@ -139,7 +141,7 @@ $('#get-data-btn').click(function () {
                 linked_courses_to_professors: linked_courses_to_professors,
                 limited_professors: limited_professors
             }),
-            success: function(data) {
+            success: function (data) {
                 if (data.status == "ok") {
                     window.location.href = "http://127.0.0.1:8000/show_schedule/";
                 }
