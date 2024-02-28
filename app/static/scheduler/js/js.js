@@ -116,17 +116,24 @@ $('#get-data-btn').click(function () {
         let time = $(this).find('td').eq(1).text();
 
         // Add course and professor to the dictionary
-        if (!(professor in limited_professors)) {
-            limited_professors[`|${professor}|`] = [[time]];
+        // if (!(`|${professor}|` in limited_professors)) {
+        //     limited_professors[`|${professor}|`] = [[time]];
+        // } else {
+        //     limited_professors[`|${professor}|`].push([time]);
+        // }
+        
+        if (!(`|${professor}|` in limited_professors)) {
+            limited_professors[`|${professor}|`] = [time];
         } else {
-            limited_professors[`|${professor}|`].push([time]);
+            limited_professors[`|${professor}|`].push(time);
         }
     });
 
     var all_courses_linked = selected_courses.every(function (course) {
         return linked_courses_to_professors.hasOwnProperty(course);
     });
-
+    // console.log(limited_professors);
+    // alert("sdjaldjk")
     if (all_courses_linked) {
         // Send data to server
         $.ajax({

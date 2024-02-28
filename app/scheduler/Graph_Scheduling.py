@@ -104,17 +104,17 @@ class InOrderSchedule:
         self.zoj_fard = None
         self.lessons_with_no_time = []
         self.professors_limit_time = professors_limit_time
-        all_professors_limit_states = []
-        combinations = itertools.product(*professors_limit_time.values())
-        for i, combination in enumerate(combinations, 1):
-            _limit_states = {}
-            for teacher, time in zip(professors_limit_time.keys(), combination):
-                _limit_states[teacher] = time
-            all_professors_limit_states.append(_limit_states)
-                
-        self.all_professors_limit_states = all_professors_limit_states
-        print(self.all_professors_limit_states)
+        print("professors_limit_time: ",professors_limit_time)
+        # all_professors_limit_states = []
+        # combinations = itertools.product(*professors_limit_time.values())
         
+        # for i, combination in enumerate(combinations, 1):
+        #     _limit_states = {}
+        #     for teacher, time in zip(professors_limit_time.keys(), combination):
+        #         _limit_states[teacher] = time
+        #     all_professors_limit_states.append(_limit_states)
+                
+        # self.all_professors_limit_states = all_professors_limit_states
         colors = dict(sorted(colors.items(), key=lambda item: len(item[1]), reverse=True))
         score_of_colors = {}
         for number, list in colors.items():
@@ -194,63 +194,54 @@ class InOrderSchedule:
 
     def assign_lessons(self):
         teachers = self.teachers
-        for teachers_limit_state in self.all_professors_limit_states:
-            _lessons_with_no_time = []
-            self.schedule = {day: {time: [] for time in self.times} for day in self.days}
-            for color_of_lesson , group_lessons in self.lessons.items():
-                for lesson in group_lessons:
-                    lesson_vahed = self.vahed[lesson]
-                    for day in self.days:
-                        teacher = teachers[lesson]
-                        if teacher in teachers_limit_state :
-                            if teachers_limit_state[teacher] == [day]:
-                                for time in self.times:
-                                    if lesson_vahed == 3:
-                                        if self.assigned == True and self.zoj_fard != None:
-                                            self.zoj_fard = random.choice(["z", "f"])
-                                        elif (self.assigned == False or self.assigned == None) and self.zoj_fard == None:
-                                            self.zoj_fard = random.choice(["z", "f"])
-                                        
-                                        self.assign_lesson(f"{lesson}_{self.zoj_fard}", group_lessons, day, time)
-                                    if self.assigned == True:
-                                        break
-                                if self.assigned == True:
-                                    break
-                        else:
+        teachers_limit_state = self.professors_limit_time
+        _lessons_with_no_time = []
+        self.schedule = {day: {time: [] for time in self.times} for day in self.days}
+        for color_of_lesson , group_lessons in self.lessons.items():
+            for lesson in group_lessons:
+                lesson_vahed = self.vahed[lesson]
+                for day in self.days:
+                    teacher = teachers[lesson]
+                    if teacher in teachers_limit_state :
+                        if day in teachers_limit_state[teacher]:
                             for time in self.times:
                                 if lesson_vahed == 3:
                                     if self.assigned == True and self.zoj_fard != None:
                                         self.zoj_fard = random.choice(["z", "f"])
                                     elif (self.assigned == False or self.assigned == None) and self.zoj_fard == None:
                                         self.zoj_fard = random.choice(["z", "f"])
-
+                                    
                                     self.assign_lesson(f"{lesson}_{self.zoj_fard}", group_lessons, day, time)
                                 if self.assigned == True:
                                     break
                             if self.assigned == True:
                                 break
-                            
-                    if self.assigned == False:
-                        _lessons_with_no_time.append(lesson)
+                    else:
+                        for time in self.times:
+                            if lesson_vahed == 3:
+                                if self.assigned == True and self.zoj_fard != None:
+                                    self.zoj_fard = random.choice(["z", "f"])
+                                elif (self.assigned == False or self.assigned == None) and self.zoj_fard == None:
+                                    self.zoj_fard = random.choice(["z", "f"])
+
+                                self.assign_lesson(f"{lesson}_{self.zoj_fard}", group_lessons, day, time)
+                            if self.assigned == True:
+                                break
+                        if self.assigned == True:
+                            break
+                        
+                if self.assigned == False:
+                    _lessons_with_no_time.append(lesson)
 
 
 
-            for color_of_lesson , group_lessons in self.lessons.items():
-                for lesson in group_lessons:
-                    lesson_vahed = self.vahed[lesson]
-                    for day in self.days:
-                        teacher = teachers[lesson]
-                        if teacher in teachers_limit_state :
-                            if teachers_limit_state[teacher] == [day]:
-                                for time in self.times:
-                                    if lesson_vahed == 4:
-                                            self.assign_lesson(lesson, group_lessons, day, time)
-
-                                    if self.assigned == True:
-                                        break
-                                if self.assigned == True:
-                                    break
-                        else:
+        for color_of_lesson , group_lessons in self.lessons.items():
+            for lesson in group_lessons:
+                lesson_vahed = self.vahed[lesson]
+                for day in self.days:
+                    teacher = teachers[lesson]
+                    if teacher in teachers_limit_state :
+                        if day in teachers_limit_state[teacher]:
                             for time in self.times:
                                 if lesson_vahed == 4:
                                         self.assign_lesson(lesson, group_lessons, day, time)
@@ -259,42 +250,41 @@ class InOrderSchedule:
                                     break
                             if self.assigned == True:
                                 break
-                            
-                    if self.assigned == False:
-                        _lessons_with_no_time.append(lesson)
-
-            for color_of_lesson , group_lessons in self.lessons.items():
-                for lesson in group_lessons:
-                    if lesson == "|dade|":
-                            pass
-                    for day in self.days:
-                        teacher = teachers[lesson]
-                        if teacher in teachers_limit_state :
-                            if teachers_limit_state[teacher] == [day]:
-                                for time in self.times:
+                    else:
+                        for time in self.times:
+                            if lesson_vahed == 4:
                                     self.assign_lesson(lesson, group_lessons, day, time)
-                                    if self.assigned == True:
-                                        break
-                                if self.assigned == True:
-                                    break
-                        else:
+
+                            if self.assigned == True:
+                                break
+                        if self.assigned == True:
+                            break
+                        
+                if self.assigned == False:
+                    _lessons_with_no_time.append(lesson)
+
+        for color_of_lesson , group_lessons in self.lessons.items():
+            for lesson in group_lessons:
+                for day in self.days:
+                    teacher = teachers[lesson]
+                    if teacher in teachers_limit_state :
+                        if day in teachers_limit_state[teacher]:
                             for time in self.times:
                                 self.assign_lesson(lesson, group_lessons, day, time)
                                 if self.assigned == True:
                                     break
                             if self.assigned == True:
                                 break
-                            
-                    if self.assigned == False:
-                        _lessons_with_no_time.append(lesson)
-            
-            if len(_lessons_with_no_time) == 0:
-                self.best_schedule = self.schedule
-                break
-            else:
-                if len(_lessons_with_no_time) <= len(self.lessons_with_no_time) or len(self.lessons_with_no_time) == 0:
-                    self.best_schedule = self.schedule
-                    self.lessons_with_no_time = _lessons_with_no_time
+                    else:
+                        for time in self.times:
+                            self.assign_lesson(lesson, group_lessons, day, time)
+                            if self.assigned == True:
+                                break
+                        if self.assigned == True:
+                            break
+                        
+                if self.assigned == False:
+                    _lessons_with_no_time.append(lesson)
         
         self.lessons_with_no_time = _lessons_with_no_time
         
