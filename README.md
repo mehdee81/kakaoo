@@ -1,9 +1,19 @@
 # kakaoo
 
 
-# University Course Scheduler
+# Academic Course Scheduler
 
 kakaoo is a Django-based web application designed to facilitate the scheduling of university courses for a specific major throughout the week. Users can add courses and professors, link them together, and schedule them accordingly.
+
+## Algorithm
+
+This software utilizes two key algorithms to optimize lesson scheduling:
+
+1. **Graph Coloring Algorithm**: This mathematical algorithm is used to group lessons that can be presented in the same section. Each group represents a color.
+
+2. **Genetic Algorithm**: This algorithm is used to arrange the groups of lessons across the days of the week. It works by generating a population of possible schedules. aiming to find the most optimal schedule.
+
+By combining these algorithms, the software can effectively avoid scheduling conflicts and distribute lessons evenly throughout the week.
 
 ## Features
 
