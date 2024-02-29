@@ -10,7 +10,6 @@ import time
 
 # Create your views here.
 def index(request):
-    all_professors = Professors.objects.values("name")
     courses = Courses.objects.values("course", "unit")
     c_to_p = CtoP.objects.values("id", "course", "professor")
     # Add professor's name to each course
@@ -38,7 +37,7 @@ def schedule(request):
         selected_courses = data.get("selected_courses")  # list
         limited_professors = data.get("limited_professors")  # dictionary
         acceptable_interferences = int(data.get("acceptable_interferences")) # integer
-        population = int(data.get("population")) # integer
+        chromosomes = int(data.get("chromosomes")) # integer
         courses_with_out_conditions = data.get("courses_with_out_conditions") #str
         courses_with_out_conditions = (courses_with_out_conditions.replace(" ","")).split("-")
         linked_courses_to_professors = {}  
@@ -85,7 +84,7 @@ def schedule(request):
             units[f"|{course}|"] = unit[0]
 
         s = GAschedule(
-            colors, units, verified_linked_courses_to_professors, limited_professors, population, acceptable_interferences, courses_with_out_conditions
+            colors, units, verified_linked_courses_to_professors, limited_professors, chromosomes, acceptable_interferences, courses_with_out_conditions
         )
         s.start()
         request.session["schedule"] = s.best_schedule

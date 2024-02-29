@@ -57,8 +57,8 @@ $('#get-data-btn').click(function () {
     // Get all checkboxes
     let checkboxes = $('.form-check-input');
 
-    // Get population
-    let population = $("#population").val();
+    // Get chromosomes
+    let chromosomes = $("#chromosomes").val();
 
     // Get number of acceptable interferences
     let acceptable_interferences = $("#acceptable_interferences").val();
@@ -102,7 +102,7 @@ $('#get-data-btn').click(function () {
         data: JSON.stringify({
             selected_courses: selected_courses,
             limited_professors: limited_professors,
-            population: population,
+            chromosomes: chromosomes,
             acceptable_interferences: acceptable_interferences,
             courses_with_out_conditions:courses_with_out_conditions
         }),
@@ -147,45 +147,13 @@ $(document).ready(function () {
 
 
 // --------------------------------------
-document.getElementById('population').addEventListener('input', function () {
+document.getElementById('chromosomes').addEventListener('input', function () {
     if (this.value > 100000000) {
-        alert('population cannot exceed 100000000');
+        alert('chromosomes cannot exceed 100000000');
         this.value = 100000000;
     }
 });
 // ----------------------------------------------------------
-$("#population").keyup(function (e) {
-    let selected_courses = [];
-    let checkboxes = $('.form-check-input');
-
-    // Loop through all checkboxes
-    checkboxes.each(function () {
-        // If checkbox is checked, add course to the list
-        if ($(this).is(':checked')) {
-            selected_courses.push($(this).val());
-        }
-    });
-
-    var population = $("#population").val();
-
-    var elapsed_time = $("#population").val() * (selected_courses.length * 0.0002467281676470588);
-
-    var time_string = "";
-
-    if (population > 10000) {
-        var seconds = (population / 10000);
-        elapsed_time += Math.floor(seconds);
-    }
-
-    // Convert to minutes if less than 1 hour
-    if (elapsed_time < 3600) {
-        time_string = (elapsed_time / 60).toFixed(2) + " minutes";
-    } else { // Convert to hours if 1 hour or more
-        time_string = ((elapsed_time / 60) / 60).toFixed(2) + " hours";
-    }
-    $("#approximate_processing_time").text("Approximate processing time: " + time_string);
-});
-// ---------------------------------------------
 
 $(document).ready(function () {
     // When the button is clicked

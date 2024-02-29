@@ -84,7 +84,7 @@ class Graph:
         return output_dict
 
 class GAschedule:
-    def __init__(self, colors, vahed, teachers, professors_limit_time, population, acceptable_interferences, courses_with_out_conditions):
+    def __init__(self, colors, vahed, teachers, professors_limit_time, chromosomes, acceptable_interferences, courses_with_out_conditions):
         self.days = [
             "shanbe",
             "1 shanbe",
@@ -102,7 +102,7 @@ class GAschedule:
         self.zoj_fard = None
         self.lessons_with_no_section = []
         self.professors_limit_time = professors_limit_time
-        self.population = population 
+        self.chromosomes = chromosomes 
         self.acceptable_interferences = acceptable_interferences
         self.courses_with_out_conditions = courses_with_out_conditions
         colors = dict(
@@ -354,7 +354,7 @@ class GAschedule:
     
     def make_solution(self):
         all_results = []
-        for i in range(0, self.population):
+        for i in range(0, self.chromosomes):
             self.assign_lessons()
             all_results.append(
                 (
@@ -369,9 +369,17 @@ class GAschedule:
                 }
                 self.lessons_with_no_section = []
                 break
-            if i % 10000 == 0:
-                print(f"Iteration {i}: Pausing for 1 seconds...")
-                time.sleep(1)
+            if (i % 5000 == 0) and (i != 0):
+                print(f"Iteration {i}: Pausing for 3 seconds...")
+                time.sleep(3)
+            
+            if i % 50000 == 0 and i != 0:
+                print(f"Iteration {i}: Pausing for 5 seconds...")
+                time.sleep(5)
+            
+            if i % 500000 == 0 and i != 0:
+                print(f"Iteration {i}: Pausing for 10 seconds...")
+                time.sleep(10)
             self.schedule = {
                 day: {time: [] for time in self.times} for day in self.days
             }
@@ -389,17 +397,17 @@ class GAschedule:
 
     def start(self):
         
-        print("Scheduling Started With", self.population,"Population", "and", self.acceptable_interferences, "Acceptable Interferences")
+        print("Scheduling Started With", self.chromosomes,"chromosomes", "and", self.acceptable_interferences, "Acceptable Interferences")
         start_time = time.time()
         self.fitness()
-        end_time = time.time()
         for course in self.courses_with_out_conditions:
             day = random.choice(self.days)
             chosen_time = random.choice(self.times)
             self.best_schedule[day][chosen_time].append(course)
+        end_time = time.time()
         elapsed_time = float(end_time - start_time)
         print("elapsed_time: ", elapsed_time, "Seconds")
-        return elapsed_time
+        
 
     def print_schedule(self):
         for day, day_schedule in self.best_schedule.items():
