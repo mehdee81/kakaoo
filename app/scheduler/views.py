@@ -4,15 +4,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.db.models import Q
-from .Graph_Scheduling import Graph, InOrderSchedule, GAschedule
+from .Graph_Scheduling import Graph, GAschedule
 import random
+import time
 
 # Create your views here.
 def index(request):
     all_professors = Professors.objects.values("name")
     courses = Courses.objects.values("course", "unit")
     c_to_p = CtoP.objects.values("id", "course", "professor")
-
     # Add professor's name to each course
     for course in courses:
         for cp in c_to_p:
@@ -37,8 +37,16 @@ def schedule(request):
         data = json.loads(request.body)
         selected_courses = data.get("selected_courses")  # list
         limited_professors = data.get("limited_professors")  # dictionary
+        acceptable_interferences = int(data.get("acceptable_interferences")) # integer
+        population = int(data.get("population")) # integer
+        courses_with_out_conditions = data.get("courses_with_out_conditions") #str
+        courses_with_out_conditions = (courses_with_out_conditions.replace(" ","")).split("-")
         linked_courses_to_professors = {}  
-
+        
+        for course in courses_with_out_conditions:
+            if course in selected_courses:
+                selected_courses.remove(course)
+        
         c_to_p = CtoP.objects.values("id", "course", "professor")
         for c_t_p in c_to_p:
             linked_courses_to_professors[c_t_p['course']] = c_t_p['professor']
@@ -49,12 +57,9 @@ def schedule(request):
                 random_prof = ''.join(random.choice(chars) for _ in range(10))
                 linked_courses_to_professors[course] = random_prof
         
-        print(linked_courses_to_professors)
-        
         verified_linked_courses_to_professors = {}
         for l_c, l_p in linked_courses_to_professors.items():
             verified_linked_courses_to_professors[f"|{l_c}|"] = f"|{l_p}|"
-            
             
         edges = []
         for course in selected_courses:
@@ -73,20 +78,19 @@ def schedule(request):
 
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
-
+        
         units = {}
         for course in selected_courses:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[f"|{course}|"] = unit[0]
 
         s = GAschedule(
-            colors, units, verified_linked_courses_to_professors, limited_professors
+            colors, units, verified_linked_courses_to_professors, limited_professors, population, acceptable_interferences, courses_with_out_conditions
         )
-        s.assign_lessons()
-        request.session["schedule"] = s.schedule
+        s.start()
+        request.session["schedule"] = s.best_schedule
         request.session["selected_courses"] = selected_courses
-        request.session["lessons_with_no_time"] = s.lessons_with_no_time
-        
+        request.session["lessons_with_no_time"] = s.lowest_lessons_with_no_section
         
         return JsonResponse({"status": "ok"})
 
