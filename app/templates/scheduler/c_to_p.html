@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block page_body %}
+<div class="container p-lg-5">
+    <div class="row">
+        {% if c_to_p %}
+        <div class="col-12 col-lg">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Course 1</th>
+                        <th>Course 2</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c_t_p in c_to_p %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ c_t_p.course }}</td>
+                        <td>{{ c_t_p.professor }}</td>
+                        <td>
+                            <a href="{% url 'delete_c_to_p' c_t_p.id %}" class="btn btn-danger m-1">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% if courses %}
+        <div class="col-12 col-lg">
+            <h3>Link Courses to Professors</h3>
+            <hr>
+            <form method="POST" action="{% url 'add_c_to_p' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="course" class="form-label">Course</label>
+                    <select id="course" name="course" class="form-select" required>
+                        {% for course in courses %}
+                        <option value={{course.course}}>{{course.course}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="professor" class="form-label">Course</label>
+                    <select id="professor" name="professor" class="form-select" required>
+                        {% for professor in professors %}
+                        <option value={{professor.name}}>{{professor.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        {% else %}
+            <div class="container p-5">
+                <p class="text-danger">
+                    <b>
+                        First go to the Courses page and add some course Then come back here.
+                    </b>
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

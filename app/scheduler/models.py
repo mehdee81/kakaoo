@@ -20,3 +20,11 @@ class SameTime(models.Model):
 
     def __str__(self):
         return self.course_1 , self.course_2
+
+
+class CtoP(models.Model):
+    course = models.CharField(max_length=200)
+    professor = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.course_1 , self.course_2

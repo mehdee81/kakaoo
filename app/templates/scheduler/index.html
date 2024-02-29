@@ -3,78 +3,68 @@
 
 {% if courses %}
 <div class="container">
-    <b>All Courses</b>
-    <hr>
     <form action="#" id="all_courses_form">
         {% csrf_token %}
-        {% for course in courses %}
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="course_{{ course.id }}" name="selected_courses"
-                value="{{ course.course }}">
-            <label class="form-check-label" for="course_{{ course.id }}">
-                {{ course.course }}
-            </label>
-        </div>
-        {% endfor %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Courses</th>
+                    <th scope="col">Professor</th>
+                    <th scope="col">Select</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ course.course }}</td>
+                    <td>{{ course.professor }}</td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="course_{{ course.id }}" name="selected_courses" value="{{ course.course }}">
+                            <label class="form-check-label" for="course_{{ course.id }}"></label>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </form>
 
-    <button type="button" class="btn btn-primary" onclick="getSelectedCourses()">Get Selected Courses</button>
-    <br>
-    <br>
-    <div id="hr_div"></div>
-    <h3>Link Professor to Course</h3>
-    <form id="selectedCoursesForm">
-        <div class="row">
-            <div class="col">
-                <label for="selectedCourses">Courses</label>
-                <select class="form-select" id="selectedCourses" aria-label="Default select example"></select>
-            </div>
-            <div class="col">
-                <label for="Professors">Professors</label>
-                <select name="selected_professor" id="Professors" class="form-select">
-                    {% for prof in professors %}
-                    <option value="{{ prof.name }}">{{ prof.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-        <button type="button" class="btn btn-dark mt-3" onclick="addRow()">Link Course to Professor</button>
-    </form>
-
-    <table id="linkedcoursesTable" class="table">
-        <thead>
-            <tr>
-                <th>Course</th>
-                <th>Professor</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Rows will be dynamically added here -->
-        </tbody>
-    </table>
     <br>
     <br>
     <div id="hr_div"></div>
     <h3>Limit Professors Time</h3>
     <form id="limit_professors">
         <div class="row">
+            <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link Courses to Porfessors</b> page and link courses to target professors.</b>
             <div class="col">
                 <label for="select_prof_for_limit">Professors</label>
                 <select name="select_prof_for_limit" id="select_prof_for_limit" class="form-select">
                     {% for prof in professors %}
-                    <option value="{{ prof.name }}">{{ prof.name }}</option>
+                    <option value="{{ prof }}">{{ prof }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col">
-                <label for="select_time_for_limit">Time</label>
-                <select class="form-select" id="select_time_for_limit" aria-label="Default select example">
+                <label for="select_day_for_limit">Day</label>
+                <select class="form-select" id="select_day_for_limit" aria-label="Default select example">
                     <option value="shanbe">shanbe</option>
                     <option value="1 shanbe">1 shanbe</option>
                     <option value="2 shanbe">2 shanbe</option>
                     <option value="3 shanbe">3 shanbe</option>
                     <option value="4 shanbe">4 shanbe</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="select_time_for_limit">Time</label>
+                <select class="form-select" id="select_time_for_limit" aria-label="Default select example">
+                    <option value="8:30">8:30</option>
+                    <option value="10:30">10:30</option>
+                    <option value="13:30">13:30</option>
+                    <option value="15:30">15:30</option>
+                    <option value="17:30">17:30</option>
                 </select>
             </div>
         </div>
@@ -85,6 +75,7 @@
         <thead>
             <tr>
                 <th>Professor</th>
+                <th>Day</th>
                 <th>Time</th>
                 <th>Action</th>
             </tr>

@@ -15,10 +15,16 @@ urlpatterns = [
     ),
     path("update_unit", views.update_unit, name="update_unit"),
     path('add_group' , views.add_group , name="add_group"),
+    
     path('professors' , views.professors , name="professors"),
     path('add_professor' , views.add_professor , name="add_professor"),
     path('delete_professor/<int:professor_id>' , views.delete_professor , name="delete_professor"),
+    
     path('pre_requirements' , views.sametimes , name="sametimes"),
     path('delete_sametime/<int:sametime_id>' , views.delete_sametime , name="delete_sametime"),
     path('add_sametime' , views.add_sametime , name="add_sametime"),
+    
+    path('c_to_p' , views.c_to_p , name="c_to_p"),
+    path('add_c_to_p' , views.add_c_to_p , name="add_c_to_p"),
+    path('delete_c_to_p/<int:c_to_p_id>' , views.delete_c_to_p , name="delete_c_to_p"),
 ]
