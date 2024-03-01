@@ -27,4 +27,8 @@ urlpatterns = [
     path('c_to_p' , views.c_to_p , name="c_to_p"),
     path('add_c_to_p' , views.add_c_to_p , name="add_c_to_p"),
     path('delete_c_to_p/<int:c_to_p_id>' , views.delete_c_to_p , name="delete_c_to_p"),
+    
+    path('professors_limit' , views.professors_limit , name="professors_limit"),
+    path('add_professors_limit' , views.add_professors_limit , name="add_professors_limit"),
+    path('delete_professors_limit/<int:professors_limit_id>' , views.delete_professors_limit , name="delete_professors_limit"),
 ]

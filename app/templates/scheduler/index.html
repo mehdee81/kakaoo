@@ -42,56 +42,7 @@
     <br>
     <br>
     <div id="hr_div"></div>
-    <h3>Limit Professors Time</h3>
-    <form id="limit_professors">
-        <div class="row">
-            <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link Courses to Porfessors</b> page and link courses to target professors.</b>
-            <div class="col">
-                <label for="select_prof_for_limit">Professors</label>
-                <select name="select_prof_for_limit" id="select_prof_for_limit" class="form-select">
-                    {% for prof in professors %}
-                    <option value="{{ prof }}">{{ prof }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col">
-                <label for="select_day_for_limit">Day</label>
-                <select class="form-select" id="select_day_for_limit" aria-label="Default select example">
-                    <option value="shanbe">shanbe</option>
-                    <option value="1 shanbe">1 shanbe</option>
-                    <option value="2 shanbe">2 shanbe</option>
-                    <option value="3 shanbe">3 shanbe</option>
-                    <option value="4 shanbe">4 shanbe</option>
-                </select>
-            </div>
-            <div class="col">
-                <label for="select_time_for_limit">Time</label>
-                <select class="form-select" id="select_time_for_limit" aria-label="Default select example">
-                    <option value="8:30">8:30</option>
-                    <option value="10:30">10:30</option>
-                    <option value="13:30">13:30</option>
-                    <option value="15:30">15:30</option>
-                    <option value="17:30">17:30</option>
-                </select>
-            </div>
-        </div>
-        <button type="button" class="btn btn-dark mt-3" onclick="addRow_limit_prof()">Limit Professor</button>
-    </form>
 
-    <table id="limited_professors" class="table">
-        <thead>
-            <tr>
-                <th>Professor</th>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Rows will be dynamically added here -->
-        </tbody>
-    </table>
-    <hr>
     <div class="mt-s mb-3">
         <label for="iteration">Number of random Solutions(Chromosomes)</label>
         <input type="number" id="chromosomes" name="chromosomes" min="1" value="1" max="1000" class="form-control">

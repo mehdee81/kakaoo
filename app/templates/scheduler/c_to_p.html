@@ -8,8 +8,8 @@
                 <thead>
                     <tr>
                         <th>Number</th>
-                        <th>Course 1</th>
-                        <th>Course 2</th>
+                        <th>Course</th>
+                        <th>Professor</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -29,6 +29,7 @@
         </div>
         {% endif %}
         {% if courses %}
+        {% if professors %}
         <div class="col-12 col-lg">
             <h3>Link Courses to Professors</h3>
             <hr>
@@ -54,13 +55,22 @@
             </form>
         </div>
         {% else %}
-            <div class="container p-5">
-                <p class="text-danger">
-                    <b>
-                        First go to the Courses page and add some course Then come back here.
-                    </b>
-                </p>
-            </div>
+        <div class="container p-5">
+            <p class="text-danger">
+                <b>
+                    First Go to The Professors Page and Add Some Professor Then Come Back Here.
+                </b>
+            </p>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="container p-5">
+            <p class="text-danger">
+                <b>
+                    First go to the Courses page and add some course Then come back here.
+                </b>
+            </p>
+        </div>
         {% endif %}
     </div>
 </div>

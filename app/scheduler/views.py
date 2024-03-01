@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
-from .models import Courses, Professors, SameTime, Professors, CtoP
+from .models import Courses, Professors, SameTime, Professors, CtoP, ProfessorsLimit
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.db.models import Q
 from .Graph_Scheduling import Graph, GAschedule
 import random
-import time
+
+
 
 # Create your views here.
 def index(request):
@@ -22,11 +23,11 @@ def index(request):
             course["professor"] = "none"
 
     # Get all unique professor names in c_to_p
-    professors = set(cp['professor'] for cp in c_to_p)
+    professors = set(cp["professor"] for cp in c_to_p)
     return render(
         request,
         "scheduler/index.html",
-        {"courses": courses,"professors":professors},
+        {"courses": courses, "professors": professors},
     )
 
 
@@ -35,31 +36,46 @@ def schedule(request):
     if request.method == "POST":
         data = json.loads(request.body)
         selected_courses = data.get("selected_courses")  # list
-        limited_professors = data.get("limited_professors")  # dictionary
-        acceptable_interferences = int(data.get("acceptable_interferences")) # integer
-        chromosomes = int(data.get("chromosomes")) # integer
-        courses_with_out_conditions = data.get("courses_with_out_conditions") #str
-        courses_with_out_conditions = (courses_with_out_conditions.replace(" ","")).split("-")
-        linked_courses_to_professors = {}  
+        acceptable_interferences = int(data.get("acceptable_interferences"))  # integer
+        chromosomes = int(data.get("chromosomes"))  # integer
+        courses_with_out_conditions = data.get("courses_with_out_conditions")  # str
+        courses_with_out_conditions = (
+            courses_with_out_conditions.replace(" ", "")
+        ).split("-")
         
+        profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
+
+        # Initialize an empty dictionary
+        limited_professors = {}
+
+        # Iterate over the queryset
+        for prof in profs_limit:
+            # If the professor is not in the dictionary, add them
+            if f"|{prof['professor']}|" not in limited_professors:
+                limited_professors[f"|{prof['professor']}|"] = []
+            # Append the day and time to the professor's list
+            limited_professors[f"|{prof['professor']}|"].append([prof['day'], prof['time']])
+        
+        linked_courses_to_professors = {}
+
         for course in courses_with_out_conditions:
             if course in selected_courses:
                 selected_courses.remove(course)
-        
+
         c_to_p = CtoP.objects.values("id", "course", "professor")
         for c_t_p in c_to_p:
-            linked_courses_to_professors[c_t_p['course']] = c_t_p['professor']
-        
+            linked_courses_to_professors[c_t_p["course"]] = c_t_p["professor"]
+
         for course in selected_courses:
             if course not in linked_courses_to_professors:
                 chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                random_prof = ''.join(random.choice(chars) for _ in range(10))
+                random_prof = "".join(random.choice(chars) for _ in range(10))
                 linked_courses_to_professors[course] = random_prof
-        
+
         verified_linked_courses_to_professors = {}
         for l_c, l_p in linked_courses_to_professors.items():
             verified_linked_courses_to_professors[f"|{l_c}|"] = f"|{l_p}|"
-            
+
         edges = []
         for course in selected_courses:
             for ch_course in selected_courses:
@@ -77,20 +93,26 @@ def schedule(request):
 
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
-        
+
         units = {}
         for course in selected_courses:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[f"|{course}|"] = unit[0]
 
         s = GAschedule(
-            colors, units, verified_linked_courses_to_professors, limited_professors, chromosomes, acceptable_interferences, courses_with_out_conditions
+            colors,
+            units,
+            verified_linked_courses_to_professors,
+            limited_professors,
+            chromosomes,
+            acceptable_interferences,
+            courses_with_out_conditions,
         )
         s.start()
         request.session["schedule"] = s.best_schedule
         request.session["selected_courses"] = selected_courses
         request.session["lessons_with_no_time"] = s.lowest_lessons_with_no_section
-        
+
         return JsonResponse({"status": "ok"})
 
 
@@ -127,7 +149,7 @@ def learn_more(request):
 
 
 def courses(request):
-    courses = Courses.objects.values("id", "course", "unit").order_by('-id')
+    courses = Courses.objects.values("id", "course", "unit").order_by("-id")
     return render(request, "scheduler/courses.html", {"courses": courses})
 
 
@@ -199,7 +221,7 @@ def add_group(request):
 
 
 def professors(request):
-    professors = Professors.objects.values("id", "name").order_by('-id')
+    professors = Professors.objects.values("id", "name").order_by("-id")
     return render(request, "scheduler/professors.html", {"professors": professors})
 
 
@@ -219,18 +241,12 @@ def add_professor(request):
 
 def sametimes(request):
     courses = Courses.objects.values("id", "course", "unit")
-    sametimes = SameTime.objects.values("id", "course_1", "course_2").order_by('-id')
+    sametimes = SameTime.objects.values("id", "course_1", "course_2").order_by("-id")
     return render(
         request,
         "scheduler/sametimes.html",
         {"courses": courses, "sametimes": sametimes},
     )
-
-
-def delete_sametime(request, sametime_id):
-    sametime = SameTime.objects.get(id=sametime_id)
-    sametime.delete()
-    return redirect("sametimes")
 
 
 def add_sametime(request):
@@ -243,16 +259,22 @@ def add_sametime(request):
     return redirect("sametimes")
 
 
+def delete_sametime(request, sametime_id):
+    sametime = SameTime.objects.get(id=sametime_id)
+    sametime.delete()
+    return redirect("sametimes")
+
 def c_to_p(request):
     courses = Courses.objects.values("id", "course", "unit")
     professors = Professors.objects.values("id", "name")
-    c_to_p = CtoP.objects.values("id", "course", "professor").order_by('-id')
+    c_to_p = CtoP.objects.values("id", "course", "professor").order_by("-id")
     return render(
         request,
         "scheduler/c_to_p.html",
         {"courses": courses, "professors": professors, "c_to_p": c_to_p},
     )
-    
+
+
 def add_c_to_p(request):
     if request.method == "POST":
         course = request.POST.get("course")
@@ -263,7 +285,40 @@ def add_c_to_p(request):
             c_to_p.save()
         return redirect("c_to_p")
 
+
 def delete_c_to_p(request, c_to_p_id):
     c_to_p = CtoP.objects.get(id=c_to_p_id)
     c_to_p.delete()
     return redirect("c_to_p")
+
+
+def professors_limit(request):
+    c_to_p = CtoP.objects.values_list('professor', flat=True)
+    # professors = Professors.objects.values("id", "name")
+    profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time").order_by("-id")
+    
+    # Filter the Professors querysetc_to_p = CtoP.objects.values_list('professor', flat=True)
+    professors = Professors.objects.filter(name__in=c_to_p).values("id", "name")
+
+    return render(
+        request,
+        "scheduler/professors_limit.html",
+        {"professors": professors, "profs_limit": profs_limit},
+    )
+
+def add_professors_limit(request):
+    if request.method == "POST":
+        prof = request.POST.get("prof")
+        day = request.POST.get("day")
+        time = request.POST.get("time")
+        profs_limit = ProfessorsLimit(professor=prof, day=day, time=time)
+        profs_limit.save()
+        return redirect("professors_limit")
+    
+    
+    
+
+def delete_professors_limit(request, professors_limit_id):
+    prof_limit = ProfessorsLimit.objects.get(id=professors_limit_id)
+    prof_limit.delete()
+    return redirect("professors_limit")

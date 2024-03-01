@@ -86,11 +86,11 @@ class Graph:
 class GAschedule:
     def __init__(self, colors, vahed, teachers, professors_limit_time, chromosomes, acceptable_interferences, courses_with_out_conditions):
         self.days = [
-            "shanbe",
-            "1 shanbe",
-            "2 shanbe",
-            "3 shanbe",
-            "4 shanbe",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
         ]
         self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
         self.schedule = {day: {time: [] for time in self.times} for day in self.days}

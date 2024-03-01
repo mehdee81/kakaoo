@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block page_body %}
+<div class="container p-lg-5">
+    <div class="row">
+        {% if profs_limit %}
+        <div class="col-12 col-lg">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Professor</th>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prof_limit in profs_limit %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ prof_limit.professor }}</td>
+                        <td>{{ prof_limit.day }}</td>
+                        <td>{{ prof_limit.time }}</td>
+                        <td>
+                            <a href="{% url 'delete_professors_limit' prof_limit.id %}" class="btn btn-danger m-1">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% if professors %}
+        <div class="col-12 col-lg">
+            <h3>Limit a Professor</h3>
+            <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link Courses to Porfessors</b> page and link courses to target professors.</b>
+            <hr>
+            <form method="POST" action="{% url 'add_professors_limit' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="prof" class="form-label">Profeesor</label>
+                    <select id="prof" name="prof" class="form-select" required>
+                        {% for prof in professors %}
+                        <option value={{prof.name}}>{{prof.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="day" class="form-label">Day</label>
+                    <select id="day" name="day" class="form-select" required>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="time" class="form-label">Time</label>
+                    <select id="time" name="time" class="form-select" required>
+                        <option value="8:30">8:30</option>
+                        <option value="10:30">10:30</option>
+                        <option value="13:30">13:30</option>
+                        <option value="15:30">15:30</option>
+                        <option value="17:30">17:30</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        {% else %}
+            <div class="container p-5">
+                <p class="text-danger">
+                    <b>
+                        First Go to The Professors Page and Add Some Professor Then Come Back Here.
+                    </b>
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
