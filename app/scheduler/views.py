@@ -8,7 +8,6 @@ from .Graph_Scheduling import Graph, GAschedule
 import random
 
 
-
 # Create your views here.
 def index(request):
     courses = Courses.objects.values("course", "unit")
@@ -42,7 +41,7 @@ def schedule(request):
         courses_with_out_conditions = (
             courses_with_out_conditions.replace(" ", "")
         ).split("-")
-        
+
         profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
 
         # Initialize an empty dictionary
@@ -54,8 +53,10 @@ def schedule(request):
             if f"|{prof['professor']}|" not in limited_professors:
                 limited_professors[f"|{prof['professor']}|"] = []
             # Append the day and time to the professor's list
-            limited_professors[f"|{prof['professor']}|"].append([prof['day'], prof['time']])
-        
+            limited_professors[f"|{prof['professor']}|"].append(
+                [prof["day"], prof["time"]]
+            )
+
         linked_courses_to_professors = {}
 
         for course in courses_with_out_conditions:
@@ -228,6 +229,9 @@ def professors(request):
 def delete_professor(request, professor_id):
     prof = Professors.objects.get(id=professor_id)
     prof.delete()
+    
+    c_to_p = CtoP.objects.filter(professor = prof)
+    c_to_p.delete()
     return redirect("professors")
 
 
@@ -264,6 +268,7 @@ def delete_sametime(request, sametime_id):
     sametime.delete()
     return redirect("sametimes")
 
+
 def c_to_p(request):
     courses = Courses.objects.values("id", "course", "unit")
     professors = Professors.objects.values("id", "name")
@@ -293,30 +298,50 @@ def delete_c_to_p(request, c_to_p_id):
 
 
 def professors_limit(request):
-    c_to_p = CtoP.objects.values_list('professor', flat=True)
+    c_to_p = CtoP.objects.values_list("professor", flat=True)
     # professors = Professors.objects.values("id", "name")
-    profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time").order_by("-id")
+    profs_limit = ProfessorsLimit.objects.values(
+        "id", "professor", "day", "time"
+    ).order_by("-id")
     
+    days = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+        ]
+    times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
+    schedule = {day: {time: [] for time in times} for day in days}
+
+    for prof in profs_limit:
+        schedule[prof['day']][prof['time']].append((prof['professor'], prof['id']))
+
     # Filter the Professors querysetc_to_p = CtoP.objects.values_list('professor', flat=True)
     professors = Professors.objects.filter(name__in=c_to_p).values("id", "name")
 
     return render(
         request,
         "scheduler/professors_limit.html",
-        {"professors": professors, "profs_limit": profs_limit},
+        {
+            "professors": professors,
+            "profs_limit": profs_limit,
+            "schedule":schedule
+        },
     )
+
 
 def add_professors_limit(request):
     if request.method == "POST":
         prof = request.POST.get("prof")
         day = request.POST.get("day")
         time = request.POST.get("time")
-        profs_limit = ProfessorsLimit(professor=prof, day=day, time=time)
-        profs_limit.save()
+        existing_record = ProfessorsLimit.objects.filter(professor=prof, day=day, time=time).exists()
+        if not existing_record:
+            profs_limit = ProfessorsLimit(professor=prof, day=day, time=time)
+            profs_limit.save()
         return redirect("professors_limit")
-    
-    
-    
+
 
 def delete_professors_limit(request, professors_limit_id):
     prof_limit = ProfessorsLimit.objects.get(id=professors_limit_id)

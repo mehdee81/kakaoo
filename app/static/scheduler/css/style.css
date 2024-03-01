@@ -77,7 +77,7 @@ ul li :hover {
 }
 
 
-#developer{
+#developer {
     text-decoration: none;
     color: black;
     font-weight: 400;
@@ -89,34 +89,51 @@ ul li :hover {
     position: relative;
     width: 80px;
     height: 80px;
-  }
-  .lds-facebook div {
+}
+
+.lds-facebook div {
     display: inline-block;
     position: absolute;
     left: 8px;
     width: 16px;
     background: #fff;
     animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
-  }
-  .lds-facebook div:nth-child(1) {
+}
+
+.lds-facebook div:nth-child(1) {
     left: 8px;
     animation-delay: -0.24s;
-  }
-  .lds-facebook div:nth-child(2) {
+}
+
+.lds-facebook div:nth-child(2) {
     left: 32px;
     animation-delay: -0.12s;
-  }
-  .lds-facebook div:nth-child(3) {
+}
+
+.lds-facebook div:nth-child(3) {
     left: 56px;
     animation-delay: 0;
-  }
-  @keyframes lds-facebook {
+}
+
+@keyframes lds-facebook {
     0% {
-      top: 8px;
-      height: 64px;
+        top: 8px;
+        height: 64px;
     }
-    50%, 100% {
-      top: 24px;
-      height: 32px;
+
+    50%,
+    100% {
+        top: 24px;
+        height: 32px;
     }
-  }
+}
+
+
+#prof_in_limit_page{
+    text-decoration: none;
+    color: white;
+}
+#prof_in_limit_page:hover{
+    transition: 0.8s;
+    color: rgb(255, 0, 0);
+}

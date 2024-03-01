@@ -4,26 +4,29 @@
     <div class="row">
         {% if profs_limit %}
         <div class="col-12 col-lg">
-            <table class="table table-striped table-bordered">
+            <table class="table table-dark table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>Number</th>
-                        <th>Professor</th>
-                        <th>Day</th>
-                        <th>Time</th>
-                        <th>Action</th>
+                        <th>Day/Time</th>
+                        <th>8:30</th>
+                        <th>10:30</th>
+                        <th>13:30</th>
+                        <th>15:30</th>
+                        <th>17:30</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for prof_limit in profs_limit %}
+                    {% for day, times in schedule.items %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ prof_limit.professor }}</td>
-                        <td>{{ prof_limit.day }}</td>
-                        <td>{{ prof_limit.time }}</td>
+                        <th>{{ day }}</th>
+                        {% for time, professors in times.items %}
                         <td>
-                            <a href="{% url 'delete_professors_limit' prof_limit.id %}" class="btn btn-danger m-1">Delete</a>
+                            {% for professor, id in professors %}
+                            <b><a id="prof_in_limit_page" href="{% url 'delete_professors_limit' id %}">{{ professor }} <br>
+                                </a></b>
+                            {% endfor %}
                         </td>
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -33,7 +36,8 @@
         {% if professors %}
         <div class="col-12 col-lg">
             <h3>Limit a Professor</h3>
-            <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link Courses to Porfessors</b> page and link courses to target professors.</b>
+            <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link
+                    Courses to Porfessors</b> page and link courses to target professors.</b>
             <hr>
             <form method="POST" action="{% url 'add_professors_limit' %}">
                 {% csrf_token %}
@@ -69,13 +73,13 @@
             </form>
         </div>
         {% else %}
-            <div class="container p-5">
-                <p class="text-danger">
-                    <b>
-                        First Go to The Professors Page and Add Some Professor Then Come Back Here.
-                    </b>
-                </p>
-            </div>
+        <div class="container p-5">
+            <p class="text-danger">
+                <b>
+                    First Go to The Professors Page and Add Some Professor Then Come Back Here.
+                </b>
+            </p>
+        </div>
         {% endif %}
     </div>
 </div>
