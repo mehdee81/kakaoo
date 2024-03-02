@@ -370,15 +370,15 @@ class GAschedule:
                 self.lessons_with_no_section = []
                 break
             if (i % 5000 == 0) and (i != 0):
-                print(f"Iteration {i}: Pausing for 3 seconds...")
+                print(f"Chromosome {i}: Pausing for 3 seconds...")
                 time.sleep(3)
             
             if i % 50000 == 0 and i != 0:
-                print(f"Iteration {i}: Pausing for 5 seconds...")
+                print(f"Chromosome {i}: Pausing for 5 seconds...")
                 time.sleep(5)
             
             if i % 500000 == 0 and i != 0:
-                print(f"Iteration {i}: Pausing for 10 seconds...")
+                print(f"Chromosome {i}: Pausing for 10 seconds...")
                 time.sleep(10)
             self.schedule = {
                 day: {time: [] for time in self.times} for day in self.days
@@ -393,7 +393,7 @@ class GAschedule:
         self.lowest_lessons_with_no_section = sorted_results[0][1]
 
         for sorted_result in sorted_results[:10]:
-            print(sorted_result[2])
+            print("Courses with out section: ",sorted_result[2])
 
     def start(self):
         
@@ -404,6 +404,7 @@ class GAschedule:
             day = random.choice(self.days)
             chosen_time = random.choice(self.times)
             self.best_schedule[day][chosen_time].append(course)
+            
         end_time = time.time()
         elapsed_time = float(end_time - start_time)
         print("elapsed_time: ", elapsed_time, "Seconds")

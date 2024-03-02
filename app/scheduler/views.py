@@ -59,8 +59,10 @@ def schedule(request):
 
         linked_courses_to_professors = {}
 
+        verified_courses_with_out_conditions = []
         for course in courses_with_out_conditions:
             if course in selected_courses:
+                verified_courses_with_out_conditions.append(course)
                 selected_courses.remove(course)
 
         c_to_p = CtoP.objects.values("id", "course", "professor")
@@ -107,7 +109,7 @@ def schedule(request):
             limited_professors,
             chromosomes,
             acceptable_interferences,
-            courses_with_out_conditions,
+            verified_courses_with_out_conditions,
         )
         s.start()
         request.session["schedule"] = s.best_schedule
