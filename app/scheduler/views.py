@@ -50,10 +50,10 @@ def schedule(request):
         # Iterate over the queryset
         for prof in profs_limit:
             # If the professor is not in the dictionary, add them
-            if f"|{prof['professor']}|" not in limited_professors:
-                limited_professors[f"|{prof['professor']}|"] = []
+            if prof['professor'] not in limited_professors:
+                limited_professors[prof['professor']] = []
             # Append the day and time to the professor's list
-            limited_professors[f"|{prof['professor']}|"].append(
+            limited_professors[prof['professor']].append(
                 [prof["day"], prof["time"]]
             )
 
@@ -77,7 +77,7 @@ def schedule(request):
 
         verified_linked_courses_to_professors = {}
         for l_c, l_p in linked_courses_to_professors.items():
-            verified_linked_courses_to_professors[f"|{l_c}|"] = f"|{l_p}|"
+            verified_linked_courses_to_professors[l_c] = l_p
 
         edges = []
         for course in selected_courses:
@@ -89,10 +89,10 @@ def schedule(request):
                     )
                     if (
                         len(check_sametime) == 0
-                        and ((f"|{ch_course}|", f"|{course}|") not in edges)
-                        and ((f"|{course}|", f"|{ch_course}|") not in edges)
+                        and ((ch_course, course) not in edges)
+                        and ((course, ch_course) not in edges)
                     ):
-                        edges.append((f"|{course}|", f"|{ch_course}|"))
+                        edges.append((course, ch_course))
 
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
@@ -100,7 +100,7 @@ def schedule(request):
         units = {}
         for course in selected_courses:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
-            units[f"|{course}|"] = unit[0]
+            units[course] = unit[0]
 
         s = GAschedule(
             colors,

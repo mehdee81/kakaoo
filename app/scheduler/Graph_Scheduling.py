@@ -84,7 +84,7 @@ class Graph:
         return output_dict
 
 class GAschedule:
-    def __init__(self, colors, vahed, teachers, professors_limit_time, chromosomes, acceptable_interferences, courses_with_out_conditions):
+    def __init__(self, colors, unit, teachers, professors_limit_time, chromosomes, acceptable_interferences, courses_with_out_conditions):
         self.days = [
             "Monday",
             "Tuesday",
@@ -96,7 +96,6 @@ class GAschedule:
         self.schedule = {day: {time: [] for time in self.times} for day in self.days}
         self.best_schedule = None
         self.lowest_lessons_with_no_section = None
-        self.vahed = vahed
         self.assigned = None
         self.teachers = teachers
         self.zoj_fard = None
@@ -105,24 +104,29 @@ class GAschedule:
         self.chromosomes = chromosomes 
         self.acceptable_interferences = acceptable_interferences
         self.courses_with_out_conditions = courses_with_out_conditions
-        colors = dict(
-            sorted(colors.items(), key=lambda item: len(item[1]), reverse=True)
-        )
-        score_of_colors = {}
-        for number, list in colors.items():
-            score = 0
-            for lesson in list:
-                s = vahed[lesson]
-                if vahed[lesson] == 4:
-                    s = s - 1
-                score += s
-            score_of_colors[number] = score
+        self.unit = unit
 
-        self.lessons = {
-            k: colors[k]
-            for k in sorted(score_of_colors, key=score_of_colors.get, reverse=True)
-        }
-
+        self.lessons = {}
+        for key, color in colors.items():
+            _color = []
+            for lesson in color:
+                _color.append(f"|{lesson}|")
+            self.lessons[key] = _color
+        
+        self.lessons = list(self.lessons.items())
+        random.shuffle(self.lessons)
+        self.lessons = dict(self.lessons)
+        
+        piped_units = {}
+        for course, unit in self.unit.items():
+            piped_units[f"|{course}|"] = unit
+        self.unit = piped_units
+        
+        piped_teachers = {}
+        for course, prof in self.teachers.items():
+            piped_teachers[f"|{course}|"] =  prof
+        self.teachers = piped_teachers
+        
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
         teachers = self.teachers
@@ -218,7 +222,7 @@ class GAschedule:
 
         for color_of_lesson, group_lessons in self.lessons.items():
             for lesson in group_lessons:
-                lesson_unit = self.vahed[lesson]
+                lesson_unit = self.unit[lesson]
                 checked_sections = []
                 teacher = teachers[lesson]
                 if lesson_unit == 3:
@@ -276,7 +280,7 @@ class GAschedule:
 
         for color_of_lesson, group_lessons in self.lessons.items():
             for lesson in group_lessons:
-                lesson_unit = self.vahed[lesson]
+                lesson_unit = self.unit[lesson]
                 checked_sections = []
                 teacher = teachers[lesson]
                 if lesson_unit == 4:
@@ -314,7 +318,7 @@ class GAschedule:
 
         for color_of_lesson, group_lessons in self.lessons.items():
             for lesson in group_lessons:
-                lesson_unit = self.vahed[lesson]
+                lesson_unit = self.unit[lesson]
                 checked_sections = []
                 teacher = teachers[lesson]
                 while True:
