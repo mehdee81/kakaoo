@@ -64,7 +64,8 @@ def schedule(request):
             if course in selected_courses:
                 verified_courses_with_out_conditions.append(course)
                 selected_courses.remove(course)
-
+        
+        
         c_to_p = CtoP.objects.values("id", "course", "professor")
         for c_t_p in c_to_p:
             linked_courses_to_professors[c_t_p["course"]] = c_t_p["professor"]
@@ -96,12 +97,16 @@ def schedule(request):
 
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
-
+        
         units = {}
         for course in selected_courses:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[course] = unit[0]
-
+            
+        for course in verified_courses_with_out_conditions:
+            unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
+            units[course] = unit[0]
+        
         s = GAschedule(
             colors,
             units,
