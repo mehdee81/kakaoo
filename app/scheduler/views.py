@@ -4,7 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.db.models import Q
-from .Graph_Scheduling import Graph, GAschedule
+from .Graph_Scheduling import Graph
+from .genetic_algorithm import GAscheduler
 import random
 
 
@@ -107,7 +108,7 @@ def schedule(request):
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[course] = unit[0]
         
-        s = GAschedule(
+        s = GAscheduler(
             colors,
             units,
             verified_linked_courses_to_professors,
