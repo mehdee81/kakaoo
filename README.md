@@ -15,6 +15,8 @@ This software utilizes two key algorithms to optimize lesson scheduling:
 
 By combining these algorithms, the software can effectively avoid scheduling conflicts and distribute lessons evenly throughout the week.
 
+![graaph genetic-min](https://github.com/mehdee81/kakaoo/assets/123891686/8e834068-fe83-453d-807e-8733e3909a17)
+
 ## Features
 
 - Add and manage courses and professors.
