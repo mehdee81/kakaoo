@@ -112,7 +112,7 @@ class GAscheduler:
                     else:
                         _append = False
             
-            check_list.append(_append)
+                check_list.append(_append)
             change_z_f = 0
             
             if False in check_list: # if they are not in a same group
