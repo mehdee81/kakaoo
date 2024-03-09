@@ -51,7 +51,7 @@ class GAscheduler:
         for color, courses in self.courses.items():
             for course in courses:
                 self.listed_all_courses.append(course)
-
+        
         piped_units = {}
         for course, unit in self.unit.items():
             piped_units[f"|{course}|"] = unit
@@ -65,67 +65,89 @@ class GAscheduler:
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
         teachers = self.teachers
+            
         if len(self.schedule[day][time]) > 0:
             check_list = []
-            assigned_lessons = self.schedule[day][time]
-            for assigned_lesson in assigned_lessons:
-                _append = True
+            assigned_courses = self.schedule[day][time]
+            
+            change_z_f = 0
+            for assigned_course in assigned_courses:
                 for course in group_lessons:
-                    if course in assigned_lesson: # if they are in a same group
-                        
-                        if assigned_lesson[-2:] == "_f" or assigned_lesson[-2:] == "_z":
+                    if course in assigned_course: # if they are in a same group
+                        _append = False
+                        if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                                if teachers[lesson[:-2]] != teachers[assigned_lesson[:-2]]:
-                                    lesson = lesson[:-2] + assigned_lesson[-2:]
+                                if teachers[lesson[:-2]] != teachers[assigned_course[:-2]]:
+                                    lesson = lesson[:-2] + assigned_course[-2:]
                                     _append = True
-                                elif teachers[lesson[:-2]] == teachers[assigned_lesson[:-2]]: 
-                                    if assigned_lesson[-2:] == "_f":
-                                        lesson = lesson[:-2] + "_z"
+                                elif teachers[lesson[:-2]] == teachers[assigned_course[:-2]]: 
+                                    if change_z_f < 1 :
+                                        if assigned_course[-2:] == "_f":
+                                            lesson = lesson[:-2] + "_z"
+                                        else:
+                                            lesson = lesson[:-2] + "_f"
+                                        _append = True
+                                        change_z_f += 1
                                     else:
-                                        lesson = lesson[:-2] + "_f"
-                                    _append = True
+                                        _append = False
                             elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
-                                if teachers[lesson] == teachers[assigned_lesson[:-2]]:
+                                if teachers[lesson] == teachers[assigned_course[:-2]]:
                                     _append = False
-                        
-                        elif assigned_lesson[-2:] != "_f" and assigned_lesson[-2:] != "_z" :
-                            if lesson[-2:] != "_f" and lesson[-2:] != "_z":
-                                if teachers[lesson] == teachers[assigned_lesson]:
-                                    _append = False
-                            elif lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                                if teachers[lesson[:-2]] == teachers[assigned_lesson]:
-                                    _append = False
+                                else:
+                                    _append = True
                                     
+                        
+                        elif assigned_course[-2:] != "_f" and assigned_course[-2:] != "_z" :
+                            if lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                                if teachers[lesson] == teachers[assigned_course]:
+                                    _append = False
+                                else:
+                                    _append = True
+                            elif lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                                if teachers[lesson[:-2]] == teachers[assigned_course]:
+                                    _append = False
+                                else:
+                                    _append = True
                         break
-                    
-                    else: # if they are not in a same group 
-                        if assigned_lesson[-2:] == "_f" or assigned_lesson[-2:] == "_z":
-                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                                if assigned_lesson[-2:] == "_f":
+                    else:
+                        _append = False
+            
+            check_list.append(_append)
+            change_z_f = 0
+            
+            if False in check_list: # if they are not in a same group
+                for assigned_course in assigned_courses:
+                    if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
+                        if lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                            if change_z_f < 1:
+                                if assigned_course[-2:] == "_f":
                                     lesson = lesson[:-2] + "_z"
                                 else:
                                     lesson = lesson[:-2] + "_f"
-                                _append = True
-                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
-                                _append = False
-                        
-                        elif assigned_lesson[-2:] != "_f" and assigned_lesson[-2:] != "_z" :
-                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                                if teachers[lesson[:-2]] == teachers[assigned_lesson]:
-                                    _append = False
-                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
-                                _append = False
-                check_list.append(_append)
+                                assign = True
+                                change_z_f += 1
+                            else:
+                                assign = False
+                                break
+                        elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                            assign = False
+                            break
+                       
+                    elif assigned_course[-2:] != "_f" and assigned_course[-2:] != "_z" :
+                        if lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                            if teachers[lesson[:-2]] == teachers[assigned_course]:
+                                assign = False
+                                break
+                            
+                        elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                            assign = False
+                            break
+                            
+            else:
+                assign = True
 
-            for check in range(len(check_list)):
-                if check_list[check]:
-                    assign = True
-                else:
-                    assign = False
-                    break
-
-            for assigned_lesson in self.schedule[day][time]:
-                if lesson in assigned_lesson or assigned_lesson in lesson:
+            for assigned_course in self.schedule[day][time]:
+                if lesson in assigned_course or assigned_course in lesson:
                     assign = False
                     break
 
@@ -277,7 +299,7 @@ class GAscheduler:
                         break
 
         self.courses_with_no_section = _lessons_with_no_section
-
+        
         for course in self.courses_with_out_conditions:
             course_teacher = teachers[course]
             group_lessons = self.listed_all_courses
