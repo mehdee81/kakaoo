@@ -1,7 +1,18 @@
 import random
 import time
+
+
 class GAscheduler:
-    def __init__(self, colors, unit, teachers, professors_limit_time, chromosomes, acceptable_interferences, courses_with_out_conditions):
+    def __init__(
+        self,
+        colors,
+        unit,
+        teachers,
+        professors_limit_time,
+        chromosomes,
+        acceptable_interferences,
+        courses_with_out_conditions,
+    ):
         self.days = [
             "Monday",
             "Tuesday",
@@ -18,17 +29,16 @@ class GAscheduler:
         self.zoj_fard = None
         self.courses_with_no_section = []
         self.professors_limit_time = professors_limit_time
-        self.chromosomes = chromosomes 
+        self.chromosomes = chromosomes
         self.acceptable_interferences = acceptable_interferences
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
-        
+
         self.piped_courses_with_out_conditions = []
         for course in self.courses_with_out_conditions:
             self.piped_courses_with_out_conditions.append(f"|{course}|")
-            
+
         self.courses_with_out_conditions = self.piped_courses_with_out_conditions
-        
 
         self.courses = {}
         for color, courses in colors.items():
@@ -36,22 +46,22 @@ class GAscheduler:
             for course in courses:
                 _color.append(f"|{course}|")
             self.courses[color] = _color
-        
+
         self.listed_all_courses = []
         for color, courses in self.courses.items():
             for course in courses:
                 self.listed_all_courses.append(course)
-        
+
         piped_units = {}
         for course, unit in self.unit.items():
             piped_units[f"|{course}|"] = unit
         self.unit = piped_units
-        
+
         piped_teachers = {}
         for course, prof in self.teachers.items():
-            piped_teachers[f"|{course}|"] =  prof
+            piped_teachers[f"|{course}|"] = prof
         self.teachers = piped_teachers
-        
+
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
         teachers = self.teachers
@@ -59,72 +69,60 @@ class GAscheduler:
             check_list = []
             assigned_lessons = self.schedule[day][time]
             for assigned_lesson in assigned_lessons:
-                _append = False
+                _append = True
                 for course in group_lessons:
-                    if course in assigned_lesson:  # اگر هم گروهی بودند
-                        if (
-                            (
-                                assigned_lesson[-2:] == "_f"
-                                or assigned_lesson[-2:] == "_z"
-                            )
-                            and (lesson[-2:] == "_f" or lesson[-2:] == "_z")
-                            and (
-                                teachers[lesson[:-2]] != teachers[assigned_lesson[:-2]]
-                            )
-                        ):
-                            lesson = lesson[:-2] + assigned_lesson[-2:]
-                        _append = True
-                        if (
-                            (
-                                assigned_lesson[-2:] != "_f"
-                                and assigned_lesson[-2:] != "_z"
-                            )
-                            and (lesson[-2:] != "_f" and lesson[-2:] != "_z")
-                            and (teachers[lesson] == teachers[assigned_lesson])
-                        ):
-                            _append = False
-                        if (
-                            (
-                                assigned_lesson[-2:] == "_f"
-                                or assigned_lesson[-2:] == "_z"
-                            )
-                            and (lesson[-2:] == "_f" or lesson[-2:] == "_z")
-                            and (
-                                teachers[lesson[:-2]] == teachers[assigned_lesson[:-2]]
-                            )
-                        ):
-                            if assigned_lesson[-2:] == "_f":
-                                lesson = lesson[:-2] + "_z"
-                            else:
-                                lesson = lesson[:-2] + "_f"
-                            _append = True
+                    if course in assigned_lesson: # if they are in a same group
+                        
+                        if assigned_lesson[-2:] == "_f" or assigned_lesson[-2:] == "_z":
+                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                                if teachers[lesson[:-2]] != teachers[assigned_lesson[:-2]]:
+                                    lesson = lesson[:-2] + assigned_lesson[-2:]
+                                    _append = True
+                                elif teachers[lesson[:-2]] == teachers[assigned_lesson[:-2]]: 
+                                    if assigned_lesson[-2:] == "_f":
+                                        lesson = lesson[:-2] + "_z"
+                                    else:
+                                        lesson = lesson[:-2] + "_f"
+                                    _append = True
+                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                                if teachers[lesson] == teachers[assigned_lesson[:-2]]:
+                                    _append = False
+                        
+                        elif assigned_lesson[-2:] != "_f" and assigned_lesson[-2:] != "_z" :
+                            if lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                                if teachers[lesson] == teachers[assigned_lesson]:
+                                    _append = False
+                            elif lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                                if teachers[lesson[:-2]] == teachers[assigned_lesson]:
+                                    _append = False
+                                    
                         break
-                    if (
-                        assigned_lesson[-2:] == "_f" or assigned_lesson[-2:] == "_z"
-                    ) and (lesson[-2:] == "_f" or lesson[-2:] == "_z"):
-                        if assigned_lesson[-2:] == "_f":
-                            lesson = lesson[:-2] + "_z"
-                        else:
-                            lesson = lesson[:-2] + "_f"
+                    
+                    else: # if they are not in a same group 
+                        if assigned_lesson[-2:] == "_f" or assigned_lesson[-2:] == "_z":
+                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                                if assigned_lesson[-2:] == "_f":
+                                    lesson = lesson[:-2] + "_z"
+                                else:
+                                    lesson = lesson[:-2] + "_f"
+                                _append = True
+                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                                _append = False
+                        
+                        elif assigned_lesson[-2:] != "_f" and assigned_lesson[-2:] != "_z" :
+                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                                if teachers[lesson[:-2]] == teachers[assigned_lesson]:
+                                    _append = False
+                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                                _append = False
                 check_list.append(_append)
 
             for check in range(len(check_list)):
                 if check_list[check]:
                     assign = True
                 else:
-                    # اگر هم گروهی نبودند
-                    if (
-                        (lesson[-2:] == "_f" or lesson[-2:] == "_z")
-                        and (
-                            assigned_lessons[check][-2:] == "_f"
-                            or assigned_lessons[check][-2:] == "_z"
-                        )
-                        and (lesson[-2:] != assigned_lessons[check][-2:])
-                    ):
-                        assign = True
-                    else:
-                        assign = False
-                        break
+                    assign = False
+                    break
 
             for assigned_lesson in self.schedule[day][time]:
                 if lesson in assigned_lesson or assigned_lesson in lesson:
@@ -144,7 +142,7 @@ class GAscheduler:
         teachers = self.teachers
         teachers_limit_state = self.professors_limit_time
         _lessons_with_no_section = []
-        
+
         for color_of_lesson, group_lessons in self.courses.items():
             for lesson in group_lessons:
                 lesson_unit = self.unit[lesson]
@@ -277,9 +275,9 @@ class GAscheduler:
                         if self.assigned == False:
                             _lessons_with_no_section.append(lesson)
                         break
-            
+
         self.courses_with_no_section = _lessons_with_no_section
-        
+
         for course in self.courses_with_out_conditions:
             course_teacher = teachers[course]
             group_lessons = self.listed_all_courses
@@ -295,14 +293,10 @@ class GAscheduler:
                             if course_teacher in teachers_limit_state:
                                 if [day, time] in teachers_limit_state[course_teacher]:
 
-                                    if (
-                                        self.assigned == True
-                                        and self.zoj_fard != None
-                                    ):
+                                    if self.assigned == True and self.zoj_fard != None:
                                         self.zoj_fard = random.choice(["z", "f"])
                                     elif (
-                                        self.assigned == False
-                                        or self.assigned == None
+                                        self.assigned == False or self.assigned == None
                                     ) and self.zoj_fard == None:
                                         self.zoj_fard = random.choice(["z", "f"])
 
@@ -333,11 +327,8 @@ class GAscheduler:
                                     break
                     else:
                         if self.assigned == False:
-                            _lessons_with_no_section.append(
-                                f"{course}_{self.zoj_fard}"
-                            )
+                            _lessons_with_no_section.append(f"{course}_{self.zoj_fard}")
                         break
-
 
             if lesson_unit == 4:
                 checked_sections = []
@@ -372,7 +363,7 @@ class GAscheduler:
                         if self.assigned == False:
                             _lessons_with_no_section.append(course)
                         break
-            
+
             checked_sections = []
             while True:
                 day = random.choice(self.days)
@@ -404,11 +395,10 @@ class GAscheduler:
                     if self.assigned == False:
                         _lessons_with_no_section.append(course)
                     break
-            
-    
+
     def make_solution(self):
         all_results = []
-        for i in range(1, self.chromosomes+1):
+        for i in range(1, self.chromosomes + 1):
             self.courses = list(self.courses.items())
             random.shuffle(self.courses)
             self.courses = dict(self.courses)
@@ -429,11 +419,11 @@ class GAscheduler:
             if (i % 5000 == 0) and (i != 0):
                 print(f"Chromosome {i}: Pausing for 3 seconds...")
                 time.sleep(3)
-            
+
             if i % 50000 == 0 and i != 0:
                 print(f"Chromosome {i}: Pausing for 5 seconds...")
                 time.sleep(5)
-            
+
             if i % 500000 == 0 and i != 0:
                 print(f"Chromosome {i}: Pausing for 10 seconds...")
                 time.sleep(10)
@@ -450,18 +440,24 @@ class GAscheduler:
         self.lowest_lessons_with_no_section = sorted_results[0][1]
 
         for sorted_result in sorted_results[:10]:
-            print("Courses with out section: ",sorted_result[2])
+            print("Courses with out section: ", sorted_result[2])
 
     def start(self):
-        
-        print("Scheduling Started With", self.chromosomes,"chromosomes", "and", self.acceptable_interferences, "Acceptable Interferences")
+
+        print(
+            "Scheduling Started With",
+            self.chromosomes,
+            "chromosomes",
+            "and",
+            self.acceptable_interferences,
+            "Acceptable Interferences",
+        )
         start_time = time.time()
         self.fitness()
-        
+
         end_time = time.time()
         elapsed_time = float(end_time - start_time)
         print("elapsed_time: ", elapsed_time, "Seconds")
-        
 
     def print_schedule(self):
         for day, day_schedule in self.best_schedule.items():
