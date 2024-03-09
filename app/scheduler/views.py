@@ -238,8 +238,11 @@ def delete_professor(request, professor_id):
     prof = Professors.objects.get(id=professor_id)
     prof.delete()
     
-    c_to_p = CtoP.objects.filter(professor = prof)
+    c_to_p = CtoP.objects.filter(professor=prof)
     c_to_p.delete()
+    
+    limit_prof = ProfessorsLimit.objects.filter(professor=prof)
+    limit_prof.delete()
     return redirect("professors")
 
 
