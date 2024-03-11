@@ -179,7 +179,7 @@ class GPAscheduler:
                 print(f"Chromosome {i}: Pausing for 10 seconds...")
                 time.sleep(10)
             
-            self.schedule = self.main_schedule
+            self.schedule = copy.deepcopy(self.main_schedule)
             
             self.penalty = 0
         return all_results
