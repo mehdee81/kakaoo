@@ -154,6 +154,13 @@ document.getElementById('chromosomes').addEventListener('input', function () {
         this.value = 100000000;
     }
 });
+// --------------------------------------
+document.getElementById('penalty_chromosomes').addEventListener('input', function () {
+    if (this.value > 1000) {
+        alert('penalty_chromosomes cannot exceed 1000');
+        this.value = 1000;
+    }
+});
 // ----------------------------------------------------------
 
 $(document).ready(function () {

@@ -28,6 +28,7 @@ class GPAscheduler:
             "Friday",
         ]
         self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
+        self.main_schedule = copy.deepcopy(schedule)
         self.schedule = schedule
         self.best_schedule = None
         self.lowest_schedule_penalty = None
@@ -157,7 +158,7 @@ class GPAscheduler:
     def make_solution(self):
         all_results = []
         for i in range(1, self.chromosomes + 1):
-            
+            print(i)
             self.assign_courses()
             all_results.append(
                 (
@@ -177,9 +178,9 @@ class GPAscheduler:
             if i % 500000 == 0 and i != 0:
                 print(f"Chromosome {i}: Pausing for 10 seconds...")
                 time.sleep(10)
-            self.schedule = {
-                day: {time: [] for time in self.times} for day in self.days
-            }
+            
+            self.schedule = self.main_schedule
+            
             self.penalty = 0
         return all_results
 
