@@ -1,26 +1,25 @@
 import random
 import time
-
+import copy
 
 class GPAscheduler:
     def __init__(
         self,
         all_courses,
+        schedule,
         edges,
         unit,
         teachers,
         professors_limit_time,
         chromosomes,
-        acceptable_penalty,
-        courses_with_out_conditions,
     ):
         self.all_courses = all_courses
         self.edges = edges
         self.penalty = 0
-        self.penalty_of_repeat_course = 60
-        self.penalty_of_same_professor = 30
-        self.penalty_of_limit_time = 15
-        self.penalty_of_edge = 7.5
+        self.penalty_of_repeat_course = 189
+        self.penalty_of_same_professor = 63
+        self.penalty_of_limit_time = 21
+        self.penalty_of_edge = 7
         self.days = [
             "Monday",
             "Tuesday",
@@ -29,27 +28,27 @@ class GPAscheduler:
             "Friday",
         ]
         self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
-        self.schedule = {day: {time: [] for time in self.times} for day in self.days}
+        self.main_schedule = copy.deepcopy(schedule)
+        self.schedule = schedule
         self.best_schedule = None
         self.lowest_schedule_penalty = None
         self.assigned = None
         self.teachers = teachers
         self.professors_limit_time = professors_limit_time
         self.chromosomes = chromosomes
-        self.acceptable_penalty = acceptable_penalty
         self.unit = unit
-        self.courses_with_out_conditions = courses_with_out_conditions
+        # self.courses_with_out_conditions = courses_with_out_conditions
 
-        self.piped_all_courses = []
-        for course in self.all_courses:
-            self.piped_all_courses.append(f"|{course}|")
-        self.all_courses = self.piped_all_courses
+        # self.piped_all_courses = []
+        # for course in self.all_courses:
+        #     self.piped_all_courses.append(f"|{course}|")
+        # self.all_courses = self.piped_all_courses
         
-        self.piped_courses_with_out_conditions = []
-        for course in self.courses_with_out_conditions:
-            self.piped_courses_with_out_conditions.append(f"|{course}|")
+        # self.piped_courses_with_out_conditions = []
+        # for course in self.courses_with_out_conditions:
+        #     self.piped_courses_with_out_conditions.append(f"|{course}|")
 
-        self.courses_with_out_conditions = self.piped_courses_with_out_conditions
+        # self.courses_with_out_conditions = self.piped_courses_with_out_conditions
 
         
         piped_units = {}
@@ -135,74 +134,13 @@ class GPAscheduler:
     def assign_courses(self):
         teachers = self.teachers
         teachers_limit_state = self.professors_limit_time
-        
+      
         for course in self.all_courses:
-            course_unit = self.unit[course]
-            teacher = teachers[course]
-            if course_unit == 3:
-                day = random.choice(self.days)
-                time = random.choice(self.times)
-                if teacher in teachers_limit_state: # if master has limit
-                    if [day, time] in teachers_limit_state[teacher]: # if master can be be in university in this section
-                        zoj_fard = random.choice(["z", "f"])
-                        self.assign_course(
-                            f"{course}_{zoj_fard}",
-                            self.edges,
-                            day,
-                            time,
-                        )
-                    else:
-                        zoj_fard = random.choice(["z", "f"])
-                        self.assign_course(
-                            f"{course}_{zoj_fard}",
-                            self.edges,
-                            day,
-                            time,
-                        )
-                        self.penalty += self.penalty_of_limit_time
-                else:
-                    zoj_fard = random.choice(["z", "f"])
-                    self.assign_course(
-                        f"{course}_{zoj_fard}",
-                        self.edges,
-                        day,
-                        time,
-                    )
-            
-        for course in self.all_courses:
-            course_unit = self.unit[course]
-            teacher = teachers[course]
-            if course_unit == 4:
-                day = random.choice(self.days)
-                time = random.choice(self.times)
-                if teacher in teachers_limit_state: # if master has limit
-                    if [day, time] in teachers_limit_state[teacher]: # if master can be be in university in this section
-                        
-                        self.assign_course(
-                            course,
-                            self.edges,
-                            day,
-                            time,
-                        )
-                    else:
-                        self.assign_course(
-                            course,
-                            self.edges,
-                            day,
-                            time,
-                        )
-                        self.penalty += self.penalty_of_limit_time
-                else:
-                    self.assign_course(
-                        course,
-                        self.edges,
-                        day,
-                        time,
-                    )
-
-        for course in self.all_courses:
-            course_unit = self.unit[course]
-            teacher = teachers[course]
+            if course[-2:] == "_z" or course[-2:] == "_f": 
+                teacher = teachers[course[:-2]]
+            else:
+                teacher = teachers[course]
+                
             day = random.choice(self.days)
             time = random.choice(self.times)
             if teacher in teachers_limit_state: # if master has limit
@@ -229,107 +167,7 @@ class GPAscheduler:
                     day,
                     time,
                 )
-        
-        # remove edges of courses_with_out_conditions  
-        new_edges = self.edges
-        for course in self.courses_with_out_conditions:
-            new_edges = [t for t in new_edges if course not in t]
-            
-        
-        for course in self.all_courses:
-            course_unit = self.unit[course]
-            teacher = teachers[course]
-            if course_unit == 3:
-                day = random.choice(self.days)
-                time = random.choice(self.times)
-                if teacher in teachers_limit_state: # if master has limit
-                    if [day, time] in teachers_limit_state[teacher]: # if master can be be in university in this section
-                        zoj_fard = random.choice(["z", "f"])
-                        self.assign_course(
-                            f"{course}_{zoj_fard}",
-                            new_edges,
-                            day,
-                            time,
-                        )
-                    else:
-                        zoj_fard = random.choice(["z", "f"])
-                        self.assign_course(
-                            f"{course}_{zoj_fard}",
-                            new_edges,
-                            day,
-                            time,
-                        )
-                        self.penalty += self.penalty_of_limit_time
-                else:
-                    zoj_fard = random.choice(["z", "f"])
-                    self.assign_course(
-                        f"{course}_{zoj_fard}",
-                        new_edges,
-                        day,
-                        time,
-                    )
-                    
-        for course in self.all_courses:
-            course_unit = self.unit[course]
-            teacher = teachers[course]
-            if course_unit == 4:
-                day = random.choice(self.days)
-                time = random.choice(self.times)
-                if teacher in teachers_limit_state: # if master has limit
-                    if [day, time] in teachers_limit_state[teacher]: # if master can be be in university in this section
-                        
-                        self.assign_course(
-                            course,
-                            new_edges,
-                            day,
-                            time,
-                        )
-                    else:
-                        self.assign_course(
-                            course,
-                            new_edges,
-                            day,
-                            time,
-                        )
-                        self.penalty += self.penalty_of_limit_time
-                else:
-                    self.assign_course(
-                        course,
-                        new_edges,
-                        day,
-                        time,
-                    )
-    
-        for course in self.all_courses:
-            course_unit = self.unit[course]
-            teacher = teachers[course]
-            day = random.choice(self.days)
-            time = random.choice(self.times)
-            if teacher in teachers_limit_state: # if master has limit
-                if [day, time] in teachers_limit_state[teacher]: # if master can be be in university in this section
-                    
-                    self.assign_course(
-                        course,
-                        new_edges,
-                        day,
-                        time,
-                    )
-                else:
-                    self.assign_course(
-                        course,
-                        new_edges,
-                        day,
-                        time,
-                    )
-                    self.penalty += self.penalty_of_limit_time
-            else:
-                self.assign_course(
-                    course,
-                    new_edges,
-                    day,
-                    time,
-                )
-                
+
     def make_solution(self):
         all_results = []
         for i in range(1, self.chromosomes + 1):
@@ -340,12 +178,7 @@ class GPAscheduler:
                     self.penalty,
                 )
             )
-            if self.penalty <= self.acceptable_penalty:
-                self.schedule = {
-                    day: {time: [] for time in self.times} for day in self.days
-                }
-                self.penalty = 0
-                break
+            
             if (i % 5000 == 0) and (i != 0):
                 print(f"Chromosome {i}: Pausing for 3 seconds...")
                 time.sleep(3)
@@ -357,9 +190,7 @@ class GPAscheduler:
             if i % 500000 == 0 and i != 0:
                 print(f"Chromosome {i}: Pausing for 10 seconds...")
                 time.sleep(10)
-            self.schedule = {
-                day: {time: [] for time in self.times} for day in self.days
-            }
+            self.schedule = self.main_schedule
             self.penalty = 0
         return all_results
 
@@ -378,9 +209,6 @@ class GPAscheduler:
             "Scheduling Started With",
             self.chromosomes,
             "chromosomes",
-            "and",
-            self.acceptable_penalty,
-            "Acceptable Penalty",
         )
         start_time = time.time()
         self.fitness()

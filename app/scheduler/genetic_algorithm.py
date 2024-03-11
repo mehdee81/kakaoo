@@ -10,7 +10,6 @@ class GAscheduler:
         teachers,
         professors_limit_time,
         chromosomes,
-        acceptable_interferences,
         courses_with_out_conditions,
     ):
         self.days = [
@@ -30,7 +29,6 @@ class GAscheduler:
         self.courses_with_no_section = []
         self.professors_limit_time = professors_limit_time
         self.chromosomes = chromosomes
-        self.acceptable_interferences = acceptable_interferences
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
 
@@ -431,12 +429,7 @@ class GAscheduler:
                     len(self.courses_with_no_section),
                 )
             )
-            if len(self.courses_with_no_section) <= self.acceptable_interferences:
-                self.schedule = {
-                    day: {time: [] for time in self.times} for day in self.days
-                }
-                self.courses_with_no_section = []
-                break
+            
             if (i % 5000 == 0) and (i != 0):
                 print(f"Chromosome {i}: Pausing for 3 seconds...")
                 time.sleep(3)
@@ -469,9 +462,6 @@ class GAscheduler:
             "Scheduling Started With",
             self.chromosomes,
             "chromosomes",
-            "and",
-            self.acceptable_interferences,
-            "Acceptable Interferences",
         )
         start_time = time.time()
         self.fitness()

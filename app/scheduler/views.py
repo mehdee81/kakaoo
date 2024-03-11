@@ -8,6 +8,7 @@ from .Graph import Graph
 from .genetic_algorithm import GAscheduler
 from .genetic_with_penalty import GPAscheduler
 import random
+import copy
 
 
 # Create your views here.
@@ -36,9 +37,9 @@ def index(request):
 def schedule(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        algorithm = data.get("algorithm")  # str
         selected_courses = data.get("selected_courses")  # list
         chromosomes = int(data.get("chromosomes"))  # integer
+        penalty_chromosomes = int(data.get("penalty_chromosomes"))  # int
         courses_with_out_conditions = data.get("courses_with_out_conditions")  # str
         courses_with_out_conditions = (
             courses_with_out_conditions.replace(" ", "")
@@ -108,73 +109,47 @@ def schedule(request):
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[course] = unit[0]
         
-        if algorithm == "Genetic":
-            acceptable_interferences = int(data.get("acceptable_interferences"))  # integer
-            s = GAscheduler(
-                colors,
-                units,
-                verified_linked_courses_to_professors,
-                limited_professors,
-                chromosomes,
-                acceptable_interferences,
-                verified_courses_with_out_conditions,
-            )
-            s.start()
-            request.session["schedule"] = s.best_schedule
-            request.session["selected_courses"] = selected_courses
-            request.session["lessons_with_no_time"] = s.lowest_lessons_with_no_section
-        else:
-            acceptable_penalty = int(data.get("acceptable_penalty")) # integer
-            sp = GPAscheduler(
-                selected_courses,
-                edges,
-                units,
-                verified_linked_courses_to_professors,
-                limited_professors,
-                chromosomes,
-                acceptable_penalty,
-                verified_courses_with_out_conditions,
-            )
-            sp.start()
-            request.session["schedule"] = sp.best_schedule
-            request.session["selected_courses"] = selected_courses
-            
+        
+        s = GAscheduler(
+            colors,
+            units,
+            verified_linked_courses_to_professors,
+            limited_professors,
+            chromosomes,
+            verified_courses_with_out_conditions,
+        )
+        s.start()
+        
+
+        request.session["schedule"] = copy.deepcopy(s.best_schedule)
+        request.session["lessons_with_no_time"] = copy.deepcopy(s.lowest_lessons_with_no_section)
+
+        request.session["selected_courses"] = selected_courses
+        
+        sp = GPAscheduler(
+            s.lowest_lessons_with_no_section,
+            s.best_schedule,
+            edges,
+            units,
+            verified_linked_courses_to_professors,
+            limited_professors,
+            penalty_chromosomes,
+        )
+        sp.start()
+        
+        request.session["penalty_schedule"] = copy.deepcopy(sp.best_schedule)
+        
         return JsonResponse({"status": "ok"})
 
 
 def show_schedule(request):
     schedule = request.session["schedule"]
+    penalty_schedule = request.session["penalty_schedule"]
     selected_courses = request.session["selected_courses"]
     lessons_with_no_time = request.session["lessons_with_no_time"]
     request.session.clear()
-    clear_schedule = {}
-    clear_lessons_with_no_time = []
-    for day, day_schedule in schedule.items():
-        _day_schedule = {}
-        for time, lessons in day_schedule.items():
-            lessons_with_out_pipe = []
-            for lesson in lessons:
-                lessons_with_out_pipe.append(lesson.replace("|", ""))
-            _day_schedule[time] = lessons_with_out_pipe
-        clear_schedule[day] = _day_schedule
-    for course in lessons_with_no_time:
-        clear_lessons_with_no_time.append(course.replace("|", ""))
-    return render(
-        request,
-        "scheduler/show_schedule.html",
-        {
-            "selected_courses": selected_courses,
-            "schedule": clear_schedule,
-            "lessons_with_no_time": clear_lessons_with_no_time,
-        },
-    )
-
-def show_penalty_schedule(request):
-    schedule = request.session["schedule"]
-    selected_courses = request.session["selected_courses"]
-    request.session.clear()
-    clear_schedule = {}
     
+    clear_schedule = {}
     for day, day_schedule in schedule.items():
         _day_schedule = {}
         for time, lessons in day_schedule.items():
@@ -184,14 +159,31 @@ def show_penalty_schedule(request):
             _day_schedule[time] = lessons_with_out_pipe
         clear_schedule[day] = _day_schedule
         
+    clear_penalty_schedule = {}
+    for day, day_schedule in penalty_schedule.items():
+        _day_schedule = {}
+        for time, lessons in day_schedule.items():
+            lessons_with_out_pipe = []
+            for lesson in lessons:
+                lessons_with_out_pipe.append(lesson.replace("|", ""))
+            _day_schedule[time] = lessons_with_out_pipe
+        clear_penalty_schedule[day] = _day_schedule
+    
+    clear_lessons_with_no_time = []
+    for course in lessons_with_no_time:
+        clear_lessons_with_no_time.append(course.replace("|", ""))
+    
     return render(
         request,
-        "scheduler/show_penalty_schedule.html",
+        "scheduler/show_schedule.html",
         {
             "selected_courses": selected_courses,
             "schedule": clear_schedule,
+            "lessons_with_no_time": clear_lessons_with_no_time,
+            "clear_penalty_schedule":clear_penalty_schedule
         },
     )
+
 
 def learn_more(request):
     return render(request, "scheduler/learn_more.html")

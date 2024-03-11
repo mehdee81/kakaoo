@@ -24,7 +24,8 @@
                     <td>{{ course.professor }}</td>
                     <td>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="course_{{ course.id }}" name="selected_courses" value="{{ course.course }}">
+                            <input class="form-check-input" type="checkbox" id="course_{{ course.id }}"
+                                name="selected_courses" value="{{ course.course }}">
                             <label class="form-check-label" for="course_{{ course.id }}"></label>
                         </div>
                     </td>
@@ -46,30 +47,21 @@
     <div id="hr_div"></div>
     
     <div class="mt-s mb-3">
-        <label for="algorithm">Algorithm</label>
-        <select class="form-select" name="algorithm" id="select_algorithm">
-            <option value="Genetic">Genetic (Some Courses Maybe stay out of Schedule.)</option>
-            <option value="Penalty_Genetic">Penalty Genetic (All Courses will schedule with minimum penalty.)</option>
-        </select>
-    </div>
-
-    <div class="mt-s mb-3">
-        <label for="iteration">Number of random Solutions(Chromosomes)</label>
+        <label for="chromosomes">Number of random Solutions(Chromosomes)</label>
         <input type="number" id="chromosomes" name="chromosomes" min="1" value="1" max="1000" class="form-control">
     </div>
 
-    <div class="mt-s mb-3" id = "acceptable_interferences_div">
-        <label for="acceptable_interferences">Number of Acceptable Interferences</label>
-        <input type="number" id="acceptable_interferences" name="acceptable_interferences" min="0" value="5" class="form-control">
+    <div class="mt-s mb-3">
+        <label for="penalty_chromosomes">Number of random Solutions(Chromosomes) for lessons wich will add in penalty genetic algorith</label>
+        <input type="number" id="penalty_chromosomes" name="penalty_chromosomes" min="1" value="1" max="1000" class="form-control">
     </div>
 
-    <div class="mt-s mb-3" id = "acceptable_penalty_div">
-        <label for="acceptable_penalty">Number of Acceptable Penalty</label>
-        <input type="number" id="acceptable_penalty" name="acceptable_penalty" min="0" value="5" class="form-control">
-    </div>
-    
 
-    <div class="lds-facebook d-none"><div></div><div></div><div></div></div>
+    <div class="lds-facebook d-none">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
     <button type="button" class="btn btn-success" id="get-data-btn" class="btn btn-primary">Schedule</button>
 </div>
 {% else %}
