@@ -1,4 +1,4 @@
-from Graph_Scheduling import Graph, InOrderSchedule
+from scheduler.Graph import Graph, InOrderSchedule
 import networkx as nx
 import matplotlib.pyplot as plt
 import time

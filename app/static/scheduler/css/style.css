@@ -137,3 +137,8 @@ ul li :hover {
     transition: 0.8s;
     color: rgb(255, 0, 0);
 }
+
+
+#acceptable_penalty_div {
+    display: none;
+}

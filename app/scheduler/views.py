@@ -4,8 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.db.models import Q
-from .Graph_Scheduling import Graph
+from .Graph import Graph
 from .genetic_algorithm import GAscheduler
+from .genetic_with_penalty import GPAscheduler
 import random
 
 
@@ -35,16 +36,15 @@ def index(request):
 def schedule(request):
     if request.method == "POST":
         data = json.loads(request.body)
+        algorithm = data.get("algorithm")  # str
         selected_courses = data.get("selected_courses")  # list
-        acceptable_interferences = int(data.get("acceptable_interferences"))  # integer
         chromosomes = int(data.get("chromosomes"))  # integer
         courses_with_out_conditions = data.get("courses_with_out_conditions")  # str
         courses_with_out_conditions = (
             courses_with_out_conditions.replace(" ", "")
         ).split("-")
-
         profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
-
+    
         # Initialize an empty dictionary
         limited_professors = {}
 
@@ -108,20 +108,37 @@ def schedule(request):
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[course] = unit[0]
         
-        s = GAscheduler(
-            colors,
-            units,
-            verified_linked_courses_to_professors,
-            limited_professors,
-            chromosomes,
-            acceptable_interferences,
-            verified_courses_with_out_conditions,
-        )
-        s.start()
-        request.session["schedule"] = s.best_schedule
-        request.session["selected_courses"] = selected_courses
-        request.session["lessons_with_no_time"] = s.lowest_lessons_with_no_section
-
+        if algorithm == "Genetic":
+            acceptable_interferences = int(data.get("acceptable_interferences"))  # integer
+            s = GAscheduler(
+                colors,
+                units,
+                verified_linked_courses_to_professors,
+                limited_professors,
+                chromosomes,
+                acceptable_interferences,
+                verified_courses_with_out_conditions,
+            )
+            s.start()
+            request.session["schedule"] = s.best_schedule
+            request.session["selected_courses"] = selected_courses
+            request.session["lessons_with_no_time"] = s.lowest_lessons_with_no_section
+        else:
+            acceptable_penalty = int(data.get("acceptable_penalty")) # integer
+            sp = GPAscheduler(
+                selected_courses,
+                edges,
+                units,
+                verified_linked_courses_to_professors,
+                limited_professors,
+                chromosomes,
+                acceptable_penalty,
+                verified_courses_with_out_conditions,
+            )
+            sp.start()
+            request.session["schedule"] = sp.best_schedule
+            request.session["selected_courses"] = selected_courses
+            
         return JsonResponse({"status": "ok"})
 
 
@@ -152,6 +169,29 @@ def show_schedule(request):
         },
     )
 
+def show_penalty_schedule(request):
+    schedule = request.session["schedule"]
+    selected_courses = request.session["selected_courses"]
+    request.session.clear()
+    clear_schedule = {}
+    
+    for day, day_schedule in schedule.items():
+        _day_schedule = {}
+        for time, lessons in day_schedule.items():
+            lessons_with_out_pipe = []
+            for lesson in lessons:
+                lessons_with_out_pipe.append(lesson.replace("|", ""))
+            _day_schedule[time] = lessons_with_out_pipe
+        clear_schedule[day] = _day_schedule
+        
+    return render(
+        request,
+        "scheduler/show_penalty_schedule.html",
+        {
+            "selected_courses": selected_courses,
+            "schedule": clear_schedule,
+        },
+    )
 
 def learn_more(request):
     return render(request, "scheduler/learn_more.html")

@@ -116,33 +116,32 @@ class GAscheduler:
             change_z_f = 0
             
             if False in check_list: # if they are not in a same group
-                for assigned_course in assigned_courses:
-                    if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
-                        if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                            if change_z_f < 1:
-                                if assigned_course[-2:] == "_f":
-                                    lesson = lesson[:-2] + "_z"
+                for check in range(len(check_list)):
+                    if check_list[check] == False:
+                        if assigned_course[check][-2:] == "_f" or assigned_course[check][-2:] == "_z":
+                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
+                                if change_z_f < 1:
+                                    if assigned_course[check][-2:] == "_f":
+                                        lesson = lesson[:-2] + "_z"
+                                    else:
+                                        lesson = lesson[:-2] + "_f"
+                                    assign = True
+                                    change_z_f += 1
                                 else:
-                                    lesson = lesson[:-2] + "_f"
-                                assign = True
-                                change_z_f += 1
-                            else:
+                                    assign = False
+                                    break
+                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
                                 assign = False
                                 break
-                        elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
-                            assign = False
-                            break
-                       
-                    elif assigned_course[-2:] != "_f" and assigned_course[-2:] != "_z" :
-                        if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                            if teachers[lesson[:-2]] == teachers[assigned_course]:
+                        
+                        elif assigned_course[check][-2:] != "_f" and assigned_course[check][-2:] != "_z" :
+                            if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 assign = False
                                 break
-                            
-                        elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
-                            assign = False
-                            break
-                            
+                                
+                            elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
+                                assign = False
+                                break            
             else:
                 assign = True
 
@@ -297,8 +296,6 @@ class GAscheduler:
                         if self.assigned == False:
                             _lessons_with_no_section.append(lesson)
                         break
-
-        self.courses_with_no_section = _lessons_with_no_section
         
         for course in self.courses_with_out_conditions:
             course_teacher = teachers[course]
@@ -417,7 +414,9 @@ class GAscheduler:
                     if self.assigned == False:
                         _lessons_with_no_section.append(course)
                     break
-
+        
+        self.courses_with_no_section = _lessons_with_no_section
+        
     def make_solution(self):
         all_results = []
         for i in range(1, self.chromosomes + 1):

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block page_title %} Schedule {% endblock %}
+{% block page_body %}
+<div class="container p-3">
+    <table class="table table-dark table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Day?Time</th>
+                <th>8:30</th>
+                <th>10:30</th>
+                <th>13:30</th>
+                <th>15:30</th>
+                <th>17:30</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for day, timeslots in schedule.items %}
+            <tr>
+                <td>{{ day }}</td>
+                {% for time, courses in timeslots.items %}
+                <td>{{ courses|join:"<br> " }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+</div>
+{% endblock %}

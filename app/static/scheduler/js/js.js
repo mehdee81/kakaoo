@@ -60,12 +60,18 @@ $('#get-data-btn').click(function () {
     // Get chromosomes
     let chromosomes = $("#chromosomes").val();
 
+    
+    // Get courses with out conditions
+    let courses_with_out_conditions = $("#courses_with_out_conditions").val();
+    
+    let algorithm = $("#select_algorithm").val();
+    
     // Get number of acceptable interferences
     let acceptable_interferences = $("#acceptable_interferences").val();
 
-    // Get courses with out conditions
-    let courses_with_out_conditions = $("#courses_with_out_conditions").val();
-
+    // Get number of acceptable interferences
+    let acceptable_penalty = $("#acceptable_penalty").val();
+    
     // Loop through all checkboxes
     checkboxes.each(function () {
         // If checkbox is checked, add course to the list
@@ -91,27 +97,51 @@ $('#get-data-btn').click(function () {
         }
     });
 
-
-    $.ajax({
-        url: 'http://127.0.0.1:8000/schedule/',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val(),
-        },
-        data: JSON.stringify({
-            selected_courses: selected_courses,
-            limited_professors: limited_professors,
-            chromosomes: chromosomes,
-            acceptable_interferences: acceptable_interferences,
-            courses_with_out_conditions:courses_with_out_conditions
-        }),
-        success: function (data) {
-            if (data.status == "ok") {
-                window.location.href = "http://127.0.0.1:8000/show_schedule/";
+    if (algorithm == "Genetic"){
+        $.ajax({
+            url: 'http://127.0.0.1:8000/schedule/',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val(),
+            },
+            data: JSON.stringify({
+                algorithm: algorithm,
+                selected_courses: selected_courses,
+                limited_professors: limited_professors,
+                chromosomes: chromosomes,
+                acceptable_interferences: acceptable_interferences,
+                courses_with_out_conditions:courses_with_out_conditions
+            }),
+            success: function (data) {
+                if (data.status == "ok") {
+                    window.location.href = "http://127.0.0.1:8000/show_schedule/";
+                }
             }
-        }
-    });
+        });
+    }else{
+        $.ajax({
+            url: 'http://127.0.0.1:8000/schedule/',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val(),
+            },
+            data: JSON.stringify({
+                algorithm: algorithm,
+                selected_courses: selected_courses,
+                limited_professors: limited_professors,
+                chromosomes: chromosomes,
+                acceptable_penalty: acceptable_penalty,
+                courses_with_out_conditions:courses_with_out_conditions
+            }),
+            success: function (data) {
+                if (data.status == "ok") {
+                    window.location.href = "http://127.0.0.1:8000/show_penalty_schedule/";
+                }
+            }
+        });
+    }
 
 });
 
@@ -160,5 +190,22 @@ $(document).ready(function () {
     $("#checkAll").click(function () {
         // Set 'checked' property to true for all checkboxes
         $('.form-check-input').prop('checked', true);
+    });
+});
+// ----------------------------------------------------------
+
+$(document).ready(function() {
+    $('#select_algorithm').change(function() {
+        var selected = $(this).val();
+        if (selected == 'Genetic') {
+            $('#acceptable_interferences').parent().show();
+            $('#acceptable_penalty').parent().hide();
+        } else if (selected == 'Penalty_Genetic') {
+            $('#acceptable_penalty').parent().show();
+            $('#acceptable_interferences').parent().hide();
+        } else {
+            $('#acceptable_interferences').parent().hide();
+            $('#acceptable_penalty').parent().hide();
+        }
     });
 });
