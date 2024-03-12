@@ -12,6 +12,7 @@
                     <tr>
                         <th>Number</th>
                         <th>Course</th>
+                        <th>Semester</th>
                         <th>Unit</th>
                         <th>Action</th>
                     </tr>
@@ -21,6 +22,7 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ course.course }}</td>
+                        <td>{{ course.semester }}</td>
                         <td>{{ course.unit}}</td>
                         <td>
                             <a href="{% url 'delete_course' course.id course.course %}"
@@ -51,6 +53,19 @@
                         <option value="4">4</option>
                     </select>
                 </div>
+                <div class="mb-3">
+                    <label for="Course_semester" class="form-label">Semester</label>
+                    <select id="Course_semester" name="Course_semester" class="form-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
 
@@ -79,6 +94,41 @@
                 <p class="text-danger p-2">
                     <b>
                         Note that if you change the number of units of a course, the number of units of other groups of
+                        the same course will not change.
+                    </b>
+                </p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+
+            <h3>Update Semester of a Course</h3>
+            <hr>
+            <form method="POST" action="{% url 'update_semester' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="course_id" class="form-label">Course name</label>
+                    <select id="course_id" name="course_id" class="form-select">
+                        {% for course in courses %}
+                        <option value={{ course.id }}>{{ course.course }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="Course_semester" class="form-label">Semester</label>
+                    <select id="Course_semester" name="Course_semester" class="form-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+                <p class="text-danger p-2">
+                    <b>
+                        Note that if you change the number of semester of a course, the number of semester of other groups of
                         the same course will not change.
                     </b>
                 </p>

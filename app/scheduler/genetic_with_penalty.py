@@ -16,10 +16,10 @@ class GPAscheduler:
         self.all_courses = all_courses
         self.edges = edges
         self.penalty = 0
-        self.penalty_of_repeat_course = 189
-        self.penalty_of_same_professor = 63
-        self.penalty_of_limit_time = 21
-        self.penalty_of_edge = 7
+        self.penalty_of_repeat_course = 27
+        self.penalty_of_same_professor = 9
+        self.penalty_of_limit_time = 3
+        self.penalty_of_edge = 1
         self.days = [
             "Monday",
             "Tuesday",
@@ -158,7 +158,7 @@ class GPAscheduler:
     def make_solution(self):
         all_results = []
         for i in range(1, self.chromosomes + 1):
-            print(i)
+            
             self.assign_courses()
             all_results.append(
                 (

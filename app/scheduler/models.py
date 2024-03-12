@@ -11,7 +11,7 @@ class Professors(models.Model):
 class Courses(models.Model):
     course = models.CharField(max_length=200)
     unit = models.IntegerField()
-
+    semester = models.IntegerField(default=1)
     def __str__(self):
         return self.course, self.unit
 

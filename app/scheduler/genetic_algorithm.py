@@ -7,6 +7,7 @@ class GAscheduler:
         self,
         colors,
         unit,
+        semesters,
         teachers,
         professors_limit_time,
         chromosomes,
@@ -31,7 +32,7 @@ class GAscheduler:
         self.chromosomes = chromosomes
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
-
+        self.semesters = semesters
         self.piped_courses_with_out_conditions = []
         for course in self.courses_with_out_conditions:
             self.piped_courses_with_out_conditions.append(f"|{course}|")
@@ -49,11 +50,16 @@ class GAscheduler:
         for color, courses in self.courses.items():
             for course in courses:
                 self.listed_all_courses.append(course)
-        
+
         piped_units = {}
         for course, unit in self.unit.items():
             piped_units[f"|{course}|"] = unit
         self.unit = piped_units
+
+        piped_semesters = {}
+        for course, semester in self.semesters.items():
+            piped_semesters[f"|{course}|"] = semester
+        self.semesters = piped_semesters
 
         piped_teachers = {}
         for course, prof in self.teachers.items():
@@ -63,23 +69,29 @@ class GAscheduler:
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
         teachers = self.teachers
-            
+
         if len(self.schedule[day][time]) > 0:
             check_list = []
             assigned_courses = self.schedule[day][time]
-            
+
             change_z_f = 0
             for assigned_course in assigned_courses:
                 for course in group_lessons:
-                    if course in assigned_course: # if they are in a same group
+                    if course in assigned_course:  # if they are in a same group
                         _append = False
                         if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                                if teachers[lesson[:-2]] != teachers[assigned_course[:-2]]:
+                                if (
+                                    teachers[lesson[:-2]]
+                                    != teachers[assigned_course[:-2]]
+                                ):
                                     lesson = lesson[:-2] + assigned_course[-2:]
                                     _append = True
-                                elif teachers[lesson[:-2]] == teachers[assigned_course[:-2]]: 
-                                    if change_z_f < 1 :
+                                elif (
+                                    teachers[lesson[:-2]]
+                                    == teachers[assigned_course[:-2]]
+                                ):
+                                    if change_z_f < 1:
                                         if assigned_course[-2:] == "_f":
                                             lesson = lesson[:-2] + "_z"
                                         else:
@@ -93,9 +105,11 @@ class GAscheduler:
                                     _append = False
                                 else:
                                     _append = True
-                                    
-                        
-                        elif assigned_course[-2:] != "_f" and assigned_course[-2:] != "_z" :
+
+                        elif (
+                            assigned_course[-2:] != "_f"
+                            and assigned_course[-2:] != "_z"
+                        ):
                             if lesson[-2:] != "_f" and lesson[-2:] != "_z":
                                 if teachers[lesson] == teachers[assigned_course]:
                                     _append = False
@@ -109,14 +123,17 @@ class GAscheduler:
                         break
                     else:
                         _append = False
-            
+
                 check_list.append(_append)
             change_z_f = 0
-            
-            if False in check_list: # if they are not in a same group
+
+            if False in check_list:  # if they are not in a same group
                 for check in range(len(check_list)):
                     if check_list[check] == False:
-                        if assigned_course[check][-2:] == "_f" or assigned_course[check][-2:] == "_z":
+                        if (
+                            assigned_course[check][-2:] == "_f"
+                            or assigned_course[check][-2:] == "_z"
+                        ):
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 if change_z_f < 1:
                                     if assigned_course[check][-2:] == "_f":
@@ -131,15 +148,18 @@ class GAscheduler:
                             elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
                                 assign = False
                                 break
-                        
-                        elif assigned_course[check][-2:] != "_f" and assigned_course[check][-2:] != "_z" :
+
+                        elif (
+                            assigned_course[check][-2:] != "_f"
+                            and assigned_course[check][-2:] != "_z"
+                        ):
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 assign = False
                                 break
-                                
+
                             elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
                                 assign = False
-                                break            
+                                break
             else:
                 assign = True
 
@@ -294,10 +314,15 @@ class GAscheduler:
                         if self.assigned == False:
                             _lessons_with_no_section.append(lesson)
                         break
-        
+
         for course in self.courses_with_out_conditions:
             course_teacher = teachers[course]
-            group_lessons = self.listed_all_courses
+            semesters = self.semesters
+            group_lessons = []
+            for group_course in self.listed_all_courses:
+                if semesters[group_course] != semesters[course]:
+                    group_lessons.append(group_course)
+            
             lesson_unit = self.unit[course]
             if lesson_unit == 3:
                 checked_sections = []
@@ -412,9 +437,9 @@ class GAscheduler:
                     if self.assigned == False:
                         _lessons_with_no_section.append(course)
                     break
-        
+
         self.courses_with_no_section = _lessons_with_no_section
-        
+
     def make_solution(self):
         all_results = []
         for i in range(1, self.chromosomes + 1):
@@ -429,7 +454,7 @@ class GAscheduler:
                     len(self.courses_with_no_section),
                 )
             )
-            
+
             if (i % 5000 == 0) and (i != 0):
                 print(f"Chromosome {i}: Pausing for 3 seconds...")
                 time.sleep(3)

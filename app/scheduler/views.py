@@ -110,9 +110,20 @@ def schedule(request):
             units[course] = unit[0]
         
         
+        semesters = {}
+        for course in selected_courses:
+            semester = Courses.objects.filter(course=course).values_list("semester", flat=True)
+            semesters[course] = semester[0]
+            
+        for course in verified_courses_with_out_conditions:
+            semester = Courses.objects.filter(course=course).values_list("semester", flat=True)
+            semesters[course] = semester[0]
+        
+        
         s = GAscheduler(
             colors,
             units,
+            semesters,
             verified_linked_courses_to_professors,
             limited_professors,
             chromosomes,
@@ -190,7 +201,7 @@ def learn_more(request):
 
 
 def courses(request):
-    courses = Courses.objects.values("id", "course", "unit").order_by("-id")
+    courses = Courses.objects.values("id", "course", "semester", "unit").order_by("-id")
     return render(request, "scheduler/courses.html", {"courses": courses})
 
 
@@ -198,7 +209,8 @@ def add_course(request):
     if request.method == "POST":
         course_name = request.POST.get("course_name")
         course_unit = request.POST.get("Course_unit")
-        course = Courses(course=course_name, unit=course_unit)
+        Course_semester = request.POST.get("Course_semester")
+        course = Courses(course=course_name, semester=Course_semester, unit=course_unit)
         course.save()
         return redirect("courses")
     else:
@@ -224,6 +236,14 @@ def update_unit(request):
         course.save()
         return redirect("courses")
 
+def update_semester(request):
+    if request.method == "POST":
+        course_id = request.POST.get("course_id")
+        new_semester_value = request.POST.get("Course_semester")
+        course = Courses.objects.get(id=course_id)
+        course.semester = new_semester_value  # Replace with the actual new unit value
+        course.save()
+        return redirect("courses")
 
 def add_group(request):
     if request.method == "POST":

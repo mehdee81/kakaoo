@@ -14,6 +14,7 @@ urlpatterns = [
         name="delete_course",
     ),
     path("update_unit", views.update_unit, name="update_unit"),
+    path("update_semester", views.update_semester, name="update_semester"),
     path('add_group' , views.add_group , name="add_group"),
     
     path('professors' , views.professors , name="professors"),
