@@ -208,6 +208,7 @@ def courses(request):
 def add_course(request):
     if request.method == "POST":
         course_name = request.POST.get("course_name")
+        course_name = course_name.replace("-","_")
         course_unit = request.POST.get("Course_unit")
         Course_semester = request.POST.get("Course_semester")
         course = Courses(course=course_name, semester=Course_semester, unit=course_unit)
@@ -224,6 +225,9 @@ def delete_course(request, course_id, course_name):
         Q(course_1=course_name) | Q(course_2=course_name)
     )
     sametimes.delete()
+    
+    c_to_p = CtoP.objects.filter(course=course_name)
+    c_to_p.delete()
     return redirect("courses")
 
 
