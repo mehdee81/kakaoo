@@ -74,11 +74,11 @@ class GAscheduler:
             check_list = []
             assigned_courses = self.schedule[day][time]
 
+            _append = False
             change_z_f = 0
             for assigned_course in assigned_courses:
                 for course in group_lessons:
                     if course in assigned_course:  # if they are in a same group
-                        _append = False
                         if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 if (
@@ -91,15 +91,18 @@ class GAscheduler:
                                     teachers[lesson[:-2]]
                                     == teachers[assigned_course[:-2]]
                                 ):
-                                    if change_z_f < 1:
-                                        if assigned_course[-2:] == "_f":
-                                            lesson = lesson[:-2] + "_z"
+                                    if assigned_course[-2:] == lesson[-2:]:
+                                        if change_z_f < 1:
+                                            if assigned_course[-2:] == "_f":
+                                                lesson = lesson[:-2] + "_z"
+                                            else:
+                                                lesson = lesson[:-2] + "_f"
+                                            _append = True
+                                            change_z_f += 1
                                         else:
-                                            lesson = lesson[:-2] + "_f"
-                                        _append = True
-                                        change_z_f += 1
+                                            _append = False
                                     else:
-                                        _append = False
+                                        _append = True
                             elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
                                 if teachers[lesson] == teachers[assigned_course[:-2]]:
                                     _append = False
@@ -125,18 +128,19 @@ class GAscheduler:
                         _append = False
 
                 check_list.append(_append)
+            
             change_z_f = 0
 
             if False in check_list:  # if they are not in a same group
                 for check in range(len(check_list)):
                     if check_list[check] == False:
                         if (
-                            assigned_course[check][-2:] == "_f"
-                            or assigned_course[check][-2:] == "_z"
+                            assigned_courses[check][-2:] == "_f"
+                            or assigned_courses[check][-2:] == "_z"
                         ):
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 if change_z_f < 1:
-                                    if assigned_course[check][-2:] == "_f":
+                                    if assigned_courses[check][-2:] == "_f":
                                         lesson = lesson[:-2] + "_z"
                                     else:
                                         lesson = lesson[:-2] + "_f"
@@ -150,8 +154,8 @@ class GAscheduler:
                                 break
 
                         elif (
-                            assigned_course[check][-2:] != "_f"
-                            and assigned_course[check][-2:] != "_z"
+                            assigned_courses[check][-2:] != "_f"
+                            and assigned_courses[check][-2:] != "_z"
                         ):
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 assign = False
@@ -503,3 +507,28 @@ class GAscheduler:
                 for lesson in lessons:
                     lessons_with_out_pipe.append(lesson.replace("|", ""))
                 print(f'    {time}: {", ".join(lessons_with_out_pipe)}')
+
+
+
+
+
+# ---------------------------------------------------test and debug--------------------------------------------------- 
+# colors= {0: ['mabahes_1'], 1: ['mabahes_2'], 2: ['jabr'], 3: ['kargah_barname_nevisi'], 4: ['kargah_barname_nevisi_pishrafte', 'kargah_barname_nevisi_pishrafte_g2', 'mabani_computer'], 5: ['sakhteman_dade', 'bazyabi', 'gosaste'], 6: ['az_electriki'], 7: ['az_assembly', 'memari'], 8: ['az_memari', 'az_memari_g2'], 9: ['paygah_dade'], 10: ['mabani_hoosh_mohasebati', 'tarahi_algorithm'], 11: ['elm_robot'], 12: ['nazarie_bazi'], 13: ['web_manayi'], 14: ['mohasebat_elmi'], 15: ['barname_nevisi_pishrafte', 'narm_1'], 16: ['zaban_takhasosi', 'ravesh_pajoohesh'], 17: ['nazarie_zaban'], 18: ['compiler'], 19: ['az_system', 'az_system_g2'], 20: ['shabake', 'amar'], 21: ['az_shabake', 'az_shabake_g2']}
+# units= {'mabahes_1': 3, 'mabahes_2': 3, 'jabr': 3, 'kargah_barname_nevisi': 1, 'kargah_barname_nevisi_pishrafte': 1, 'kargah_barname_nevisi_pishrafte_g2': 1, 'sakhteman_dade': 3, 'az_electriki': 1, 'az_assembly': 1, 'az_memari': 1, 'az_memari_g2': 1, 'paygah_dade': 3, 'bazyabi': 3, 'mabani_hoosh_mohasebati': 3, 'elm_robot': 3, 'nazarie_bazi': 3, 'web_manayi': 3, 'mohasebat_elmi': 3, 'mabani_computer': 3, 'barname_nevisi_pishrafte': 3, 'tarahi_algorithm': 3, 'zaban_takhasosi': 3, 'nazarie_zaban': 3, 'memari': 3, 'narm_1': 3, 'compiler': 3, 'az_system': 1, 'az_system_g2': 1, 'shabake': 3, 'amar': 3, 'gosaste': 3, 'ravesh_pajoohesh': 2, 'az_shabake': 1, 'az_shabake_g2': 1}
+# semesters= {'mabahes_1': 8, 'mabahes_2': 8, 'jabr': 4, 'kargah_barname_nevisi': 1, 'kargah_barname_nevisi_pishrafte': 2, 'kargah_barname_nevisi_pishrafte_g2': 2, 'sakhteman_dade': 3, 'az_electriki': 3, 'az_assembly': 7, 'az_memari': 4, 'az_memari_g2': 4, 'paygah_dade': 5, 'bazyabi': 6, 'mabani_hoosh_mohasebati': 6, 'elm_robot': 6, 'nazarie_bazi': 8, 'web_manayi': 8, 'mohasebat_elmi': 2, 'mabani_computer': 1, 'barname_nevisi_pishrafte': 2, 'tarahi_algorithm': 4, 'zaban_takhasosi': 5, 'nazarie_zaban': 4, 'memari': 4, 'narm_1': 4, 'compiler': 8, 'az_system': 5, 'az_system_g2': 5, 'shabake': 6, 'amar': 3, 'gosaste': 2, 'ravesh_pajoohesh': 6, 'az_shabake': 6, 'az_shabake_g2': 6}
+# verified_linked_courses_to_professors= {'mabahes_1': 'dr_nadjafi', 'mabahes_2': 'dr_khosravi', 'jabr': 'dr_amooshahi', 'kargah_barname_nevisi': 'dr_farangi', 'kargah_barname_nevisi_pishrafte': 'dr_khalili', 'kargah_barname_nevisi_pishrafte_g2': 'dr_khalili', 'sakhteman_dade': 'dr_rahimkhani', 'az_electriki': 'dr_ataollah', 'az_assembly': 'mohandes_rajabi', 'az_memari': 'dr_rasooli', 'az_memari_g2': 'dr_rasooli', 'paygah_dade': 'dr_khalili', 'bazyabi': 'dr_khosravi', 'mabani_hoosh_mohasebati': 'dr_khosravi', 'elm_robot': 'dr_rasooli', 'nazarie_bazi': 'dr_nadjafi', 'web_manayi': 'dr_khosravi', 'mohasebat_elmi': 'dr_rahimkhani', 'mabani_computer': 'dr_farangi', 'barname_nevisi_pishrafte': 'dr_khalili', 'tarahi_algorithm': 'dr_doostali', 'zaban_takhasosi': 'dr_nadjafi', 'nazarie_zaban': 'dr_rahimkhani', 'memari': 'dr_rasooli', 'narm_1': 'dr_khosravi', 'compiler': 'dr_doostali', 'shabake': 'mohandes_rajabi', 'amar': 'dr_mirzargar', 'gosaste': 'dr_nadjafi', 'ravesh_pajoohesh': 'dr_nadjafi', 'az_shabake': 'mohandes_rajabi', 'az_shabake_g2': 'dr_farangi', 'az_system': 'mahdi_rezaie', 'az_system_g2': 'mahdi_rezaie'}
+# limited_professors= {'dr_khosravi': [['Tuesday', '8:30'], ['Tuesday', '10:30'], ['Tuesday', '13:30'], ['Tuesday', '15:30'], ['Tuesday', '17:30'], ['Wednesday', '8:30'], ['Wednesday', '10:30'], ['Wednesday', '13:30'], ['Wednesday', '15:30'], ['Wednesday', '17:30'], ['Thursday', '8:30'], ['Thursday', '10:30'], ['Thursday', '13:30'], ['Thursday', '15:30'], ['Thursday', '17:30']], 'dr_nadjafi': [['Tuesday', '10:30'], ['Tuesday', '13:30'], ['Tuesday', '15:30'], ['Wednesday', '10:30'], ['Wednesday', '13:30'], ['Wednesday', '15:30'], ['Thursday', '10:30'], ['Thursday', '13:30'], ['Thursday', '15:30']], 'dr_mirzargar': [['Monday', '8:30'], ['Monday', '10:30'], ['Friday', '8:30'], ['Friday', '10:30'], ['Tuesday', '8:30'], ['Tuesday', '10:30']], 'dr_rahimkhani': [['Monday', '8:30'], ['Monday', '10:30'], ['Monday', '13:30'], ['Monday', '15:30'], ['Monday', '17:30'], ['Tuesday', '8:30'], ['Tuesday', '13:30'], ['Tuesday', '10:30'], ['Tuesday', '15:30'], ['Tuesday', '17:30'], ['Wednesday', '8:30'], ['Wednesday', '10:30'], ['Wednesday', '13:30'], ['Wednesday', '15:30'], ['Wednesday', '17:30']], 'dr_khalili': [['Friday', '8:30'], ['Friday', '10:30'], ['Friday', '13:30'], ['Friday', '15:30'], ['Friday', '17:30'], ['Thursday', '8:30'], ['Thursday', '10:30'], ['Thursday', '13:30'], ['Thursday', '15:30'], ['Thursday', '17:30']], 'dr_farangi': [['Monday', '17:30'], ['Tuesday', '17:30'], ['Wednesday', '17:30'], ['Thursday', '17:30'], ['Friday', '17:30']], 'dr_doostali': [['Friday', '8:30'], ['Friday', '10:30'], ['Friday', '13:30'], ['Friday', '15:30'], ['Friday', '17:30']], 'mohandes_rajabi': [['Monday', '17:30'], ['Monday', '15:30'], ['Friday', '15:30'], ['Friday', '17:30']], 'dr_rasooli': [['Monday', '8:30'], ['Monday', '10:30'], ['Monday', '13:30'], ['Monday', '15:30'], ['Monday', '17:30'], ['Wednesday', '8:30'], ['Wednesday', '10:30'], ['Wednesday', '13:30'], ['Wednesday', '15:30'], ['Wednesday', '17:30']]}
+# chromosomes= 1
+# verified_courses_with_out_conditions= []
+
+
+# s = GAscheduler(
+#     colors,
+#     units,
+#     semesters,
+#     verified_linked_courses_to_professors,
+#     limited_professors,
+#     chromosomes,
+#     verified_courses_with_out_conditions,
+# )
+# s.start()
