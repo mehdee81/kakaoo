@@ -7,11 +7,13 @@ kakaoo is a Django-based web application designed to facilitate the scheduling o
 
 ## Algorithm
 
-This software utilizes two key algorithms to optimize lesson scheduling:
+This software utilizes three key algorithms to optimize lesson scheduling:
 
 1. **Graph Coloring Algorithm**: This mathematical algorithm is used to group lessons that can be presented in the same section. Each group represents a color.
 
 2. **Genetic Algorithm**: This algorithm is used to arrange the groups of lessons across the days of the week. It works by generating a population of possible schedules. aiming to find the most optimal schedule.
+
+3. **Penalty Genetic Algorithm**: Finally, we use the genetic algorithm again and select the courses that have been left out of the table for the week in such a way that for academic and temporal conflicts (time constraints of professors), we consider a penalty, and again create a large number of random solutions under these conditions. This time our cost function is the number of penalties, and we choose a schedule that has the least penalty.
 
 By combining these algorithms, the software can effectively avoid scheduling conflicts and distribute lessons evenly throughout the week.
 
