@@ -33,6 +33,7 @@ class GAscheduler:
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
         self.semesters = semesters
+        
         self.piped_courses_with_out_conditions = []
         for course in self.courses_with_out_conditions:
             self.piped_courses_with_out_conditions.append(f"|{course}|")
@@ -50,6 +51,9 @@ class GAscheduler:
         for color, courses in self.courses.items():
             for course in courses:
                 self.listed_all_courses.append(course)
+                
+        for course in self.courses_with_out_conditions:
+            self.listed_all_courses.append(course)
 
         piped_units = {}
         for course, unit in self.unit.items():
@@ -66,6 +70,15 @@ class GAscheduler:
             piped_teachers[f"|{course}|"] = prof
         self.teachers = piped_teachers
 
+        self.courses_number = 0
+        for course in self.listed_all_courses:
+            if self.unit[course] == 3:
+                self.courses_number+=2
+            elif self.unit[course] == 4:
+                self.courses_number+=2
+            else:
+                self.courses_number+=1
+                
     def assign_lesson(self, lesson, group_lessons, day, time):
         assign = False
         teachers = self.teachers
@@ -491,6 +504,9 @@ class GAscheduler:
             "Scheduling Started With",
             self.chromosomes,
             "chromosomes",
+            "and",
+            self.courses_number,
+            "Courses"
         )
         start_time = time.time()
         self.fitness()
