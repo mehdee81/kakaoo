@@ -1,12 +1,19 @@
 {% extends "base.html" %} {% block page_title %} Scheduler {% endblock %}
 {%block page_body %} {% if courses %}
-<div class="mycontainer">
+<div class="main-up mycontainer">
     <h1>Scheduler</h1>
     <form action="#" id="all_courses_form">
         {% csrf_token %}
         <div class="table-main">
             <div class="table-main-header">
-                <p></p>
+                <p>
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="checkAll"
+                        value="false"
+                    />
+                </p>
                 <p>Courses</p>
                 <p>Professor</p>
             </div>
@@ -35,9 +42,6 @@
             </div>
         </div>
     </form>
-    <button type="button" class="btn btn-primary" id="checkAll">
-        Check All
-    </button>
 </div>
 
 <div class="main-down">
@@ -57,7 +61,7 @@
     </div>
     <div class="mycontainer">
         <div class="mt-s mb-3">
-            <h4 for="chromosomes">Number of random Solutions(Chromosomes)</h4>
+            <h4 for="chromosomes">Random Solutions</h4>
             <input
                 type="number"
                 id="chromosomes"
@@ -70,8 +74,7 @@
 
         <div class="mt-s mb-3">
             <h4 for="penalty_chromosomes">
-                Number of random Solutions(Chromosomes) for lessons wich will
-                add in penalty genetic algorith
+                Random Solutions for penalty genetic algorithm
             </h4>
             <input
                 type="number"

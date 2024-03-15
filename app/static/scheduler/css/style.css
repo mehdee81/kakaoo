@@ -114,11 +114,6 @@ ul li :hover {
     color: #666;
 }
 
-#all_courses_form {
-    overflow: auto;
-    height: 300px !important;
-}
-
 #developer {
     text-decoration: none;
     color: black;
@@ -185,6 +180,7 @@ ul li :hover {
 .layout {
     display: grid;
     grid-template-columns: 2fr 6fr;
+    height: -webkit-fill-available;
 }
 
 .sidebar {
@@ -243,16 +239,27 @@ ul li :hover {
 
 .table-main {
     font-size: 1.5rem;
+    margin-top: 1rem;
 }
 
 .table-main-header {
     display: grid;
     grid-template-columns: 1fr 4fr 2fr;
     font-weight: 1000;
+    background-color: var(--color-grey-100);
+    border-radius: 10px;
+    align-items: center;
+    height: 4rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    width: 100%;
 }
 
 .table-main-body {
     font-weight: 300;
+    padding: 1rem;
+    height: 20vw;
+    overflow-y: auto;
 }
 
 .table-main-body--item {
@@ -261,12 +268,8 @@ ul li :hover {
 }
 
 .main-down {
-    display: flex;
-    justify-content: space-between;
-}
-
-.container-cond {
-    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 .hint-text {
