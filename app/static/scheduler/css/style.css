@@ -1,3 +1,47 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+html {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 62.5%;
+}
+
+body {
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-color: var(--color-brown-0);
+    color: var(--color-grey-0);
+}
+
+:root {
+    --color-grey-0: #baa4a4;
+    --color-grey-100: #2d2222;
+    --color-grey-200: #110d0d;
+
+    --color-brown-0: #7c5e5e;
+    --color-brown-100: #503c3c;
+    --color-brown-200: #3e2f2f;
+
+    --color-green-0: #64bec4;
+    --color-green-200: #317c81;
+    --color-green-400: #205053;
+
+    --color-red-0: #ffb0b0;
+    --color-red-200: #ff8686;
+    --color-red-400: #f90000;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
 .links {
     display: flex;
     justify-content: center;
@@ -26,7 +70,6 @@ ul {
 ul li {
     display: inline !important;
     margin: 4px;
-
 }
 
 ul li a {
@@ -76,13 +119,11 @@ ul li :hover {
     height: 300px !important;
 }
 
-
 #developer {
     text-decoration: none;
     color: black;
     font-weight: 400;
 }
-
 
 .lds-facebook {
     display: inline-block;
@@ -128,17 +169,107 @@ ul li :hover {
     }
 }
 
-
-#prof_in_limit_page{
+#prof_in_limit_page {
     text-decoration: none;
     color: white;
 }
-#prof_in_limit_page:hover{
+#prof_in_limit_page:hover {
     transition: 0.8s;
     color: rgb(255, 0, 0);
 }
 
-
 #acceptable_penalty_div {
     display: none;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 2fr 6fr;
+}
+
+.sidebar {
+    background-color: var(--color-brown-200);
+    padding: 2rem 1.5rem;
+}
+
+.header {
+    font-weight: bolder;
+    font-size: 4rem;
+    font-family: "Lilita One";
+}
+
+.menu {
+    margin-top: 3rem;
+}
+
+.menu-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 2rem 0;
+    height: 5rem;
+    padding: 0 2rem;
+    text-decoration: none;
+}
+
+.menu-item--active {
+    display: flex;
+    background-color: var(--color-brown-100);
+    border-radius: 9px;
+}
+
+.menu-item--icon {
+    margin-right: 1rem;
+    color: var(--color-grey-0);
+}
+
+.menu-item--icon span {
+    transform: scale(1.3);
+}
+
+.menu-item--text {
+    color: var(--color-grey-0);
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-left: 3rem;
+}
+
+.mycontainer {
+    background-color: var(--color-brown-200);
+    margin: 1rem;
+    padding: 2rem;
+    border-radius: 9px;
+}
+
+.table-main {
+    font-size: 1.5rem;
+}
+
+.table-main-header {
+    display: grid;
+    grid-template-columns: 1fr 4fr 2fr;
+    font-weight: 1000;
+}
+
+.table-main-body {
+    font-weight: 300;
+}
+
+.table-main-body--item {
+    display: grid;
+    grid-template-columns: 1fr 4fr 2fr;
+}
+
+.main-down {
+    display: flex;
+    justify-content: space-between;
+}
+
+.container-cond {
+    width: 100%;
+}
+
+.hint-text {
+    font-style: italic;
+    font-size: 1.2rem;
 }
