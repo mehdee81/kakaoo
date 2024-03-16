@@ -27,7 +27,13 @@ class GPAscheduler:
             "Thursday",
             "Friday",
         ]
-        self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
+        self.times = [
+            "8:30", 
+            "10:30", 
+            "13:30", 
+            "15:30", 
+            "17:30"
+            ]
         self.main_schedule = copy.deepcopy(schedule)
         self.schedule = schedule
         self.best_schedule = None

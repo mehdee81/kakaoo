@@ -118,8 +118,15 @@ def schedule(request):
         for course in verified_courses_with_out_conditions:
             semester = Courses.objects.filter(course=course).values_list("semester", flat=True)
             semesters[course] = semester[0]
-        
-        
+        # ----------------------------------------------testing----------------------------------------------
+        # print("colors=",colors)
+        # print("units=",units)
+        # print("semesters=",semesters)
+        # print("verified_linked_courses_to_professors=",verified_linked_courses_to_professors)
+        # print("limited_professors=",limited_professors)
+        # print("chromosomes=",chromosomes)
+        # print("verified_courses_with_out_conditions=",verified_courses_with_out_conditions)
+        # ----------------------------------------------end testing------------------------------------------
         s = GAscheduler(
             colors,
             units,
