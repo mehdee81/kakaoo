@@ -1,0 +1,2 @@
+django-livereload-server
+django-livesync
