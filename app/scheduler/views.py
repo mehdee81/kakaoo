@@ -45,19 +45,17 @@ def schedule(request):
             courses_with_out_conditions.replace(" ", "")
         ).split("-")
         profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
-    
+
         # Initialize an empty dictionary
         limited_professors = {}
 
         # Iterate over the queryset
         for prof in profs_limit:
             # If the professor is not in the dictionary, add them
-            if prof['professor'] not in limited_professors:
-                limited_professors[prof['professor']] = []
+            if prof["professor"] not in limited_professors:
+                limited_professors[prof["professor"]] = []
             # Append the day and time to the professor's list
-            limited_professors[prof['professor']].append(
-                [prof["day"], prof["time"]]
-            )
+            limited_professors[prof["professor"]].append([prof["day"], prof["time"]])
 
         linked_courses_to_professors = {}
 
@@ -66,8 +64,7 @@ def schedule(request):
             if course in selected_courses:
                 verified_courses_with_out_conditions.append(course)
                 selected_courses.remove(course)
-        
-        
+
         c_to_p = CtoP.objects.values("id", "course", "professor")
         for c_t_p in c_to_p:
             linked_courses_to_professors[c_t_p["course"]] = c_t_p["professor"]
@@ -99,24 +96,27 @@ def schedule(request):
 
         my_graph = Graph(edges=edges)
         colors = my_graph.color_graph_h()
-        
+
         units = {}
         for course in selected_courses:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[course] = unit[0]
-            
+
         for course in verified_courses_with_out_conditions:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
             units[course] = unit[0]
-        
-        
+
         semesters = {}
         for course in selected_courses:
-            semester = Courses.objects.filter(course=course).values_list("semester", flat=True)
+            semester = Courses.objects.filter(course=course).values_list(
+                "semester", flat=True
+            )
             semesters[course] = semester[0]
-            
+
         for course in verified_courses_with_out_conditions:
-            semester = Courses.objects.filter(course=course).values_list("semester", flat=True)
+            semester = Courses.objects.filter(course=course).values_list(
+                "semester", flat=True
+            )
             semesters[course] = semester[0]
         # ----------------------------------------------testing----------------------------------------------
         # print("colors=",colors)
@@ -137,13 +137,14 @@ def schedule(request):
             verified_courses_with_out_conditions,
         )
         s.start()
-        
 
         request.session["schedule"] = copy.deepcopy(s.best_schedule)
-        request.session["lessons_with_no_time"] = copy.deepcopy(s.lowest_lessons_with_no_section)
+        request.session["lessons_with_no_time"] = copy.deepcopy(
+            s.lowest_lessons_with_no_section
+        )
 
         request.session["selected_courses"] = selected_courses
-        
+
         sp = GPAscheduler(
             s.lowest_lessons_with_no_section,
             s.best_schedule,
@@ -154,9 +155,9 @@ def schedule(request):
             penalty_chromosomes,
         )
         sp.start()
-        
+
         request.session["penalty_schedule"] = copy.deepcopy(sp.best_schedule)
-        
+
         return JsonResponse({"status": "ok"})
 
 
@@ -166,7 +167,7 @@ def show_schedule(request):
     selected_courses = request.session["selected_courses"]
     lessons_with_no_time = request.session["lessons_with_no_time"]
     request.session.clear()
-    
+
     clear_schedule = {}
     for day, day_schedule in schedule.items():
         _day_schedule = {}
@@ -176,7 +177,7 @@ def show_schedule(request):
                 lessons_with_out_pipe.append(lesson.replace("|", ""))
             _day_schedule[time] = lessons_with_out_pipe
         clear_schedule[day] = _day_schedule
-        
+
     clear_penalty_schedule = {}
     for day, day_schedule in penalty_schedule.items():
         _day_schedule = {}
@@ -186,11 +187,11 @@ def show_schedule(request):
                 lessons_with_out_pipe.append(lesson.replace("|", ""))
             _day_schedule[time] = lessons_with_out_pipe
         clear_penalty_schedule[day] = _day_schedule
-    
+
     clear_lessons_with_no_time = []
     for course in lessons_with_no_time:
         clear_lessons_with_no_time.append(course.replace("|", ""))
-    
+
     return render(
         request,
         "scheduler/show_schedule.html",
@@ -198,7 +199,7 @@ def show_schedule(request):
             "selected_courses": selected_courses,
             "schedule": clear_schedule,
             "lessons_with_no_time": clear_lessons_with_no_time,
-            "clear_penalty_schedule":clear_penalty_schedule
+            "clear_penalty_schedule": clear_penalty_schedule,
         },
     )
 
@@ -215,12 +216,14 @@ def courses(request):
 def add_course(request):
     if request.method == "POST":
         course_name = request.POST.get("course_name")
-        course_name = course_name.replace("-","_")
+        course_name = course_name.replace("-", "_")
         course_unit = request.POST.get("Course_unit")
         Course_semester = request.POST.get("Course_semester")
         existing_record = Courses.objects.filter(course=course_name).exists()
         if not existing_record:
-            course = Courses(course=course_name, semester=Course_semester, unit=course_unit)
+            course = Courses(
+                course=course_name, semester=Course_semester, unit=course_unit
+            )
             course.save()
         return redirect("courses")
     else:
@@ -234,7 +237,7 @@ def delete_course(request, course_id, course_name):
         Q(course_1=course_name) | Q(course_2=course_name)
     )
     sametimes.delete()
-    
+
     c_to_p = CtoP.objects.filter(course=course_name)
     c_to_p.delete()
     return redirect("courses")
@@ -249,6 +252,7 @@ def update_unit(request):
         course.save()
         return redirect("courses")
 
+
 def update_semester(request):
     if request.method == "POST":
         course_id = request.POST.get("course_id")
@@ -257,6 +261,7 @@ def update_semester(request):
         course.semester = new_semester_value  # Replace with the actual new unit value
         course.save()
         return redirect("courses")
+
 
 def add_group(request):
     if request.method == "POST":
@@ -302,10 +307,10 @@ def professors(request):
 def delete_professor(request, professor_id):
     prof = Professors.objects.get(id=professor_id)
     prof.delete()
-    
+
     c_to_p = CtoP.objects.filter(professor=prof)
     c_to_p.delete()
-    
+
     limit_prof = ProfessorsLimit.objects.filter(professor=prof)
     limit_prof.delete()
     return redirect("professors")
@@ -336,8 +341,13 @@ def add_sametime(request):
         course_1 = request.POST.get("sametime_course_1")
         course_2 = request.POST.get("sametime_course_2")
         if course_1 != course_2:
-            sametime = SameTime(course_1=course_1, course_2=course_2)
-            sametime.save()
+            existing_record = SameTime.objects.filter(
+                Q(course_1=course_1, course_2=course_2)
+                | Q(course_1=course_2, course_2=course_1)
+            ).exists()
+            if not existing_record:
+                sametime = SameTime(course_1=course_1, course_2=course_2)
+                sametime.save()
     return redirect("sametimes")
 
 
@@ -381,19 +391,19 @@ def professors_limit(request):
     profs_limit = ProfessorsLimit.objects.values(
         "id", "professor", "day", "time"
     ).order_by("-id")
-    
+
     days = [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-        ]
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+    ]
     times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
     schedule = {day: {time: [] for time in times} for day in days}
 
     for prof in profs_limit:
-        schedule[prof['day']][prof['time']].append((prof['professor'], prof['id']))
+        schedule[prof["day"]][prof["time"]].append((prof["professor"], prof["id"]))
 
     # Filter the Professors querysetc_to_p = CtoP.objects.values_list('professor', flat=True)
     professors = Professors.objects.filter(name__in=c_to_p).values("id", "name")
@@ -401,11 +411,7 @@ def professors_limit(request):
     return render(
         request,
         "scheduler/professors_limit.html",
-        {
-            "professors": professors,
-            "profs_limit": profs_limit,
-            "schedule":schedule
-        },
+        {"professors": professors, "profs_limit": profs_limit, "schedule": schedule},
     )
 
 
@@ -414,7 +420,9 @@ def add_professors_limit(request):
         prof = request.POST.get("prof")
         day = request.POST.get("day")
         time = request.POST.get("time")
-        existing_record = ProfessorsLimit.objects.filter(professor=prof, day=day, time=time).exists()
+        existing_record = ProfessorsLimit.objects.filter(
+            professor=prof, day=day, time=time
+        ).exists()
         if not existing_record:
             profs_limit = ProfessorsLimit(professor=prof, day=day, time=time)
             profs_limit.save()
