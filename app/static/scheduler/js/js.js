@@ -54,7 +54,7 @@ $("#get-data-btn").click(function () {
     let limited_professors = {};
 
     // Get all checkboxes
-    let checkboxes = $(".form-check-input");
+    let checkboxes = $(".checkboxes");
 
     // Get chromosomes
     let chromosomes = $("#chromosomes").val();
@@ -159,9 +159,6 @@ document
         }
     });
 // ----------------------------------------------------------
-var checkAll = document.getElementById("checkAll").value;
-console.log(checkAll);
-
 $(document).ready(function () {
     // When the button is clicked
     $("#checkAll").click(function () {
