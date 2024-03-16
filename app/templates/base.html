@@ -32,10 +32,7 @@
             <div class="sidebar">
                 <h1 class="header">Kakaoo</h1>
                 <div class="menu">
-                    <a
-                        class="menu-item menu-item--active"
-                        href="http://127.0.0.1:8000/"
-                    >
+                    <a class="menu-item" href="http://127.0.0.1:8000/">
                         <div class="menu-item--icon">
                             <span class="material-symbols-outlined">
                                 schedule
@@ -100,4 +97,24 @@
     </body>
     <script src="{% static 'scheduler/js/jquery.js' %}"></script>
     <script src="{% static 'scheduler/js/js.js' %}"></script>
+    <script>
+        let url = new URL(window.location.href);
+        var path = url.pathname;
+        var items = document.getElementsByClassName("menu-item");
+        if (path === "/" || path === "/show_schedule/") {
+            items[0].classList.add("menu-item--active");
+        } else if (path === "/courses/") {
+            items[1].classList.add("menu-item--active");
+        } else if (path === "/professors") {
+            items[2].classList.add("menu-item--active");
+        } else if (path === "/c_to_p") {
+            items[3].classList.add("menu-item--active");
+        } else if (path === "/professors_limit") {
+            items[4].classList.add("menu-item--active");
+        } else if (path === "/pre_requirements") {
+            items[5].classList.add("menu-item--active");
+        } else if (path === "/learn_more/") {
+            items[6].classList.add("menu-item--active");
+        }
+    </script>
 </html>

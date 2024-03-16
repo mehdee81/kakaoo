@@ -30,12 +30,12 @@ body {
     --color-brown-200: #3e2f2f;
 
     --color-green-0: #64bec4;
-    --color-green-200: #317c81;
-    --color-green-400: #205053;
+    --color-green-100: #317c81;
+    --color-green-200: #205053;
 
     --color-red-0: #ffb0b0;
-    --color-red-200: #ff8686;
-    --color-red-400: #f90000;
+    --color-red-100: #ff8686;
+    --color-red-200: #f90000;
 }
 
 .material-symbols-outlined {
@@ -275,4 +275,14 @@ ul li :hover {
 .hint-text {
     font-style: italic;
     font-size: 1.2rem;
+}
+
+.primary-button {
+    background-color: var(--color-green-200);
+    color: var(--color-green-0);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-weight: 500;
+    font-size: 1.2rem;
+    border: none;
 }
