@@ -94,6 +94,7 @@ class GAscheduler:
             assigned_courses = self.schedule[day][time]
 
             _append = False
+            change_z_f = 0
             for assigned_course in assigned_courses:
                 for course in group_lessons:
                     if course in assigned_course:  # if they are in a same group
@@ -110,7 +111,15 @@ class GAscheduler:
                                     == teachers[assigned_course[:-2]]
                                 ):
                                     if assigned_course[-2:] == lesson[-2:]:
-                                        _append = False
+                                        if change_z_f < 1:
+                                            if assigned_course[-2:] == "_f":
+                                                lesson = lesson[:-2] + "_z"
+                                            else:
+                                                lesson = lesson[:-2] + "_f"
+                                            _append = True
+                                            change_z_f += 1
+                                        else:
+                                            _append = False
                                     else:
                                         _append = True
                             elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
