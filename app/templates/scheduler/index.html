@@ -1,21 +1,17 @@
 {% extends "base.html" %} {% block page_title %} Scheduler {% endblock %}
 {%block page_body %} {% if courses %}
-<div class="main-up mycontainer">
+<div class="main-up">
     <h1>Scheduler</h1>
+    <div class="table-main-header">
+        <p>
+            <input class="form-check-input" type="checkbox" id="checkAll" />
+        </p>
+        <p>Courses</p>
+        <p>Professor</p>
+    </div>
     <form action="#" id="all_courses_form">
         {% csrf_token %}
         <div class="table-main">
-            <div class="table-main-header">
-                <p>
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="checkAll"
-                    />
-                </p>
-                <p>Courses</p>
-                <p>Professor</p>
-            </div>
             <div class="table-main-body">
                 {% for course in courses %}
                 <div class="table-main-body--item">
@@ -46,16 +42,21 @@
 <div class="main-down">
     <div class="mycontainer container-cond">
         <div class="mt-3 mb-3">
-            <h2 for="courses_with_out_conditions">
-                Courses With Out Condition
-            </h2>
-            <p class="hint-text">sample: fizik_1-riazi_2-assembly</p>
-            <input
+            <h2 for="courses_with_out_conditions">Courses Without Condition</h2>
+            <!-- <p class="hint-text">sample: fizik_1-riazi_2-assembly</p> -->
+            <!-- <input
                 type="text"
                 name="courses_with_out_conditions"
                 id="courses_with_out_conditions"
                 class="form-control"
-            />
+            /> -->
+            <select id="courses-without-conditions">
+                <option></option>
+                {% for course in courses %}
+                <option value="{{course.course}}">{{course.course}}</option>
+                {% endfor %}
+            </select>
+            <div class="courses-without-cond"></div>
         </div>
     </div>
     <div class="mycontainer">
@@ -109,10 +110,4 @@
         </b>
     </div>
 </div>
-{% endif %}
-
-<br />
-<br />
-<br />
-<br />
-{% endblock %}
+{% endif %} {% endblock %}

@@ -46,6 +46,8 @@ $(document).on("click", "#remove_limited_professor", function () {
     $(this).closest("tr").remove();
 });
 // -----------------------------------------------------
+var coursesWithoutCondition = [];
+
 $("#get-data-btn").click(function () {
     // Create a list to store selected courses
     let selected_courses = [];
@@ -60,7 +62,8 @@ $("#get-data-btn").click(function () {
     let chromosomes = $("#chromosomes").val();
 
     // Get courses with out conditions
-    let courses_with_out_conditions = $("#courses_with_out_conditions").val();
+    var courses_with_out_conditions = coursesWithoutCondition.join("-");
+    // let courses_with_out_conditions = $("#courses_with_out_conditions").val();
 
     // Get penalty chromosomes number
     let penalty_chromosomes = $("#penalty_chromosomes").val();
@@ -168,3 +171,51 @@ $(document).ready(function () {
     });
 });
 // ----------------------------------------------------------
+var a = document.getElementById("courses-without-conditions");
+var cwd = document.getElementsByClassName("courses-without-cond")[0];
+
+a.addEventListener("change", function () {
+    var value = this.value;
+    var lastOfValue = value.split("_").slice(-1)[0];
+    if (value === "") return;
+    if (
+        lastOfValue[0] === "g" &&
+        (lastOfValue[1] === "1" ||
+            lastOfValue[1] === "2" ||
+            lastOfValue[1] === "3" ||
+            lastOfValue[1] === "4" ||
+            lastOfValue[1] === "5")
+    ) {
+        value = value.slice(0, -3);
+    }
+    if (coursesWithoutCondition.indexOf(value) === -1) {
+        coursesWithoutCondition.push(value);
+    }
+    cwd.textContent = "";
+    coursesWithoutCondition.map((course) => {
+        var child = document.createElement("div");
+        child.className = "courses-without-cond--item";
+        child.textContent = course;
+        child.addEventListener("click", () => {
+            var index = coursesWithoutCondition.indexOf(course);
+            coursesWithoutCondition.splice(index, 1);
+            rebuild();
+        });
+        cwd.appendChild(child);
+    });
+});
+
+function rebuild() {
+    cwd.textContent = "";
+    coursesWithoutCondition.map((course) => {
+        var child = document.createElement("div");
+        child.className = "courses-without-cond--item";
+        child.textContent = course;
+        child.addEventListener("click", () => {
+            var index = coursesWithoutCondition.indexOf(course);
+            coursesWithoutCondition.splice(index, 1);
+            rebuild();
+        });
+        cwd.appendChild(child);
+    });
+}

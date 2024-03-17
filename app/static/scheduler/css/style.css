@@ -18,6 +18,7 @@ body {
     overflow-x: hidden;
     background-color: var(--color-brown-0);
     color: var(--color-grey-0);
+    font-family: "Lato";
 }
 
 :root {
@@ -173,12 +174,34 @@ ul li :hover {
     color: rgb(255, 0, 0);
 }
 
+.main {
+    display: flex;
+    flex-direction: column;
+}
+
+::-webkit-scrollbar {
+    width: 1.5rem;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-brown-0);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-brown-100);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-grey-100);
+}
+
 #acceptable_penalty_div {
     display: none;
 }
 
 .layout {
     display: grid;
+    height: 100dvh;
     grid-template-columns: 2fr 6fr;
     height: -webkit-fill-available;
 }
@@ -192,6 +215,8 @@ ul li :hover {
     font-weight: bolder;
     font-size: 4rem;
     font-family: "Lilita One";
+    padding-left: 2rem;
+    transition: all 0.5s;
 }
 
 .menu {
@@ -206,6 +231,11 @@ ul li :hover {
     height: 5rem;
     padding: 0 2rem;
     text-decoration: none;
+    transition: all 0.2s;
+}
+
+.menu-item:hover {
+    transform: translateX(0.5rem);
 }
 
 .menu-item--active {
@@ -238,33 +268,45 @@ ul li :hover {
 }
 
 .table-main {
-    font-size: 1.5rem;
-    margin-top: 1rem;
+    font-size: 1.7rem;
 }
 
 .table-main-header {
     display: grid;
     grid-template-columns: 1fr 4fr 2fr;
+    align-items: center;
     font-weight: 1000;
+    font-size: 1.7rem;
     background-color: var(--color-grey-100);
     border-radius: 10px;
-    align-items: center;
     height: 4rem;
     margin-bottom: 1rem;
-    padding: 1rem;
-    width: 100%;
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
 }
 
 .table-main-body {
-    font-weight: 300;
+    font-weight: 400;
     padding: 1rem;
-    height: 20vw;
-    overflow-y: auto;
+    height: 40dvh;
+    /* overflow-y: auto; */
 }
 
 .table-main-body--item {
     display: grid;
     grid-template-columns: 1fr 4fr 2fr;
+    padding: 0.8rem 0;
+}
+
+.main-up {
+    background-color: var(--color-brown-200);
+    margin: 1rem;
+    padding: 2rem;
+    border-radius: 9px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: stretch;
 }
 
 .main-down {
@@ -278,11 +320,54 @@ ul li :hover {
 }
 
 .primary-button {
-    background-color: var(--color-green-200);
+    background-color: var(--color-green-100);
     color: var(--color-green-0);
+    transition: all 0.1s;
     padding: 0.5rem 1rem;
     border-radius: 5px;
     font-weight: 500;
     font-size: 1.2rem;
     border: none;
+}
+
+.primary-button:hover {
+    background-color: var(--color-green-200);
+}
+
+#all_courses_form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: scroll;
+}
+
+select {
+    background-color: var(--color-grey-0);
+    color: var(--color-grey-200);
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+}
+
+.courses-without-cond {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.courses-without-cond--item {
+    background-color: var(--color-red-0);
+    color: var(--color-grey-100);
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.1s;
+    border-radius: 5px;
+}
+
+.courses-without-cond--item:hover {
+    background-color: var(--color-red-200);
+    color: var(--color-red-0);
 }
