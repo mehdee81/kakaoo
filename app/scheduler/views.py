@@ -234,6 +234,8 @@ def add_course(request):
     if request.method == "POST":
         course_name = request.POST.get("course_name")
         course_name = course_name.replace("-", "_")
+        course_name = course_name.strip()
+        course_name = course_name.replace(" ", "_")
         course_unit = request.POST.get("Course_unit")
         Course_semester = request.POST.get("Course_semester")
         course_field = request.POST.get("course_field")
@@ -347,6 +349,8 @@ def delete_professor(request, professor_id):
 def add_professor(request):
     if request.method == "POST":
         prof_name = request.POST.get("professor_name")
+        prof_name = prof_name.strip()
+        prof_name = prof_name.replace(" ","_")
         existing_record = Professors.objects.filter(name=prof_name).exists()
         if not existing_record:
             prof = Professors(name=prof_name)
