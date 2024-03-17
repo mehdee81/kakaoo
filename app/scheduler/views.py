@@ -118,6 +118,21 @@ def schedule(request):
                 "semester", flat=True
             )
             semesters[course] = semester[0]
+            
+        fields = {}
+        for course in selected_courses:
+            field = Courses.objects.filter(course=course).values_list(
+                "field", flat=True
+            )
+            fields[course] = field[0]
+
+        for course in verified_courses_with_out_conditions:
+            field = Courses.objects.filter(course=course).values_list(
+                "field", flat=True
+            )
+            fields[course] = field[0]
+        
+        
         # ----------------------------------------------testing----------------------------------------------
         # print("colors=",colors)
         # print("units=",units)
@@ -129,6 +144,7 @@ def schedule(request):
         # ----------------------------------------------end testing------------------------------------------
         s = GAscheduler(
             colors,
+            fields,
             units,
             semesters,
             verified_linked_courses_to_professors,
@@ -147,6 +163,7 @@ def schedule(request):
 
         sp = GPAscheduler(
             s.lowest_lessons_with_no_section,
+            fields,
             s.best_schedule,
             edges,
             units,
@@ -209,7 +226,7 @@ def learn_more(request):
 
 
 def courses(request):
-    courses = Courses.objects.values("id", "course", "semester", "unit").order_by("-id")
+    courses = Courses.objects.values("id", "course", "semester", "unit", "field").order_by("-id")
     return render(request, "scheduler/courses.html", {"courses": courses})
 
 
@@ -219,10 +236,12 @@ def add_course(request):
         course_name = course_name.replace("-", "_")
         course_unit = request.POST.get("Course_unit")
         Course_semester = request.POST.get("Course_semester")
+        course_field = request.POST.get("course_field")
+        course_field = course_field.strip()
         existing_record = Courses.objects.filter(course=course_name).exists()
         if not existing_record:
             course = Courses(
-                course=course_name, semester=Course_semester, unit=course_unit
+                course=course_name, semester=Course_semester, unit=course_unit, field=course_field
             )
             course.save()
         return redirect("courses")
@@ -252,6 +271,15 @@ def update_unit(request):
         course.save()
         return redirect("courses")
 
+
+def update_field(request):
+    if request.method == "POST":
+        course_id = request.POST.get("course_id")
+        course_field = request.POST.get("course_field")
+        course = Courses.objects.get(id=course_id)
+        course.field = course_field.strip()  # Replace with the actual new unit value
+        course.save()
+        return redirect("courses")
 
 def update_semester(request):
     if request.method == "POST":

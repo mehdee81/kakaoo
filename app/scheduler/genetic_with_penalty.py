@@ -2,10 +2,12 @@ import random
 import time
 import copy
 
+
 class GPAscheduler:
     def __init__(
         self,
         all_courses,
+        fields,
         schedule,
         edges,
         unit,
@@ -27,13 +29,7 @@ class GPAscheduler:
             "Thursday",
             "Friday",
         ]
-        self.times = [
-            "8:30", 
-            "10:30", 
-            "13:30", 
-            "15:30", 
-            "17:30"
-            ]
+        self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
         self.main_schedule = copy.deepcopy(schedule)
         self.schedule = schedule
         self.best_schedule = None
@@ -43,6 +39,20 @@ class GPAscheduler:
         self.professors_limit_time = professors_limit_time
         self.chromosomes = chromosomes
         self.unit = unit
+        self.fields = fields
+
+
+        piped_fields = {}
+        for course, field in self.fields.items():
+            piped_fields[f"|{course}|"] = field
+        self.fields = piped_fields
+
+        _fields = {}
+        for course, field in self.fields.items():
+            _fields[f"{course}"] = field
+            _fields[f"{course}_f"] = field
+            _fields[f"{course}_z"] = field
+        self.fields = _fields
         
         piped_units = {}
         for course, unit in self.unit.items():
@@ -57,8 +67,9 @@ class GPAscheduler:
     def assign_course(self, new_course, edges, day, time):
         assign = False
         teachers = self.teachers
-            
+
         if len(self.schedule[day][time]) > 0:
+            fields = self.fields
 
             assigned_courses = self.schedule[day][time]
             assigned_courses_with_out_z_f = []
@@ -67,78 +78,116 @@ class GPAscheduler:
                     assigned_courses_with_out_z_f.append(assigned_course[:-2])
                 else:
                     assigned_courses_with_out_z_f.append(assigned_course)
-                    
+
             for i in range(len(assigned_courses_with_out_z_f)):
-                if (assigned_courses_with_out_z_f[i],new_course) not in edges and (new_course,assigned_courses_with_out_z_f[i]) not in edges: # if they have not edge
-                    if assigned_courses[i][-2:] == "_f" or assigned_courses[i][-2:] == "_z":
+                if (
+                    (assigned_courses_with_out_z_f[i], new_course) not in edges
+                    and (new_course, assigned_courses_with_out_z_f[i]) not in edges
+                ) or (
+                    (fields[new_course] != fields[assigned_courses_with_out_z_f[i]])
+                    and (fields[new_course] != "both" and fields[assigned_courses_with_out_z_f[i]] != "both")
+                ):  # if they have not edge or they have not same field
+                    if (
+                        assigned_courses[i][-2:] == "_f"
+                        or assigned_courses[i][-2:] == "_z"
+                    ):
                         if new_course[-2:] == "_f" or new_course[-2:] == "_z":
                             if new_course[-2:] == assigned_courses[i][-2:]:
-                                if teachers[new_course[:-2]] == teachers[assigned_courses[i][:-2]]:
+                                if (
+                                    teachers[new_course[:-2]]
+                                    == teachers[assigned_courses[i][:-2]]
+                                ):
                                     self.penalty += self.penalty_of_same_professor
-                            
-                            
+
                         elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
-                            if teachers[new_course] == teachers[assigned_courses[i][:-2]]:
+                            if (
+                                teachers[new_course]
+                                == teachers[assigned_courses[i][:-2]]
+                            ):
                                 self.penalty += self.penalty_of_same_professor
-                            
-                    
-                    elif assigned_courses[i][-2:] != "_f" and assigned_courses[i][-2:] != "_z":
+
+                    elif (
+                        assigned_courses[i][-2:] != "_f"
+                        and assigned_courses[i][-2:] != "_z"
+                    ):
                         if new_course[-2:] != "_f" and new_course[-2:] != "_z":
                             if teachers[new_course] == teachers[assigned_courses[i]]:
                                 self.penalty += self.penalty_of_same_professor
-                            
+
                         elif new_course[-2:] == "_f" or new_course[-2:] == "_z":
-                            if teachers[new_course[:-2]] == teachers[assigned_courses[i]]:
+                            if (
+                                teachers[new_course[:-2]]
+                                == teachers[assigned_courses[i]]
+                            ):
                                 self.penalty += self.penalty_of_same_professor
-                
-                else: # if they have edge penalty += penalty_of_edge
-                    if assigned_courses[i][-2:] == "_f" or assigned_courses[i][-2:] == "_z":
+
+                else:  # if they have edge penalty += penalty_of_edge
+                    if (
+                        assigned_courses[i][-2:] == "_f"
+                        or assigned_courses[i][-2:] == "_z"
+                    ):
                         if new_course[-2:] == "_f" or new_course[-2:] == "_z":
                             if new_course[-2:] == assigned_courses[i][-2:]:
                                 self.penalty += self.penalty_of_edge
-                                if teachers[new_course[:-2]] == teachers[assigned_courses[i][:-2]]:
+                                if (
+                                    teachers[new_course[:-2]]
+                                    == teachers[assigned_courses[i][:-2]]
+                                ):
                                     self.penalty += self.penalty_of_same_professor
-                            
+
                         elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
                             self.penalty += self.penalty_of_edge
-                            if teachers[new_course[:-2]] == teachers[assigned_courses[i][:-2]]:
+                            if (
+                                teachers[new_course[:-2]]
+                                == teachers[assigned_courses[i][:-2]]
+                            ):
                                 self.penalty += self.penalty_of_same_professor
-                            
-                    
-                    elif assigned_courses[i][-2:] != "_f" and assigned_courses[i][-2:] != "_z" :
+
+                    elif (
+                        assigned_courses[i][-2:] != "_f"
+                        and assigned_courses[i][-2:] != "_z"
+                    ):
                         if new_course[-2:] == "_f" or new_course[-2:] == "_z":
                             self.penalty += self.penalty_of_edge
-                            if teachers[new_course[:-2]] == teachers[assigned_courses[i][:-2]]:
+                            if (
+                                teachers[new_course[:-2]]
+                                == teachers[assigned_courses[i][:-2]]
+                            ):
                                 self.penalty += self.penalty_of_same_professor
-                        
+
                         elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
                             self.penalty += self.penalty_of_edge
-                            if teachers[new_course[:-2]] == teachers[assigned_courses[i][:-2]]:
+                            if (
+                                teachers[new_course[:-2]]
+                                == teachers[assigned_courses[i][:-2]]
+                            ):
                                 self.penalty += self.penalty_of_same_professor
 
             for assigned_course in self.schedule[day][time]:
                 if new_course in assigned_course or assigned_course in new_course:
                     self.penalty += self.penalty_of_repeat_course
-                
-            self.schedule[day][time].append(new_course)    
+
+            self.schedule[day][time].append(new_course)
         else:
             self.schedule[day][time].append(new_course)
 
     def assign_courses(self):
         teachers = self.teachers
         teachers_limit_state = self.professors_limit_time
-      
+
         for course in self.all_courses:
-            if course[-2:] == "_z" or course[-2:] == "_f": 
+            if course[-2:] == "_z" or course[-2:] == "_f":
                 teacher = teachers[course[:-2]]
             else:
                 teacher = teachers[course]
-                
+
             day = random.choice(self.days)
             time = random.choice(self.times)
-            if teacher in teachers_limit_state: # if master has limit
-                if [day, time] in teachers_limit_state[teacher]: # if master can be be in university in this section
-                    
+            if teacher in teachers_limit_state:  # if master has limit
+                if [day, time] in teachers_limit_state[
+                    teacher
+                ]:  # if master can be be in university in this section
+
                     self.assign_course(
                         course,
                         self.edges,
@@ -164,7 +213,7 @@ class GPAscheduler:
     def make_solution(self):
         all_results = []
         for i in range(1, self.chromosomes + 1):
-            
+
             self.assign_courses()
             all_results.append(
                 (
@@ -172,7 +221,7 @@ class GPAscheduler:
                     self.penalty,
                 )
             )
-            
+
             if (i % 5000 == 0) and (i != 0):
                 print(f"Chromosome {i}: Pausing for 3 seconds...")
                 time.sleep(3)
@@ -184,9 +233,9 @@ class GPAscheduler:
             if i % 500000 == 0 and i != 0:
                 print(f"Chromosome {i}: Pausing for 10 seconds...")
                 time.sleep(10)
-            
+
             self.schedule = copy.deepcopy(self.main_schedule)
-            
+
             self.penalty = 0
         return all_results
 
@@ -221,5 +270,3 @@ class GPAscheduler:
                 for lesson in lessons:
                     lessons_with_out_pipe.append(lesson.replace("|", ""))
                 print(f'    {time}: {", ".join(lessons_with_out_pipe)}')
-
-

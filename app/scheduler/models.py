@@ -12,6 +12,7 @@ class Courses(models.Model):
     course = models.CharField(max_length=200)
     unit = models.IntegerField()
     semester = models.IntegerField(default=1)
+    field = models.CharField(max_length=200,default="not set")
     def __str__(self):
         return self.course, self.unit
 

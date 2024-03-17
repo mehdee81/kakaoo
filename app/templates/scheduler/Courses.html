@@ -14,6 +14,7 @@
                         <th>Course</th>
                         <th>Semester</th>
                         <th>Unit</th>
+                        <th>field</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -24,6 +25,7 @@
                         <td>{{ course.course }}</td>
                         <td>{{ course.semester }}</td>
                         <td>{{ course.unit}}</td>
+                        <td>{{ course.field}}</td>
                         <td>
                             <a href="{% url 'delete_course' course.id course.course %}"
                                 class="btn btn-danger m-1">Delete</a>
@@ -66,10 +68,43 @@
                         <option value="8">8</option>
                     </select>
                 </div>
+                
+                <select id="course_field" name="course_field" class="form-select">
+                        <option value="first">first</option>
+                        <option value="second">second</option>
+                        <option value="both">both</option>
+                </select>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
 
             {% if courses %}
+            <h3>Update field of a Course</h3>
+            <hr>
+            <form method="POST" action="{% url 'update_field' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="course_id" class="form-label">Course name</label>
+                    <select id="course_id" name="course_id" class="form-select">
+                        {% for course in courses %}
+                        <option value={{ course.id }}>{{ course.course }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <select id="course_field" name="course_field" class="form-select">
+                        <option value="first">first</option>
+                        <option value="second">second</option>
+                        <option value="both">both</option>
+                </select>
+                <p class="text-danger p-2">
+                    <b>
+                        Note that if you change the field of a course, the field of other groups of
+                        the same course will not change.
+                    </b>
+                </p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+
             <h3>Update Units of a Course</h3>
             <hr>
             <form method="POST" action="{% url 'update_unit' %}">

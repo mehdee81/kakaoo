@@ -1,11 +1,13 @@
 import random
 import time
+import copy
 
 
 class GAscheduler:
     def __init__(
         self,
         colors,
+        fields,
         unit,
         semesters,
         teachers,
@@ -20,13 +22,7 @@ class GAscheduler:
             "Thursday",
             "Friday",
         ]
-        self.times = [
-            "8:30", 
-            "10:30", 
-            "13:30", 
-            "15:30", 
-            "17:30"
-            ]
+        self.times = ["8:30", "10:30", "13:30", "15:30", "17:30"]
         self.schedule = {day: {time: [] for time in self.times} for day in self.days}
         self.best_schedule = None
         self.lowest_lessons_with_no_section = None
@@ -39,7 +35,8 @@ class GAscheduler:
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
         self.semesters = semesters
-        
+        self.fields = fields
+
         self.piped_courses_with_out_conditions = []
         for course in self.courses_with_out_conditions:
             self.piped_courses_with_out_conditions.append(f"|{course}|")
@@ -57,9 +54,21 @@ class GAscheduler:
         for color, courses in self.courses.items():
             for course in courses:
                 self.listed_all_courses.append(course)
-                
+
         for course in self.courses_with_out_conditions:
             self.listed_all_courses.append(course)
+
+        piped_fields = {}
+        for course, field in self.fields.items():
+            piped_fields[f"|{course}|"] = field
+        self.fields = piped_fields
+
+        _fields = {}
+        for course, field in self.fields.items():
+            _fields[f"{course}"] = field
+            _fields[f"{course}_f"] = field
+            _fields[f"{course}_z"] = field
+        self.fields = _fields
 
         piped_units = {}
         for course, unit in self.unit.items():
@@ -79,25 +88,32 @@ class GAscheduler:
         self.courses_number = 0
         for course in self.listed_all_courses:
             if self.unit[course] == 3:
-                self.courses_number+=2
+                self.courses_number += 2
             elif self.unit[course] == 4:
-                self.courses_number+=2
+                self.courses_number += 2
             else:
-                self.courses_number+=1
-                
-    def assign_lesson(self, lesson, group_lessons, day, time):
+                self.courses_number += 1
+
+    def assign_lesson(self, lesson, group_courses, day, time):
         assign = False
         teachers = self.teachers
 
         if len(self.schedule[day][time]) > 0:
             check_list = []
+            fields = self.fields
             assigned_courses = self.schedule[day][time]
-
             _append = False
             change_z_f = 0
+
             for assigned_course in assigned_courses:
-                for course in group_lessons:
-                    if course in assigned_course:  # if they are in a same group
+                for course in group_courses:
+                    if (course in assigned_course) or (
+                        (fields[course] != fields[assigned_course])
+                        and (
+                            fields[course] != "both"
+                            and fields[assigned_course] != "both"
+                        )
+                    ):  # if they are in a same group
                         if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
                                 if (
@@ -147,8 +163,6 @@ class GAscheduler:
                         _append = False
 
                 check_list.append(_append)
-            
-            
 
             if False in check_list:  # if they are not in a same group
                 for check in range(len(check_list)):
@@ -158,17 +172,20 @@ class GAscheduler:
                             or assigned_courses[check][-2:] == "_z"
                         ):
                             if lesson[-2:] == "_f" or lesson[-2:] == "_z":
-                                
+
                                 if assigned_courses[check][-2:] == lesson[-2:]:
                                     assign = False
                                     break
                                 else:
-                                    if teachers[assigned_courses[check][:-2]] != teachers[lesson[:-2]]:
+                                    if (
+                                        teachers[assigned_courses[check][:-2]]
+                                        != teachers[lesson[:-2]]
+                                    ):
                                         assign = True
                                     else:
                                         assign = False
                                         break
-                                
+
                             elif lesson[-2:] != "_f" and lesson[-2:] != "_z":
                                 assign = False
                                 break
@@ -346,7 +363,7 @@ class GAscheduler:
             for group_course in self.listed_all_courses:
                 if semesters[group_course] != semesters[course]:
                     group_lessons.append(group_course)
-            
+
             lesson_unit = self.unit[course]
             if lesson_unit == 3:
                 checked_sections = []
@@ -513,7 +530,7 @@ class GAscheduler:
             "chromosomes",
             "and",
             self.courses_number,
-            "Courses"
+            "Courses",
         )
         start_time = time.time()
         self.fitness()
@@ -532,10 +549,7 @@ class GAscheduler:
                 print(f'    {time}: {", ".join(lessons_with_out_pipe)}')
 
 
-
-
-
-# ---------------------------------------------------test and debug--------------------------------------------------- 
+# ---------------------------------------------------test and debug---------------------------------------------------
 # colors= {0: ['barname_nevisi_pishrafte', 'narm_1'], 1: ['compiler', 'gosaste']}
 # units= {'barname_nevisi_pishrafte': 3, 'narm_1': 3, 'compiler': 3, 'gosaste': 3}
 # semesters= {'barname_nevisi_pishrafte': 2, 'narm_1': 4, 'compiler': 8, 'gosaste': 2}
@@ -554,4 +568,4 @@ class GAscheduler:
 #     verified_courses_with_out_conditions,
 # )
 # s.start()
-# ---------------------------------------------------edn test and debug----------------------------------------------- 
+# ---------------------------------------------------edn test and debug-----------------------------------------------
