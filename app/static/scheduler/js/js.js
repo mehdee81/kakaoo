@@ -178,19 +178,8 @@ a.addEventListener("change", function () {
     var value = this.value;
     var lastOfValue = value.split("_").slice(-1)[0];
     if (value === "") return;
-    if (
-        lastOfValue[0] === "g" &&
-        (lastOfValue[1] === "1" ||
-            lastOfValue[1] === "2" ||
-            lastOfValue[1] === "3" ||
-            lastOfValue[1] === "4" ||
-            lastOfValue[1] === "5")
-    ) {
-        value = value.slice(0, -3);
-    }
-    if (coursesWithoutCondition.indexOf(value) === -1) {
+    if (coursesWithoutCondition.indexOf(value) === -1)
         coursesWithoutCondition.push(value);
-    }
     cwd.textContent = "";
     coursesWithoutCondition.map((course) => {
         var child = document.createElement("div");
