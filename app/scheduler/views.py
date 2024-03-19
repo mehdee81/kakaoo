@@ -175,7 +175,7 @@ def schedule(request):
 
         request.session["penalty_schedule"] = copy.deepcopy(sp.best_schedule)
 
-        return JsonResponse({"status": "ok"})
+        return JsonResponse({"status": "ok","penalty": sp.lowest_schedule_penalty})
 
 
 def show_schedule(request):
