@@ -1,45 +1,91 @@
 {% extends "base.html" %}
-{% block page_title %} Professors Management {% endblock %}
-
+{% block page_title %} Professors Management 
+{% endblock %}
 {% block page_body %}
-<div class="container p-lg-5">
-    <div class="row">
-        {% if professors %}
-        <div class="col-12 col-lg">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Number</th>
-                        <th>Professor</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for professor in professors %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ professor.name }}</td>
-                        <td>
-                            <a href="{% url 'delete_professor' professor.id %}" class="btn btn-danger m-1">Delete</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
-        <div class="col-12 col-lg">
-            <h3>Add Professor</h3>
-            <hr>
-            <form method="POST" action="{% url 'add_professor' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="professor_name" class="form-label">Professor name</label>
-                    <input type="text" class="form-control" id="professor_name" name="professor_name" aria-describedby="professor name" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
+<div class="mymodal absolute-center hidden">
+    <div class="table-heading">
+        <h2>Add Professor</h2>
+        <span
+            class="material-symbols-outlined close-button"
+            style="position: absolute; top: 1rem; left: 1rem"
+        >
+            close
+        </span>
     </div>
+    <br />
+    <form method="POST" action="{% url 'add_professor' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="professor_name" class="form-label"
+                >Professor name</label
+            >
+            <input
+                type="text"
+                class="form-control"
+                id="professor_name"
+                name="professor_name"
+                aria-describedby="professor name"
+                required
+            />
+        </div>
+        <button type="submit" class="primary-button">Submit</button>
+    </form>
 </div>
+
+<div class="main-up">
+    <div class="table-heading">
+        <h1>Professors</h1>
+        <button id="toggle-modal" class="primary-button">Add Professor</button>
+    </div>
+    {% if professors %}
+    <div class="table-main-header">
+        <p>#</p>
+        <p>Professor</p>
+        <p></p>
+    </div>
+    <form action="#" id="all_courses_form">
+        {% csrf_token %}
+        <div class="table-main">
+            <div class="table-main-body">
+                {% for professor in professors %}
+                <div class="table-main-body--item">
+                    <p>{{forloop.counter}}</p>
+                    <p>{{ professor.name }}</p>
+                    <p>
+                        <a
+                            href="{% url 'delete_professor' professor.id %}"
+                            class="danger-button"
+                            >Delete</a
+                        >
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</div>
+<script>
+    var isToggled = true;
+    var modalToggleButton = document.getElementById("toggle-modal");
+    var modal = document.getElementsByClassName("mymodal")[0];
+    var closeButton = document.getElementsByClassName("close-button")[0];
+
+    function toggle() {
+        isToggled = !isToggled;
+        if (isToggled) {
+            modal.classList.add("hidden");
+        } else {
+            modal.classList.remove("hidden");
+        }
+    }
+
+    modalToggleButton.addEventListener("click", () => {
+        toggle();
+    });
+
+    closeButton.addEventListener("click", () => {
+        toggle();
+    });
+</script>
 {% endblock %}
