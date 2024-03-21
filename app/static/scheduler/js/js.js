@@ -144,7 +144,22 @@ $(document).ready(function () {
         $(".lds-facebook").show();
     });
 });
-
+// --------------------------------------
+document.getElementById("chromosomes").addEventListener("input", function () {
+    if (this.value < 1) {
+        alert("chromosomes cannot be less than 1");
+        this.value = 1;
+    }
+});
+// --------------------------------------
+document
+    .getElementById("penalty_chromosomes")
+    .addEventListener("input", function () {
+        if (this.value < 1) {
+            alert("penalty_chromosomes cannot be less than 1");
+            this.value = 1;
+        }
+    });
 // --------------------------------------
 document.getElementById("chromosomes").addEventListener("input", function () {
     if (this.value > 100000000) {
