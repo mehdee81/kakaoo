@@ -1,63 +1,58 @@
 {% extends "base.html" %}
 {% block page_title %} Link Courses to Professors {% endblock %}
 {% block page_body %}
-<div class="container p-lg-5">
-    <div class="row">
-        {% if c_to_p %}
-        <div class="col-12 col-lg">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Number</th>
-                        <th>Course</th>
-                        <th>Professor</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c_t_p in c_to_p %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ c_t_p.course }}</td>
-                        <td>{{ c_t_p.professor }}</td>
-                        <td>
-                            <a href="{% url 'delete_c_to_p' c_t_p.id %}" class="btn btn-danger m-1">Delete</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+{% if courses %}
+{% if professors %}
+<div class="mymodal absolute-center hidden">
+    <div class="table-heading">
+        <h2>Link Courses to Professors</h2>
+        <span
+            class="material-symbols-outlined close-button"
+            style="position: absolute; top: 1rem; left: 1rem"
+        >
+            close
+        </span>
+    </div>
+    <br />
+    <form method="POST" action="{% url 'add_c_to_p' %}">
+        {% csrf_token %}
+        <div>
+            <br/>
+            <label for="course" class="">Course</label>
+            <select id="course" name="course" class="form-select" required>
+                {% for course in courses %}
+                <option value="{{course.course}}">{{course.course}}</option>
+                {% endfor %}
+            </select>
         </div>
-        {% endif %}
+        <div>
+            <br/>
+            <label for="professor" class="">Professor</label>
+            <select
+                id="professor"
+                name="professor"
+                class="form-select"
+                required
+            >
+                {% for professor in professors %}
+                <option value="{{professor.name}}">{{professor.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br/>
+        <button type="submit" class="primary-button">Submit</button>
+    </form>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- <div class="main-up">
         {% if courses %}
         {% if professors %}
-        <div class="col-12 col-lg">
-            <h3>Link Courses to Professors</h3>
-            <hr>
-            <form method="POST" action="{% url 'add_c_to_p' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="course" class="form-label">Course</label>
-                    <select id="course" name="course" class="form-select" required>
-                        {% for course in courses %}
-                        <option value={{course.course}}>{{course.course}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="professor" class="form-label">Course</label>
-                    <select id="professor" name="professor" class="form-select" required>
-                        {% for professor in professors %}
-                        <option value={{professor.name}}>{{professor.name}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
         {% else %}
         <div class="container p-5">
-            <p class="text-danger">
+            <p class="text-danger" style="font-size: 2rem; color: var(--color-red-200);">
                 <b>
                     First Go to The Professors Page and Add Some Professor Then Come Back Here.
                 </b>
@@ -66,13 +61,70 @@
         {% endif %}
         {% else %}
         <div class="container p-5">
-            <p class="text-danger">
+            <p class="text-danger" style="font-size: 2rem; color: var(--color-red-200);">
                 <b>
                     First go to the Courses page and add some course Then come back here.
                 </b>
             </p>
         </div>
         {% endif %}
+</div> -->
+
+<div class="main-up">
+    <div class="table-heading">
+        <h1>Linked Courses to Professors</h1>
+        <button id="toggle-modal" class="primary-button">Link Course to Professor</button>
     </div>
+    {% if c_to_p %}
+    <div class="table-main-header">
+        <p>Professors</p>
+        <p>Courses</p>
+        <p></p>
+    </div>
+    <form action="#" id="all_courses_form">
+        {% csrf_token %}
+        <div class="table-main">
+            <div class="table-main-body">
+                {% for c_t_p in c_to_p %}
+                <div class="table-main-body--item">
+                    <p>{{ c_t_p.professor }}</p>
+                    <p>{{ c_t_p.course }}</p>
+                    <p>
+                        <a
+                            href="{% url 'delete_c_to_p' c_t_p.id %}"
+                            class="danger-button"
+                            >Delete</a
+                        >
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+    {% endif %}
 </div>
+
+<script>
+    var isToggled = true;
+    var modalToggleButton = document.getElementById("toggle-modal");
+    var modal = document.getElementsByClassName("mymodal")[0];
+    var closeButton = document.getElementsByClassName("close-button")[0];
+
+    function toggle() {
+        isToggled = !isToggled;
+        if (isToggled) {
+            modal.classList.add("hidden");
+        } else {
+            modal.classList.remove("hidden");
+        }
+    }
+
+    modalToggleButton.addEventListener("click", () => {
+        toggle();
+    });
+
+    closeButton.addEventListener("click", () => {
+        toggle();
+    });
+</script>
 {% endblock %}
