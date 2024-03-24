@@ -1,68 +1,109 @@
 {% extends "base.html" %}
 {% block page_title %} Courses Prerequisites {% endblock %}
 {% block page_body %}
-<div class="container p-lg-5">
-    <div class="row">
-        {% if courses %}
-        <div class="col-12 col-lg">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Number</th>
-                        <th>Course 1</th>
-                        <th>Course 2</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sametime in sametimes %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ sametime.course_1 }}</td>
-                        <td>{{ sametime.course_2 }}</td>
-                        <td>
-                            <a href="{% url 'delete_sametime' sametime.id %}" class="btn btn-danger m-1">Delete</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
-        {% if courses %}
-        <div class="col-12 col-lg">
-            <h3>Add Permission to hold simultaneously</h3>
-            <hr>
-            <form method="POST" action="{% url 'add_sametime' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="sametime_course_1" class="form-label">Course 1</label>
-                    <select id="sametime_course_1" name="sametime_course_1" class="form-select" required>
-                        {% for course in courses %}
-                        <option value={{course.course}}>{{course.course}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="sametime_course_2" class="form-label">Course 2</label>
-                    <select id="sametime_course_2" name="sametime_course_2" class="form-select" required>
-                        {% for course in courses %}
-                        <option value={{course.course}}>{{course.course}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-        {% else %}
-            <div class="container p-5">
-                <p class="text-danger">
-                    <b>
-                        First go to the Courses page and add some course Then come back here.
-                    </b>
-                </p>
-            </div>
-        {% endif %}
+
+{% if courses %}
+<div class="mymodal absolute-center hidden">
+    <div class="table-heading">
+        <h2>Add Permission to hold Simultaneously</h2>
+        <span
+            class="material-symbols-outlined close-button"
+            style="position: absolute; top: 1rem; left: 1rem"
+        >
+            close
+        </span>
     </div>
+    <br />
+    <form method="POST" action="{% url 'add_sametime' %}">
+        {% csrf_token %}
+        <div>
+            <br/>
+            <label for="sametime_course_1">Course 1</label>
+            <select id="sametime_course_1" name="sametime_course_1" class="form-select" required>
+                {% for course in courses %}
+                <option value={{course.course}}>{{course.course}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="sametime_course_2" class="form-label">Course 2</label>
+            <select id="sametime_course_2" name="sametime_course_2" class="form-select" required>
+                {% for course in courses %}
+                <option value={{course.course}}>{{course.course}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br/>
+        <button type="submit" class="primary-button">Submit</button>
+    </form>
 </div>
+{% endif %}
+
+
+<div class="main-up">
+    <div class="table-heading">
+        <h1>Permissions to hold Simultaneously</h1>
+        <button id="toggle-modal" class="primary-button">Add Permissions</button>
+    </div>
+    {% if courses %}
+        <div class="table-main-header">
+            <p>Course 1</p>
+            <p>Course 2</p>
+            <p></p>
+        </div>
+    <form action="#" id="all_courses_form">
+        {% csrf_token %}
+        <div class="table-main">
+            <div class="table-main-body">
+                {% for sametime in sametimes %}
+                <div class="table-main-body--item">
+                    <p>{{ sametime.course_1 }}</p>
+                    <p>{{ sametime.course_2 }}</p>
+                    <p>
+                        <a href="{% url 'delete_sametime' sametime.id %}" class="danger-button">Delete</a>
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</form>
+    {% endif %}
+</div>
+
+
+
+<!-- {% else 
+    <div class="container p-5">
+        <p class="text-danger">
+            <b>
+                First go to the Courses page and add some course Then come back here.
+            </b>
+        </p>
+    </div>
+{% endif -->
+
+<script>
+    var isToggled = true;
+    var modalToggleButton = document.getElementById("toggle-modal");
+    var modal = document.getElementsByClassName("mymodal")[0];
+    var closeButton = document.getElementsByClassName("close-button")[0];
+
+    function toggle() {
+        isToggled = !isToggled;
+        if (isToggled) {
+            modal.classList.add("hidden");
+        } else {
+            modal.classList.remove("hidden");
+        }
+    }
+
+    modalToggleButton.addEventListener("click", () => {
+        toggle();
+    });
+
+    closeButton.addEventListener("click", () => {
+        toggle();
+    });
+</script>
 {% endblock %}
