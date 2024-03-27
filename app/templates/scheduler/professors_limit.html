@@ -2,79 +2,123 @@
 {% block page_title %} Professors Time Management {% endblock %}
 
 {% block page_body %}
-<div class="container p-lg-5">
-    <div class="row">
-        {% if profs_limit %}
-        <div class="col-12 col-lg">
-            <table class="table table-dark table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Day/Time</th>
-                        <th>8:30</th>
-                        <th>10:30</th>
-                        <th>13:30</th>
-                        <th>15:30</th>
-                        <th>17:30</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for day, times in schedule.items %}
-                    <tr>
-                        <th>{{ day }}</th>
-                        {% for time, professors in times.items %}
-                        <td>
-                            {% for professor, id in professors %}
-                            <b><a id="prof_in_limit_page" href="{% url 'delete_professors_limit' id %}">{{ professor }} <br>
-                                </a></b>
-                            {% endfor %}
-                        </td>
+<div class="mymodal absolute-center hidden">
+    <div class="table-heading">
+        <h2>Add Limit</h2>
+        <span
+            class="material-symbols-outlined close-button"
+            style="position: absolute; top: 1rem; left: 1rem"
+        >
+            close
+        </span>
+    </div>
+    <br />
+    <form method="POST" action="{% url 'add_professors_limit' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="prof" class="form-label">Profeesor</label>
+            <select id="prof" name="prof" class="form-select" required>
+                {% for prof in professors %}
+                <option value={{prof.name}}>{{prof.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="day" class="form-label">Day</label>
+            <select id="day" name="day" class="form-select" required>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="time" class="form-label">Time</label>
+            <select id="time" name="time" class="form-select" required>
+                <option value="8:30">8:30</option>
+                <option value="10:30">10:30</option>
+                <option value="13:30">13:30</option>
+                <option value="15:30">15:30</option>
+                <option value="17:30">17:30</option>
+            </select>
+        </div>
+        <button type="submit" class="primary-button">Submit</button>
+    </form>
+</div>
+<div class="main-up">
+    <div class="table-heading">
+        <h1>Professors Time Limits</h1>
+        <button id="toggle-modal" class="primary-button">Add Limit</button>
+    </div>
+    {% if profs_limit %}
+    <div class="table-main-header table-week">
+        <p>Day/Time</p>
+        <p>8:30</p>
+        <p>10:30</p>
+        <p>13:30</p>
+        <p>15:30</p>
+        <p>17:30</p>
+    </div>
+    <form action="#" id="all_courses_form">
+        {% csrf_token %}
+        <div class="table-main">
+            <div class="table-main-body">
+                {% for day, times in schedule.items %}
+                <div class="table-main-body--item table-week table-week--item">
+                    <p>{{day}}</p>
+                    {% for time, professors in times.items %}
+                    <p>
+
+                        {% for professor, id in professors %}
+                        <a id="prof_in_limit_page" href="{% url 'delete_professors_limit' id %}">{{ professor }} <br>
+                            </a>
+                        {% endfor %}
+                    </p>
                         {% endfor %}
                     </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    
+                    
+                </div>
+                <hr/>
+                {% endfor %}
+            </div>
         </div>
-        {% endif %}
-        {% if professors %}
-        <div class="col-12 col-lg">
-            <h3>Limit a Professor</h3>
-            <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link
+    </form>
+    {% else %}
+    <h3 class="text-center">There is No Professors Limits.<h3/>
+    {% endif %}
+</div>
+<script>
+    var isToggled = true;
+    var modalToggleButton = document.getElementById("toggle-modal");
+    var modal = document.getElementsByClassName("mymodal")[0];
+    var closeButton = document.getElementsByClassName("close-button")[0];
+
+    function toggle() {
+        isToggled = !isToggled;
+        if (isToggled) {
+            modal.classList.add("hidden");
+        } else {
+            modal.classList.remove("hidden");
+        }
+    }
+
+    modalToggleButton.addEventListener("click", () => {
+        toggle();
+    });
+
+    closeButton.addEventListener("click", () => {
+        toggle();
+    });
+</script>
+
+
+            <!-- <b class="text-danger">if you can not see some professor, you should to go to the <b class="text-dark">Link
                     Courses to Porfessors</b> page and link courses to target professors.</b>
-            <hr>
-            <form method="POST" action="{% url 'add_professors_limit' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="prof" class="form-label">Profeesor</label>
-                    <select id="prof" name="prof" class="form-select" required>
-                        {% for prof in professors %}
-                        <option value={{prof.name}}>{{prof.name}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="day" class="form-label">Day</label>
-                    <select id="day" name="day" class="form-select" required>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="time" class="form-label">Time</label>
-                    <select id="time" name="time" class="form-select" required>
-                        <option value="8:30">8:30</option>
-                        <option value="10:30">10:30</option>
-                        <option value="13:30">13:30</option>
-                        <option value="15:30">15:30</option>
-                        <option value="17:30">17:30</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
-        {% else %}
+            <hr> -->
+            
+        <!-- {% else 
         <div class="container p-5">
             <p class="text-danger">
                 <b>
@@ -82,7 +126,7 @@
                 </b>
             </p>
         </div>
-        {% endif %}
+        {% endif  -->
     </div>
 </div>
 {% endblock %}

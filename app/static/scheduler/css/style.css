@@ -409,6 +409,7 @@ select {
     padding: 3rem 5rem;
     box-shadow: .1rem .1rem 5rem var(--color-grey-200);
     border-radius: 10px;
+    z-index: 10;
 }
 
 .close-button {
@@ -422,4 +423,13 @@ select {
 
 .hidden {
     display: none;
+}
+
+.table-week {
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr !important;
+}
+
+.table-week--item {
+    border-bottom: black 2rem;
+    align-items: center;
 }
