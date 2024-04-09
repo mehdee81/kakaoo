@@ -85,34 +85,30 @@ ul li :hover {
     font-weight: 600;
 }
 
-#learn-more-container {
-    width: 80%;
-    margin: auto;
-}
-
 #learn-more-project-title {
     text-align: center;
-    color: #333;
 }
 
 #learn-more-contact-info {
     text-align: center;
     margin-bottom: 50px;
+    font-size: 1.5rem;
 }
 
 .learn-more-page-description {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: var(--color-grey-0);
     padding: 20px;
     margin-bottom: 20px;
 }
 
 .learn-more-page-description h2 {
     color: #444;
+    font-weight: 700;
 }
 
 .learn-more-page-description p {
-    color: #666;
+    color: var(--color-brown-100);
+    font-size: 1.5rem;
 }
 
 #developer {
@@ -464,4 +460,11 @@ select {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
+}
+
+.learn-more {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2rem;
 }
