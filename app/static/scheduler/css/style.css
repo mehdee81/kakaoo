@@ -211,6 +211,10 @@ ul li :hover {
     padding: 2rem 1.5rem;
 }
 
+.sidebar-fix {
+    position: fixed;
+}
+
 .header {
     font-weight: bolder;
     font-size: 4rem;
@@ -291,10 +295,14 @@ ul li :hover {
     height: 40dvh;
 }
 
+.table-main-body-full {
+    height: 100% !important;
+}
+
 .table-main-body--item {
     display: grid;
     grid-template-columns: 2fr 4fr 1fr;
-    padding: 0.8rem 0;
+    padding: .4rem;
 }
 
 .main-up {
@@ -426,10 +434,23 @@ select {
 }
 
 .table-week {
-    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr !important;
+    grid-template-columns: 1fr 2fr 2fr 2fr 2fr 2fr !important;
+    column-gap: 2rem;
 }
 
 .table-week--item {
     border-bottom: black 2rem;
     align-items: center;
+    font-size: 1.4rem;
+}
+
+.lessons-with-no-times {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 2rem;
+}
+
+.table-week--item-course {
+    overflow: auto;
+    font-size: 1.3rem;
 }

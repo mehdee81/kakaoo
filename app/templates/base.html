@@ -36,8 +36,10 @@
     <body>
         <main class="layout">
             <div class="sidebar">
-                <h1 class="header">Kakaoo</h1>
-                <div class="menu">
+                <div class="sidebar-fix">
+
+                    <h1 class="header">Kakaoo</h1>
+                    <div class="menu">
                     <a class="menu-item" href="http://127.0.0.1:8000/">
                         <div class="menu-item--icon">
                             <span class="material-symbols-outlined">
@@ -55,55 +57,56 @@
                         <div class="menu-item--text">Courses</div>
                     </a>
                     <a
-                        class="menu-item"
-                        href="http://127.0.0.1:8000/professors"
+                    class="menu-item"
+                    href="http://127.0.0.1:8000/professors"
                     >
-                        <div class="menu-item--icon">
-                            <span class="material-symbols-outlined">
-                                account_box
-                            </span>
-                        </div>
-                        <div class="menu-item--text">Professors</div>
-                    </a>
-                    <a class="menu-item" href="http://127.0.0.1:8000/c_to_p">
-                        <div class="menu-item--icon">X</div>
-                        <div class="menu-item--text">
-                            Link Course To Professor
-                        </div>
-                    </a>
-                    <a
-                        class="menu-item"
-                        href="http://127.0.0.1:8000/professors_limit"
-                    >
-                        <div class="menu-item--icon">X</div>
-                        <div class="menu-item--text">Professors time limit</div>
-                    </a>
-                    <a
-                        class="menu-item"
-                        href="http://127.0.0.1:8000/pre_requirements"
-                    >
-                        <div class="menu-item--icon">X</div>
-                        <div class="menu-item--text">Pre Requirements</div>
-                    </a>
-                    <a
-                        class="menu-item"
-                        href="http://127.0.0.1:8000/learn_more"
-                    >
-                        <div class="menu-item--icon">
-                            <span class="material-symbols-outlined">
-                                help
-                            </span>
-                        </div>
-                        <div class="menu-item--text">Learn More</div>
-                    </a>
-                </div>
-            </div>
-            <div class="main">{% block page_body %}{% endblock %}</div>
-        </main>
-    </body>
-    <script src="{% static 'scheduler/js/jquery.js' %}"></script>
-    <script src="{% static 'scheduler/js/js.js' %}"></script>
-    <script>
+                    <div class="menu-item--icon">
+                        <span class="material-symbols-outlined">
+                            account_box
+                        </span>
+                    </div>
+                    <div class="menu-item--text">Professors</div>
+                </a>
+                <a class="menu-item" href="http://127.0.0.1:8000/c_to_p">
+                    <div class="menu-item--icon">X</div>
+                    <div class="menu-item--text">
+                        Link Course To Professor
+                    </div>
+                </a>
+                <a
+                class="menu-item"
+                href="http://127.0.0.1:8000/professors_limit"
+                >
+                <div class="menu-item--icon">X</div>
+                <div class="menu-item--text">Professors time limit</div>
+            </a>
+            <a
+            class="menu-item"
+            href="http://127.0.0.1:8000/pre_requirements"
+            >
+            <div class="menu-item--icon">X</div>
+            <div class="menu-item--text">Pre Requirements</div>
+        </a>
+        <a
+        class="menu-item"
+        href="http://127.0.0.1:8000/learn_more"
+        >
+        <div class="menu-item--icon">
+            <span class="material-symbols-outlined">
+                help
+            </span>
+        </div>
+        <div class="menu-item--text">Learn More</div>
+    </a>
+</div>
+</div>
+</div>
+<div class="main">{% block page_body %}{% endblock %}</div>
+</main>
+</body>
+<script src="{% static 'scheduler/js/jquery.js' %}"></script>
+<script src="{% static 'scheduler/js/js.js' %}"></script>
+<script>
         let url = new URL(window.location.href);
         var path = url.pathname;
         var items = document.getElementsByClassName("menu-item");
