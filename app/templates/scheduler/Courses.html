@@ -3,111 +3,154 @@
 
 {% block page_body %}
 
-<div class="container p-lg-5">
-    <div class="row">
-        {% if courses %}
-        <div class="col-12 col-lg">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Number</th>
-                        <th>Course</th>
-                        <th>Semester</th>
-                        <th>Unit</th>
-                        <th>field</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for course in courses %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ course.course }}</td>
-                        <td>{{ course.semester }}</td>
-                        <td>{{ course.unit}}</td>
-                        <td>{{ course.field}}</td>
-                        <td>
-                            <a href="{% url 'delete_course' course.id course.course %}"
-                                class="btn btn-danger m-1">Delete</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="mymodal absolute-center hidden">
+    <div class="table-heading">
+        <h2>Add Limit</h2>
+        <span
+            class="material-symbols-outlined close-button"
+            style="position: absolute; top: 1rem; left: 1rem"
+        >
+            close
+        </span>
+    </div>
+    <form method="POST" action="{% url 'add_course' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="course_name" class="form-label">Course name</label>
+            <input type="text" class="form-control" id="course_name" name="course_name"
+                aria-describedby="courseHelp" required>
         </div>
-        {% endif %}
-        <div class="col-12 col-lg">
-            <h3>Add Course</h3>
-            <hr>
-            <form method="POST" action="{% url 'add_course' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="course_name" class="form-label">Course name</label>
-                    <input type="text" class="form-control" id="course_name" name="course_name"
-                        aria-describedby="courseHelp" required>
+        <div class="mb-3">
+            <label for="Course_unit" class="form-label">Unit</label>
+            <select id="Course_unit" name="Course_unit" class="form-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="Course_semester" class="form-label">Semester</label>
+            <select id="Course_semester" name="Course_semester" class="form-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="course_field" class="form-label">Field</label>
+            <select id="course_field" name="course_field" class="form-select">
+                <option value="first">first</option>
+                <option value="second">second</option>
+                <option value="both">both</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<div class="main-up">
+    {% if courses %}
+    <div class="table-heading">
+        <h1>Courses</h1>
+        <button id="toggle-modal" class="primary-button">Add Course</button>
+    </div>
+    <div class="table-main-header table-course">
+        <p>Course</p>
+        <p>Semester</p>
+        <p>Unit</p>
+        <p>Field</p>
+        <p></p>
+    </div>
+    <form action="#" id="all_courses_form">
+        {% csrf_token %}
+        <div class="table-main">
+            <div class="table-main-body">
+                {% for course in courses %}
+                <div class="table-main-body--item table-course table-week--item">
+                    
+                        <p>{{ course.course }}</p>
+                        <p>{{ course.semester }}</p>
+                        <p>{{ course.unit}}</p>
+                        <p>{{ course.field}}</p>
+                        <p>
+                            <a href="{% url 'delete_course' course.id course.course %}"
+                                class="danger-button">Delete</a>
+                        </td>
+                    
                 </div>
-                <div class="mb-3">
-                    <label for="Course_unit" class="form-label">Unit</label>
-                    <select id="Course_unit" name="Course_unit" class="form-select">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="Course_semester" class="form-label">Semester</label>
-                    <select id="Course_semester" name="Course_semester" class="form-select">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                    </select>
-                </div>
-                
-                <select id="course_field" name="course_field" class="form-select">
-                        <option value="first">first</option>
-                        <option value="second">second</option>
-                        <option value="both">both</option>
+                <hr/>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</div>
+<script>
+    var isToggled = true;
+    var modalToggleButton = document.getElementById("toggle-modal");
+    var modal = document.getElementsByClassName("mymodal")[0];
+    var closeButton = document.getElementsByClassName("close-button")[0];
+
+    function toggle() {
+        isToggled = !isToggled;
+        if (isToggled) {
+            modal.classList.add("hidden");
+        } else {
+            modal.classList.remove("hidden");
+        }
+    }
+
+    modalToggleButton.addEventListener("click", () => {
+        toggle();
+    });
+
+    closeButton.addEventListener("click", () => {
+        toggle();
+    });
+</script>
+
+{% if courses %}
+<div class="main-up--4">
+    <div class="main-up">
+
+        <h3>Update field of a Course</h3>
+        <hr>
+        <form method="POST" action="{% url 'update_field' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="course_id" class="form-label">Course name</label>
+                <select id="course_id" name="course_id" class="form-select">
+                    {% for course in courses %}
+                    <option value={{ course.id }}>{{ course.course }}</option>
+                    {% endfor %}
                 </select>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            </div>
+            <select id="course_field" name="course_field" class="form-select">
+                <option value="first">first</option>
+                <option value="second">second</option>
+                <option value="both">both</option>
+            </select>
+            <p class="text-danger p-2">
+                <b>
+                    Note that if you change the field of a course, the field of other groups of
+                    the same course will not change.
+                </b>
+            </p>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="main-up">
 
-            {% if courses %}
-            <h3>Update field of a Course</h3>
-            <hr>
-            <form method="POST" action="{% url 'update_field' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="course_id" class="form-label">Course name</label>
-                    <select id="course_id" name="course_id" class="form-select">
-                        {% for course in courses %}
-                        <option value={{ course.id }}>{{ course.course }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <select id="course_field" name="course_field" class="form-select">
-                        <option value="first">first</option>
-                        <option value="second">second</option>
-                        <option value="both">both</option>
-                </select>
-                <p class="text-danger p-2">
-                    <b>
-                        Note that if you change the field of a course, the field of other groups of
-                        the same course will not change.
-                    </b>
-                </p>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-
-
-            <h3>Update Units of a Course</h3>
-            <hr>
-            <form method="POST" action="{% url 'update_unit' %}">
+        
+        <h3>Update Units of a Course</h3>
+        <hr>
+        <form method="POST" action="{% url 'update_unit' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="course_id" class="form-label">Course name</label>
@@ -135,6 +178,9 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
 
+
+        </div>
+        <div class="main-up">
 
             <h3>Update Semester of a Course</h3>
             <hr>
@@ -169,7 +215,10 @@
                 </p>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+        </div>
+        <div class="main-up">
 
+            
             <h3>Add Group For a Course</h3>
             <hr>
             <form method="POST" action="{% url 'add_group' %}">
@@ -189,8 +238,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
-            {% endif %}
         </div>
     </div>
-</div>
+        {% endif %}
 {% endblock %}

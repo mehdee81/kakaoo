@@ -438,6 +438,10 @@ select {
     column-gap: 2rem;
 }
 
+.table-course {
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important;
+}
+
 .table-week--item {
     border-bottom: black 2rem;
     align-items: center;
@@ -453,4 +457,11 @@ select {
 .table-week--item-course {
     overflow: auto;
     font-size: 1.3rem;
+}
+
+.main-up--4 {
+    border-radius: 9px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
