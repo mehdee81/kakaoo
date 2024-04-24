@@ -135,6 +135,7 @@ def schedule(request):
         
         # ----------------------------------------------testing----------------------------------------------
         # print("colors=",colors)
+        # print("fields=",fields)
         # print("units=",units)
         # print("semesters=",semesters)
         # print("verified_linked_courses_to_professors=",verified_linked_courses_to_professors)

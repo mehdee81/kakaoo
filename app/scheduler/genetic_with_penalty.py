@@ -18,8 +18,8 @@ class GPAscheduler:
         self.all_courses = all_courses
         self.edges = edges
         self.penalty = 0
-        self.penalty_of_repeat_course = 27
-        self.penalty_of_same_professor = 9
+        self.penalty_of_repeat_course = 20
+        self.penalty_of_same_professor = 20
         self.penalty_of_limit_time = 3
         self.penalty_of_edge = 1
         self.days = [
