@@ -1,11 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 {% block page_title %} Schedule {% endblock %}
 {% block page_body %}
+<div id="tablesToPrint">
 
-<div class="main-up">
-    <!-- <div class="table-heading"> -->
-        <!-- <h1>Professors Time Limits</h1> -->
-    <!-- </div> -->
+    <div class="main-up">
+        <div class="table-heading">
+            <h1>Genetic Algorithm</h1>
+        </div>
     <div class="table-main-header table-week">
         <p>Day/Time</p>
         <p>8:30</p>
@@ -23,13 +25,13 @@
                     <b>{{day}}</b>
                     {% for time, courses in timeslots.items %}
 
-                        <p class="table-week--item-course">{{ courses|join:"<br> " }}</p>
+                    <p class="table-week--item-course">{{ courses|join:"<br> " }}</p>
                     {% endfor %}
                 </p>
-                    
-                    
-                </div>
-                <hr/>
+                
+                
+            </div>
+            <hr/>
                 {% endfor %}
             </div>
         </div>
@@ -50,31 +52,37 @@
         {% endfor %}
     </div>
 </div>
+<div class="main-up">
+    <div class="table-heading">
+        <h1>Number of Penalty: {{lowest_schedule_penalty}}</h1>
+        <button onclick="takeshot()" class="primary-button">Print</button>
+    </div>
+</div>
 {% endif %}
 
 <div class="main-up">
-    <!-- <div class="table-heading"> -->
-        <!-- <h1>Professors Time Limits</h1> -->
-    <!-- </div> -->
-    <div class="table-main-header table-week">
-        <p>Day/Time</p>
-        <p>8:30</p>
-        <p>10:30</p>
-        <p>13:30</p>
-        <p>15:30</p>
-        <p>17:30</p>
+    <div class="table-heading">
+        <h1>Genetic Algorithm with Penalty</h1>
     </div>
-    <form action="#" id="all_courses_form">
-        {% csrf_token %}
-        <div class="table-main">
-            <div class="table-main-body table-main-body-full">
-                {% for day, timeslots in clear_penalty_schedule.items %}
-                <div class="table-main-body--item table-week table-week--item">
-                    <b>{{day}}</b>
-                    {% for time, courses in timeslots.items %}
+        <div class="table-main-header table-week">
+            <p>Day/Time</p>
+            <p>8:30</p>
+            <p>10:30</p>
+            <p>13:30</p>
+            <p>15:30</p>
+            <p>17:30</p>
+        </div>
+        <form action="#" id="all_courses_form">
+            {% csrf_token %}
+            <div class="table-main">
+                <div class="table-main-body table-main-body-full">
+                    {% for day, timeslots in clear_penalty_schedule.items %}
+                    <div class="table-main-body--item table-week table-week--item">
+                        <b>{{day}}</b>
+                        {% for time, courses in timeslots.items %}
                         <p class="table-week--item-course">{{ courses|join:"<br> " }}</p>
-                    {% endfor %}
-                </p>
+                        {% endfor %}
+                    </p>
                 </div>
                 <hr/>
                 {% endfor %}
@@ -82,4 +90,23 @@
         </div>
     </form>
 </div>
+</div>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js"></script> -->
+<!-- <script src=""></script> -->
+<script src="{% static 'scheduler/js/html2canvas.js' %}"></script>
+<script src="{% static 'scheduler/js/jspdf.js' %}"></script>
+<script>
+    function takeshot() {
+            let div = document.getElementById('tablesToPrint');
+            html2canvas(div).then((canvas) => {
+                let imgData = canvas.toDataURL('image/png');
+                let pdf = new jsPDF('p', 'mm', 'a4');
+                let width = pdf.internal.pageSize.width;
+                let height = pdf.internal.pageSize.height;
+                pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+                pdf.save("download.pdf");
+            });
+    }
+takeshot()
+</script>
 {% endblock %}

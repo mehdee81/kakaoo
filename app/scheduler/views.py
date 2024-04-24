@@ -211,7 +211,6 @@ def show_schedule(request):
     for course in lessons_with_no_time:
         clear_lessons_with_no_time.append(course.replace("|", ""))
 
-    print(lowest_schedule_penalty)
     return render(
         request,
         "scheduler/show_schedule.html",

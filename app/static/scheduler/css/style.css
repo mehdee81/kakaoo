@@ -276,12 +276,12 @@ ul li :hover {
     grid-template-columns: 2fr 4fr 1fr;
     align-items: center;
     font-weight: 1000;
-    font-size: 1.7rem;
+    font-size: 1.8rem;
     background-color: var(--color-grey-100);
     border-radius: 10px;
     height: 4rem;
     margin-bottom: 1rem;
-    padding: 0.5rem 1rem;
+    padding: 0.2rem 1rem;
     margin-top: 1rem;
 }
 
@@ -298,7 +298,9 @@ ul li :hover {
 .table-main-body--item {
     display: grid;
     grid-template-columns: 2fr 4fr 1fr;
-    padding: .4rem;
+    padding: .2rem;
+    font-size: 1.6rem;
+    font-weight: 1000;
 }
 
 .main-up {
