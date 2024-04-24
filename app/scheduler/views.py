@@ -175,8 +175,8 @@ def schedule(request):
         sp.start()
 
         request.session["penalty_schedule"] = copy.deepcopy(sp.best_schedule)
-
-        return JsonResponse({"status": "ok","penalty": sp.lowest_schedule_penalty})
+        request.session["lowest_schedule_penalty"] = copy.deepcopy(sp.lowest_schedule_penalty)
+        return JsonResponse({"status": "ok"})
 
 
 def show_schedule(request):
@@ -184,6 +184,7 @@ def show_schedule(request):
     penalty_schedule = request.session["penalty_schedule"]
     selected_courses = request.session["selected_courses"]
     lessons_with_no_time = request.session["lessons_with_no_time"]
+    lowest_schedule_penalty = request.session["lowest_schedule_penalty"]
     request.session.clear()
 
     clear_schedule = {}
@@ -210,6 +211,7 @@ def show_schedule(request):
     for course in lessons_with_no_time:
         clear_lessons_with_no_time.append(course.replace("|", ""))
 
+    print(lowest_schedule_penalty)
     return render(
         request,
         "scheduler/show_schedule.html",
@@ -218,6 +220,7 @@ def show_schedule(request):
             "schedule": clear_schedule,
             "lessons_with_no_time": clear_lessons_with_no_time,
             "clear_penalty_schedule": clear_penalty_schedule,
+            "lowest_schedule_penalty": lowest_schedule_penalty
         },
     )
 
