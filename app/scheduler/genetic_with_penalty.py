@@ -65,7 +65,7 @@ class GPAscheduler:
         self.teachers = piped_teachers
 
     def assign_course(self, new_course, edges, day, time):
-        assign = False
+        # assign = False
         teachers = self.teachers
 
         if len(self.schedule[day][time]) > 0:

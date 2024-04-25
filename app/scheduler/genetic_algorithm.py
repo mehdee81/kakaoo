@@ -107,59 +107,57 @@ class GAscheduler:
             for assigned_course in assigned_courses:
                 fields_new_course = fields[new_course]
                 fields_assigned_course = fields[assigned_course]
-                if (fields_new_course != fields_assigned_course) and (fields_new_course != "both" and fields_assigned_course != "both"):
-                    _append = True
-                else:
-                    for course in group_courses:
-                        
-                        if (course in assigned_course):  
-                            if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
-                                if new_course[-2:] == "_f" or new_course[-2:] == "_z":
-                                    if (
-                                        teachers[new_course[:-2]]
-                                        != teachers[assigned_course[:-2]]
-                                    ):
-                                        new_course = new_course[:-2] + assigned_course[-2:]
-                                        _append = True
-                                    elif (
-                                        teachers[new_course[:-2]]
-                                        == teachers[assigned_course[:-2]]
-                                    ):
-                                        if assigned_course[-2:] == new_course[-2:]:
-                                            if change_z_f < 1:
-                                                if assigned_course[-2:] == "_f":
-                                                    new_course = new_course[:-2] + "_z"
-                                                else:
-                                                    new_course = new_course[:-2] + "_f"
-                                                _append = True
-                                                change_z_f += 1
+            
+                for course in group_courses:
+                    
+                    if (course in assigned_course) or ((fields_new_course != fields_assigned_course) and (fields_new_course != "both" and fields_assigned_course != "both")):
+                        if assigned_course[-2:] == "_f" or assigned_course[-2:] == "_z":
+                            if new_course[-2:] == "_f" or new_course[-2:] == "_z":
+                                if (
+                                    teachers[new_course[:-2]]
+                                    != teachers[assigned_course[:-2]]
+                                ):
+                                    new_course = new_course[:-2] + assigned_course[-2:]
+                                    _append = True
+                                elif (
+                                    teachers[new_course[:-2]]
+                                    == teachers[assigned_course[:-2]]
+                                ):
+                                    if assigned_course[-2:] == new_course[-2:]:
+                                        if change_z_f < 1:
+                                            if assigned_course[-2:] == "_f":
+                                                new_course = new_course[:-2] + "_z"
                                             else:
-                                                _append = False
-                                        else:
+                                                new_course = new_course[:-2] + "_f"
                                             _append = True
-                                elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
-                                    if teachers[new_course] == teachers[assigned_course[:-2]]:
-                                        _append = False
+                                            change_z_f += 1
+                                        else:
+                                            _append = False
                                     else:
                                         _append = True
+                            elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
+                                if teachers[new_course] == teachers[assigned_course[:-2]]:
+                                    _append = False
+                                else:
+                                    _append = True
 
-                            elif (
-                                assigned_course[-2:] != "_f"
-                                and assigned_course[-2:] != "_z"
-                            ):
-                                if new_course[-2:] != "_f" and new_course[-2:] != "_z":
-                                    if teachers[new_course] == teachers[assigned_course]:
-                                        _append = False
-                                    else:
-                                        _append = True
-                                elif new_course[-2:] == "_f" or new_course[-2:] == "_z":
-                                    if teachers[new_course[:-2]] == teachers[assigned_course]:
-                                        _append = False
-                                    else:
-                                        _append = True
-                            break
-                        else:
-                            _append = False
+                        elif (
+                            assigned_course[-2:] != "_f"
+                            and assigned_course[-2:] != "_z"
+                        ):
+                            if new_course[-2:] != "_f" and new_course[-2:] != "_z":
+                                if teachers[new_course] == teachers[assigned_course]:
+                                    _append = False
+                                else:
+                                    _append = True
+                            elif new_course[-2:] == "_f" or new_course[-2:] == "_z":
+                                if teachers[new_course[:-2]] == teachers[assigned_course]:
+                                    _append = False
+                                else:
+                                    _append = True
+                        break
+                    else:
+                        _append = False
 
                 check_list.append(_append)
 
