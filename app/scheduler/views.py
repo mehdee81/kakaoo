@@ -44,6 +44,7 @@ def schedule(request):
         courses_with_out_conditions = (
             courses_with_out_conditions.replace(" ", "")
         ).split("-")
+        cpu_protector = data.get("cpu_protector")
         profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
 
         # Initialize an empty dictionary
@@ -152,6 +153,7 @@ def schedule(request):
             limited_professors,
             chromosomes,
             verified_courses_with_out_conditions,
+            cpu_protector,
         )
         s.start()
 
@@ -171,6 +173,7 @@ def schedule(request):
             verified_linked_courses_to_professors,
             limited_professors,
             penalty_chromosomes,
+            cpu_protector,
         )
         sp.start()
 

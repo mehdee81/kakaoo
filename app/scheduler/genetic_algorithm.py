@@ -14,6 +14,7 @@ class GAscheduler:
         professors_limit_time,
         chromosomes,
         courses_with_out_conditions,
+        cpu_protector,
     ):
         self.days = [
             "Monday",
@@ -34,6 +35,7 @@ class GAscheduler:
         self.chromosomes = chromosomes
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
+        self.cpu_protector = cpu_protector
         self.semesters = semesters
         self.fields = fields
 
@@ -489,16 +491,27 @@ class GAscheduler:
             )
 
             if (i % 5000 == 0) and (i != 0):
-                print(f"Chromosome {i}: Pausing for 3 seconds...")
-                time.sleep(3)
+                if self.cpu_protector == "on":
+                    print(f"Chromosome {i}: Pausing for 3 seconds...")
+                    time.sleep(3)
+                else:
+                    print(f"Chromosome {i}")
+                    
 
             if i % 50000 == 0 and i != 0:
-                print(f"Chromosome {i}: Pausing for 5 seconds...")
-                time.sleep(5)
+                if self.cpu_protector == "on":
+                    print(f"Chromosome {i}: Pausing for 5 seconds...")
+                    time.sleep(5)
+                else:
+                    print(f"Chromosome {i}")
 
             if i % 500000 == 0 and i != 0:
-                print(f"Chromosome {i}: Pausing for 10 seconds...")
-                time.sleep(10)
+                if self.cpu_protector == "on":
+                    print(f"Chromosome {i}: Pausing for 10 seconds...")
+                    time.sleep(10)
+                else:
+                    print(f"Chromosome {i}")
+                
             self.schedule = {
                 day: {time: [] for time in self.times} for day in self.days
             }

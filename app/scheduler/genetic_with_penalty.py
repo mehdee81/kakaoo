@@ -14,6 +14,7 @@ class GPAscheduler:
         teachers,
         professors_limit_time,
         chromosomes,
+        cpu_protector,
     ):
         self.all_courses = all_courses
         self.edges = edges
@@ -38,6 +39,8 @@ class GPAscheduler:
         self.teachers = teachers
         self.professors_limit_time = professors_limit_time
         self.chromosomes = chromosomes
+        self.cpu_protector = cpu_protector
+        
         self.unit = unit
         self.fields = fields
 
@@ -223,16 +226,25 @@ class GPAscheduler:
             )
 
             if (i % 5000 == 0) and (i != 0):
-                print(f"Chromosome {i}: Pausing for 3 seconds...")
-                time.sleep(3)
+                if self.cpu_protector == "on":
+                    print(f"Chromosome {i}: Pausing for 3 seconds...")
+                    time.sleep(3)
+                else:
+                    print(f"Chromosome {i}")
 
             if i % 50000 == 0 and i != 0:
-                print(f"Chromosome {i}: Pausing for 5 seconds...")
-                time.sleep(5)
+                if self.cpu_protector == "on":
+                    print(f"Chromosome {i}: Pausing for 5 seconds...")
+                    time.sleep(5)
+                else:
+                    print(f"Chromosome {i}")
 
             if i % 500000 == 0 and i != 0:
-                print(f"Chromosome {i}: Pausing for 10 seconds...")
-                time.sleep(10)
+                if self.cpu_protector == "on":
+                    print(f"Chromosome {i}: Pausing for 10 seconds...")
+                    time.sleep(10)
+                else:
+                    print(f"Chromosome {i}")
 
             self.schedule = copy.deepcopy(self.main_schedule)
 
