@@ -57,7 +57,6 @@ $("#get-data-btn").click(function () {
 
     // Get all checkboxes
     let checkboxes = $(".checkboxes");
-
     // Get chromosomes
     let chromosomes = $("#chromosomes").val();
 
@@ -93,57 +92,76 @@ $("#get-data-btn").click(function () {
         }
     });
 
-    $.ajax({
-        url: "http://127.0.0.1:8000/schedule/",
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
-        },
-        data: JSON.stringify({
-            selected_courses: selected_courses,
-            limited_professors: limited_professors,
-            chromosomes: chromosomes,
-            penalty_chromosomes: penalty_chromosomes,
-            courses_with_out_conditions: courses_with_out_conditions,
-        }),
-        success: function (data) {
-            if (data.status == "ok") {
-                window.location.href = "http://127.0.0.1:8000/show_schedule/";
-            }
-        },
-    });
+    function postRequest() {
+        preLoader()
+        $.ajax({
+            url: "http://127.0.0.1:8000/schedule/",
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val(),
+            },
+            data: JSON.stringify({
+                selected_courses: selected_courses,
+                limited_professors: limited_professors,
+                chromosomes: chromosomes,
+                penalty_chromosomes: penalty_chromosomes,
+                courses_with_out_conditions: courses_with_out_conditions,
+                cpu_protector: cpu_protector
+            }),
+            success: function (data) {
+                if (data.status == "ok") {
+                    window.location.href = "http://127.0.0.1:8000/show_schedule/";
+                }
+            },
+        });
+    }
+
+    // Get Cpu Protector Option
+    let cpu_protector_input = $("#cpu_protector");
+    let cpu_protector = "off";
+    if($(cpu_protector_input).is(":checked")) {
+        cpu_protector = "on";
+        postRequest()
+    } else {
+        if(confirm("It's Better To Enable CPU Protector, Are You Sure That You Want to Continue Without This Option?")) {
+            cpu_protector = "off";
+            postRequest()
+        }
+    }
+
+
 });
 
 // -----------------------------------------------------
-$(document).ready(function () {
-    $("#get-data-btn").click(function () {
-        // Create an overlay div
-        $("body").append('<div id="overlay"></div>');
-        $("#overlay").css({
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            "background-color": "rgba(0,0,0,0.5)",
-            "z-index": 1000,
+function preLoader() {
+    $(document).ready(function () {
+            // Create an overlay div
+            $("body").append('<div id="overlay"></div>');
+            $("#overlay").css({
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                "background-color": "rgba(0,0,0,0.5)",
+                "z-index": 1000,
+            });
+    
+            // Position the loader in the middle of the page
+            $(".lds-facebook").removeClass("d-none");
+            $(".lds-facebook").css({
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                "z-index": 1001,
+            });
+    
+            // Show the loader
+            $(".lds-facebook").show();
         });
-
-        // Position the loader in the middle of the page
-        $(".lds-facebook").removeClass("d-none");
-        $(".lds-facebook").css({
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            "z-index": 1001,
-        });
-
-        // Show the loader
-        $(".lds-facebook").show();
-    });
-});
+}
 // --------------------------------------
 document.getElementById("chromosomes").addEventListener("input", function () {
     if (this.value < 1) {
@@ -182,7 +200,7 @@ $(document).ready(function () {
     $("#checkAll").click(function () {
         var isChecked = $(this).is(":checked");
         // Set 'checked' property to true for all checkboxes
-        $(".form-check-input").prop("checked", isChecked);
+        $(".checkboxes").prop("checked", isChecked);
     });
 });
 // ----------------------------------------------------------
