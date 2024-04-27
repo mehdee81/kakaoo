@@ -45,6 +45,7 @@ def schedule(request):
             courses_with_out_conditions.replace(" ", "")
         ).split("-")
         cpu_protector = data.get("cpu_protector")
+        
         profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
 
         # Initialize an empty dictionary
