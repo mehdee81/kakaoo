@@ -45,17 +45,24 @@ class GAscheduler:
 
         self.courses_with_out_conditions = self.piped_courses_with_out_conditions
 
-        self.courses = {}
+        self.colors = {}
         for color, courses in colors.items():
             _color = []
             for course in courses:
                 _color.append(f"|{course}|")
-            self.courses[color] = _color
+            self.colors[color] = _color
 
-        self.listed_all_courses = []
-        for color, courses in self.courses.items():
+        self.courses = []
+        self.group_courses = {}
+        
+        for color, courses in self.colors.items():
+            _grp_course = courses
             for course in courses:
-                self.listed_all_courses.append(course)
+                self.courses.append(course)
+                self.group_courses[course] = _grp_course
+        
+                
+        self.listed_all_courses = self.courses
 
         for course in self.courses_with_out_conditions:
             self.listed_all_courses.append(course)
@@ -212,112 +219,16 @@ class GAscheduler:
         else:
             self.assigned = False
 
-    def assign_lessons(self):
+    def assign_lessons(self, courses, group_courses):
         teachers = self.teachers
         teachers_limit_state = self.professors_limit_time
         _lessons_with_no_section = []
 
-        for color_of_lesson, group_lessons in self.courses.items():
-            for lesson in group_lessons:
-                lesson_unit = self.unit[lesson]
-                checked_sections = []
-                teacher = teachers[lesson]
-                if lesson_unit == 3:
-                    while True:
-                        day = random.choice(self.days)
-                        time = random.choice(self.times)
-                        if len(checked_sections) < len(self.days) * len(self.times):
-                            if [day, time] not in checked_sections:
-                                checked_sections.append([day, time])
-                                if teacher in teachers_limit_state:
-                                    if [day, time] in teachers_limit_state[teacher]:
-
-                                        if (
-                                            self.assigned == True
-                                            and self.zoj_fard != None
-                                        ):
-                                            self.zoj_fard = random.choice(["z", "f"])
-                                        elif (
-                                            self.assigned == False
-                                            or self.assigned == None
-                                        ) and self.zoj_fard == None:
-                                            self.zoj_fard = random.choice(["z", "f"])
-
-                                        self.assign_lesson(
-                                            f"{lesson}_{self.zoj_fard}",
-                                            group_lessons,
-                                            day,
-                                            time,
-                                        )
-                                        if self.assigned == True:
-                                            break
-
-                                else:
-                                    if self.assigned == True and self.zoj_fard != None:
-                                        self.zoj_fard = random.choice(["z", "f"])
-                                    elif (
-                                        self.assigned == False or self.assigned == None
-                                    ) and self.zoj_fard == None:
-                                        self.zoj_fard = random.choice(["z", "f"])
-
-                                    self.assign_lesson(
-                                        f"{lesson}_{self.zoj_fard}",
-                                        group_lessons,
-                                        day,
-                                        time,
-                                    )
-                                    if self.assigned == True:
-                                        break
-                        else:
-                            if self.assigned == False:
-                                _lessons_with_no_section.append(
-                                    f"{lesson}_{self.zoj_fard}"
-                                )
-                            break
-
-        for color_of_lesson, group_lessons in self.courses.items():
-            for lesson in group_lessons:
-                lesson_unit = self.unit[lesson]
-                checked_sections = []
-                teacher = teachers[lesson]
-                if lesson_unit == 4:
-                    while True:
-                        day = random.choice(self.days)
-                        time = random.choice(self.times)
-                        if len(checked_sections) < len(self.days) * len(self.times):
-                            if [day, time] not in checked_sections:
-                                checked_sections.append([day, time])
-                                if teacher in teachers_limit_state:
-                                    if [day, time] in teachers_limit_state[teacher]:
-
-                                        self.assign_lesson(
-                                            lesson,
-                                            group_lessons,
-                                            day,
-                                            time,
-                                        )
-                                        if self.assigned == True:
-                                            break
-
-                                else:
-                                    self.assign_lesson(
-                                        lesson,
-                                        group_lessons,
-                                        day,
-                                        time,
-                                    )
-                                    if self.assigned == True:
-                                        break
-                        else:
-                            if self.assigned == False:
-                                _lessons_with_no_section.append(lesson)
-                            break
-
-        for color_of_lesson, group_lessons in self.courses.items():
-            for lesson in group_lessons:
-                lesson_unit = self.unit[lesson]
-                checked_sections = []
-                teacher = teachers[lesson]
+        for course in courses:
+            course_unit = self.unit[course]
+            checked_sections = []
+            teacher = teachers[course]
+            if course_unit == 3:
                 while True:
                     day = random.choice(self.days)
                     time = random.choice(self.times)
@@ -327,59 +238,20 @@ class GAscheduler:
                             if teacher in teachers_limit_state:
                                 if [day, time] in teachers_limit_state[teacher]:
 
-                                    self.assign_lesson(
-                                        lesson,
-                                        group_lessons,
-                                        day,
-                                        time,
-                                    )
-                                    if self.assigned == True:
-                                        break
-
-                            else:
-                                self.assign_lesson(
-                                    lesson,
-                                    group_lessons,
-                                    day,
-                                    time,
-                                )
-                                if self.assigned == True:
-                                    break
-                    else:
-                        if self.assigned == False:
-                            _lessons_with_no_section.append(lesson)
-                        break
-
-        for course in self.courses_with_out_conditions:
-            course_teacher = teachers[course]
-            semesters = self.semesters
-            group_lessons = []
-            for group_course in self.listed_all_courses:
-                if semesters[group_course] != semesters[course]:
-                    group_lessons.append(group_course)
-
-            lesson_unit = self.unit[course]
-            if lesson_unit == 3:
-                checked_sections = []
-                while True:
-                    day = random.choice(self.days)
-                    time = random.choice(self.times)
-                    if len(checked_sections) < len(self.days) * len(self.times):
-                        if [day, time] not in checked_sections:
-                            checked_sections.append([day, time])
-                            if course_teacher in teachers_limit_state:
-                                if [day, time] in teachers_limit_state[course_teacher]:
-
-                                    if self.assigned == True and self.zoj_fard != None:
+                                    if (
+                                        self.assigned == True
+                                        and self.zoj_fard != None
+                                    ):
                                         self.zoj_fard = random.choice(["z", "f"])
                                     elif (
-                                        self.assigned == False or self.assigned == None
+                                        self.assigned == False
+                                        or self.assigned == None
                                     ) and self.zoj_fard == None:
                                         self.zoj_fard = random.choice(["z", "f"])
 
                                     self.assign_lesson(
                                         f"{course}_{self.zoj_fard}",
-                                        group_lessons,
+                                        group_courses[course],
                                         day,
                                         time,
                                     )
@@ -396,7 +268,7 @@ class GAscheduler:
 
                                 self.assign_lesson(
                                     f"{course}_{self.zoj_fard}",
-                                    group_lessons,
+                                    group_courses[course],
                                     day,
                                     time,
                                 )
@@ -404,23 +276,29 @@ class GAscheduler:
                                     break
                     else:
                         if self.assigned == False:
-                            _lessons_with_no_section.append(f"{course}_{self.zoj_fard}")
+                            _lessons_with_no_section.append(
+                                f"{course}_{self.zoj_fard}"
+                            )
                         break
 
-            if lesson_unit == 4:
-                checked_sections = []
+        for course in courses:
+
+            coures_unit = self.unit[course]
+            checked_sections = []
+            teacher = teachers[course]
+            if coures_unit == 4:
                 while True:
                     day = random.choice(self.days)
                     time = random.choice(self.times)
                     if len(checked_sections) < len(self.days) * len(self.times):
                         if [day, time] not in checked_sections:
                             checked_sections.append([day, time])
-                            if course_teacher in teachers_limit_state:
-                                if [day, time] in teachers_limit_state[course_teacher]:
+                            if teacher in teachers_limit_state:
+                                if [day, time] in teachers_limit_state[teacher]:
 
                                     self.assign_lesson(
                                         course,
-                                        group_lessons,
+                                        group_courses[course],
                                         day,
                                         time,
                                     )
@@ -430,7 +308,7 @@ class GAscheduler:
                             else:
                                 self.assign_lesson(
                                     course,
-                                    group_lessons,
+                                    group_courses[course],
                                     day,
                                     time,
                                 )
@@ -441,28 +319,33 @@ class GAscheduler:
                             _lessons_with_no_section.append(course)
                         break
 
+        for course in courses:
+            
+            course_unit = self.unit[course]
             checked_sections = []
+            teacher = teachers[course]
             while True:
                 day = random.choice(self.days)
                 time = random.choice(self.times)
                 if len(checked_sections) < len(self.days) * len(self.times):
                     if [day, time] not in checked_sections:
                         checked_sections.append([day, time])
-                        if course_teacher in teachers_limit_state:
-                            if [day, time] in teachers_limit_state[course_teacher]:
+                        if teacher in teachers_limit_state:
+                            if [day, time] in teachers_limit_state[teacher]:
 
                                 self.assign_lesson(
                                     course,
-                                    group_lessons,
+                                    group_courses[course],
                                     day,
                                     time,
                                 )
                                 if self.assigned == True:
                                     break
+
                         else:
                             self.assign_lesson(
                                 course,
-                                group_lessons,
+                                group_courses[course],
                                 day,
                                 time,
                             )
@@ -470,19 +353,141 @@ class GAscheduler:
                                 break
                 else:
                     if self.assigned == False:
-                        _lessons_with_no_section.append(course)
+                        _lessons_with_no_section.append(course) 
+                    break
+
+        for new_course in self.courses_with_out_conditions:
+            new_course_teacher = teachers[new_course]
+            semesters = self.semesters
+            new_course_group = []
+            for course in courses:
+                if semesters[new_course] != semesters[course]:
+                    new_course_group.append(course)
+
+            new_course_unit = self.unit[course]
+            if new_course_unit == 3:
+                checked_sections = []
+                while True:
+                    day = random.choice(self.days)
+                    time = random.choice(self.times)
+                    if len(checked_sections) < len(self.days) * len(self.times):
+                        if [day, time] not in checked_sections:
+                            checked_sections.append([day, time])
+                            if new_course_teacher in teachers_limit_state:
+                                if [day, time] in teachers_limit_state[new_course_teacher]:
+
+                                    if self.assigned == True and self.zoj_fard != None:
+                                        self.zoj_fard = random.choice(["z", "f"])
+                                    elif (
+                                        self.assigned == False or self.assigned == None
+                                    ) and self.zoj_fard == None:
+                                        self.zoj_fard = random.choice(["z", "f"])
+
+                                    self.assign_lesson(
+                                        f"{new_course}_{self.zoj_fard}",
+                                        new_course_group,
+                                        day,
+                                        time,
+                                    )
+                                    if self.assigned == True:
+                                        break
+
+                            else:
+                                if self.assigned == True and self.zoj_fard != None:
+                                    self.zoj_fard = random.choice(["z", "f"])
+                                elif (
+                                    self.assigned == False or self.assigned == None
+                                ) and self.zoj_fard == None:
+                                    self.zoj_fard = random.choice(["z", "f"])
+
+                                self.assign_lesson(
+                                    f"{new_course}_{self.zoj_fard}",
+                                    new_course_group,
+                                    day,
+                                    time,
+                                )
+                                if self.assigned == True:
+                                    break
+                    else:
+                        if self.assigned == False:
+                            _lessons_with_no_section.append(f"{new_course}_{self.zoj_fard}")
+                        break
+
+            if new_course_unit == 4:
+                checked_sections = []
+                while True:
+                    day = random.choice(self.days)
+                    time = random.choice(self.times)
+                    if len(checked_sections) < len(self.days) * len(self.times):
+                        if [day, time] not in checked_sections:
+                            checked_sections.append([day, time])
+                            if new_course_teacher in teachers_limit_state:
+                                if [day, time] in teachers_limit_state[new_course_teacher]:
+
+                                    self.assign_lesson(
+                                        new_course,
+                                        new_course_group,
+                                        day,
+                                        time,
+                                    )
+                                    if self.assigned == True:
+                                        break
+
+                            else:
+                                self.assign_lesson(
+                                    new_course,
+                                    new_course_group,
+                                    day,
+                                    time,
+                                )
+                                if self.assigned == True:
+                                    break
+                    else:
+                        if self.assigned == False:
+                            _lessons_with_no_section.append(new_course)
+                        break
+
+            checked_sections = []
+            while True:
+                day = random.choice(self.days)
+                time = random.choice(self.times)
+                if len(checked_sections) < len(self.days) * len(self.times):
+                    if [day, time] not in checked_sections:
+                        checked_sections.append([day, time])
+                        if new_course_teacher in teachers_limit_state:
+                            if [day, time] in teachers_limit_state[new_course_teacher]:
+
+                                self.assign_lesson(
+                                    new_course,
+                                    new_course_group,
+                                    day,
+                                    time,
+                                )
+                                if self.assigned == True:
+                                    break
+                        else:
+                            self.assign_lesson(
+                                new_course,
+                                new_course_group,
+                                day,
+                                time,
+                            )
+                            if self.assigned == True:
+                                break
+                else:
+                    if self.assigned == False:
+                        _lessons_with_no_section.append(new_course)
                     break
 
         self.courses_with_no_section = _lessons_with_no_section
 
     def make_solution(self):
-        all_results = []
+        solutions = []
         for i in range(1, self.chromosomes + 1):
-            self.courses = list(self.courses.items())
-            random.shuffle(self.courses)
-            self.courses = dict(self.courses)
-            self.assign_lessons()
-            all_results.append(
+            courses = self.courses
+            group_courses = self.group_courses
+            self.assign_lessons(courses, group_courses)
+            solutions.append(
                 (
                     self.schedule,
                     self.courses_with_no_section,
@@ -516,15 +521,15 @@ class GAscheduler:
                 day: {time: [] for time in self.times} for day in self.days
             }
             self.courses_with_no_section = []
-        return all_results
+        return solutions
 
     def fitness(self):
-        all_results = self.make_solution()
-        sorted_results = sorted(all_results, key=lambda x: x[2])
-        self.best_schedule = sorted_results[0][0]
-        self.lowest_lessons_with_no_section = sorted_results[0][1]
+        solutions = self.make_solution()
+        sorted_solutions = sorted(solutions, key=lambda x: x[2])
+        self.best_schedule = sorted_solutions[0][0]
+        self.lowest_lessons_with_no_section = sorted_solutions[0][1]
 
-        for sorted_result in sorted_results[:10]:
+        for sorted_result in sorted_solutions[:10]:
             print("Courses with out section: ", sorted_result[2])
 
     def start(self):
