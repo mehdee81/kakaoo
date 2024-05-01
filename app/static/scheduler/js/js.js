@@ -64,8 +64,6 @@ $("#get-data-btn").click(function () {
     var courses_with_out_conditions = coursesWithoutCondition.join("-");
     // let courses_with_out_conditions = $("#courses_with_out_conditions").val();
 
-    // Get penalty chromosomes number
-    let penalty_chromosomes = $("#penalty_chromosomes").val();
 
     // Loop through all checkboxes
     checkboxes.each(function () {
@@ -105,7 +103,6 @@ $("#get-data-btn").click(function () {
                 selected_courses: selected_courses,
                 limited_professors: limited_professors,
                 chromosomes: chromosomes,
-                penalty_chromosomes: penalty_chromosomes,
                 courses_with_out_conditions: courses_with_out_conditions,
                 cpu_protector: cpu_protector
             }),
@@ -169,15 +166,7 @@ document.getElementById("chromosomes").addEventListener("input", function () {
         this.value = 1;
     }
 });
-// --------------------------------------
-document
-    .getElementById("penalty_chromosomes")
-    .addEventListener("input", function () {
-        if (this.value < 1) {
-            alert("penalty_chromosomes cannot be less than 1");
-            this.value = 1;
-        }
-    });
+
 // --------------------------------------
 document.getElementById("chromosomes").addEventListener("input", function () {
     if (this.value > 100000000) {
@@ -185,15 +174,6 @@ document.getElementById("chromosomes").addEventListener("input", function () {
         this.value = 100000000;
     }
 });
-// --------------------------------------
-document
-    .getElementById("penalty_chromosomes")
-    .addEventListener("input", function () {
-        if (this.value > 100000000) {
-            alert("penalty_chromosomes cannot exceed 100000000");
-            this.value = 100000000;
-        }
-    });
 // ----------------------------------------------------------
 $(document).ready(function () {
     // When the button is clicked

@@ -27,6 +27,9 @@ class GAscheduler:
         self.schedule = {day: {time: [] for time in self.times} for day in self.days}
         self.best_schedule = None
         self.lowest_lessons_with_no_section = None
+        self.penalty = 0
+        self.penalty_of_edge = 1
+        self.best_penalty = 0
         self.assigned = None
         self.teachers = teachers
         self.zoj_fard = None
@@ -61,11 +64,15 @@ class GAscheduler:
                 self.courses.append(course)
                 self.group_courses[course] = _grp_course
         
-                
+        
         self.listed_all_courses = self.courses
 
         for course in self.courses_with_out_conditions:
             self.listed_all_courses.append(course)
+
+        for course in self.courses_with_out_conditions:
+            if course in self.courses:
+                self.courses.remove(course)
 
         piped_fields = {}
         for course, field in self.fields.items():
@@ -180,8 +187,12 @@ class GAscheduler:
                             if new_course[-2:] == "_f" or new_course[-2:] == "_z":
 
                                 if assigned_courses[check][-2:] == new_course[-2:]:
-                                    assign = False
-                                    break
+                                    if teachers[assigned_courses[check][:-2]] != teachers[new_course[:-2]]:
+                                        self.penalty += self.penalty_of_edge
+                                        assign = True
+                                    else:
+                                        assign = False
+                                        break
                                 else:
                                     if (
                                         teachers[assigned_courses[check][:-2]]
@@ -193,15 +204,33 @@ class GAscheduler:
                                         break
 
                             elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
-                                assign = False
-                                break
+                                if teachers[assigned_courses[check][:-2]] != teachers[new_course]:
+                                    self.penalty += self.penalty_of_edge
+                                    assign = True
+                                else:
+                                    assign = False
+                                    break
 
                         elif (
                             assigned_courses[check][-2:] != "_f"
                             and assigned_courses[check][-2:] != "_z"
                         ):
-                            assign = False
-                            break
+                            if new_course[-2:] == "_f" or new_course[-2:] == "_z":
+
+                                    if teachers[assigned_courses[check]] != teachers[new_course[:-2]]:
+                                        self.penalty += self.penalty_of_edge
+                                        assign = True
+                                    else:
+                                        assign = False
+                                        break
+
+                            elif new_course[-2:] != "_f" and new_course[-2:] != "_z":
+                                if teachers[assigned_courses[check]] != teachers[new_course]:
+                                    self.penalty += self.penalty_of_edge
+                                    assign = True
+                                else:
+                                    assign = False
+                                    break
             else:
                 assign = True
 
@@ -364,7 +393,7 @@ class GAscheduler:
                 if semesters[new_course] != semesters[course]:
                     new_course_group.append(course)
 
-            new_course_unit = self.unit[course]
+            new_course_unit = self.unit[new_course]
             if new_course_unit == 3:
                 checked_sections = []
                 while True:
@@ -491,7 +520,7 @@ class GAscheduler:
                 (
                     self.schedule,
                     self.courses_with_no_section,
-                    len(self.courses_with_no_section),
+                    len(self.courses_with_no_section) + self.penalty,
                 )
             )
 
@@ -520,6 +549,7 @@ class GAscheduler:
             self.schedule = {
                 day: {time: [] for time in self.times} for day in self.days
             }
+            self.penalty = 0
             self.courses_with_no_section = []
         return solutions
 
@@ -528,9 +558,10 @@ class GAscheduler:
         sorted_solutions = sorted(solutions, key=lambda x: x[2])
         self.best_schedule = sorted_solutions[0][0]
         self.lowest_lessons_with_no_section = sorted_solutions[0][1]
+        self.best_penalty = sorted_solutions[0][2]
 
         for sorted_result in sorted_solutions[:10]:
-            print("Courses with out section: ", sorted_result[2])
+            print("Best Penalty: ", sorted_result[2])
 
     def start(self):
 
