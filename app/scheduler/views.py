@@ -142,6 +142,7 @@ def schedule(request):
         # print("limited_professors=",limited_professors)
         # print("chromosomes=",chromosomes)
         # print("verified_courses_with_out_conditions=",verified_courses_with_out_conditions)
+        # print("cpu_protector=",cpu_protector)
         # ----------------------------------------------end testing------------------------------------------
         s = GAscheduler(
             colors,
