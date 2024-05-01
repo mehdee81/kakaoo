@@ -585,13 +585,16 @@ class GAscheduler:
     def mutation(self, solutions):
         print("mutation started.")
         new_chromosomes = []
-        for i in range(10000):
-            for solution, courses_with_no_section, penalty, penalty_history in solutions:
+        
+        for i in range(5000):
+            sorted_solutions = sorted(solutions, key=lambda x: x[2])
+            rankedSoulutions = sorted_solutions[:10]
+            for solution, courses_with_no_section, penalty, penalty_history in rankedSoulutions:
                 # Copy the solution to avoid modifying the original
                 mutated_solution = solution.copy()
                 
                 # Select two random days
-                selected_days = random.sample(self.days, 2)
+                selected_days = random.sample(self.days, 3)
                 
                 # Set the new schedule
                 self.schedule = solution
@@ -605,7 +608,7 @@ class GAscheduler:
                         
                 
                 selected_courses = selected_courses + courses_with_no_section
-                
+                random.shuffle(selected_courses)
                 # Decrasing the penalty of leassons that removed
                 for course in selected_courses:
                     for day in selected_days:
@@ -642,8 +645,9 @@ class GAscheduler:
                                 if teacher in teachers_limit_state:
                                     if [day, time] in teachers_limit_state[teacher]:
                                         
-                                        if course[-2:] == "_f" or course[-2:] == "_z": 
+                                        if course[-2:] == "_f" or course[-2:] == "_z":
                                             group_course = group_courses[course[:-2]]
+                                            course = f"{course[:-2]}{random.choice(['_f','_z'])}"
                                         else:
                                             group_course = group_courses[course]
                                             
@@ -660,6 +664,7 @@ class GAscheduler:
                                     
                                     if course[-2:] == "_f" or course[-2:] == "_z": 
                                         group_course = group_courses[course[:-2]]
+                                        course = f"{course[:-2]}{random.choice(['_f','_z'])}"
                                     else:
                                         group_course = group_courses[course]
                                         
@@ -680,9 +685,16 @@ class GAscheduler:
                 
                 # Add the mutated solution to the new generation
                 new_chromosomes.append((mutated_solution, _lessons_with_no_section, self.penalty, self.penalty_history))
-            if i % 100 ==  0:
-                print("New Gen Penalty: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2])
+            if i < 100:
+                print(f"New Gen Penalty[{i}]: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2])
                 
+            elif i % 100 ==  0 and i != 0:
+                print(f"New Gen Penalty[{i}]: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2])
+            
+            solutions = sorted(solutions, key=lambda x: x[2])
+            # Remove the last 10 chromosomes
+            solutions = solutions[:-len(new_chromosomes)]
+            solutions += new_chromosomes
         return new_chromosomes
             
     def start(self):
@@ -698,9 +710,7 @@ class GAscheduler:
         start_time = time.time()
 
         solutions = self.make_solution()
-        sorted_solutions = sorted(solutions, key=lambda x: x[2])
-        rankedSoulutions = sorted_solutions[:10]
-        new_chromosomes = self.mutation(rankedSoulutions)
+        new_chromosomes = self.mutation(solutions)
         sorted_chromosomes = sorted(new_chromosomes, key=lambda x: x[2])
 
         self.best_schedule = sorted_chromosomes[0][0]
