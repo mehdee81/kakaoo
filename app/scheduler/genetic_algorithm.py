@@ -583,7 +583,7 @@ class GAscheduler:
         return solutions
 
     def mutation(self, solutions):
-        print("mutation started.")
+        print("-------------------------------------------mutation started-------------------------------------------")
         new_chromosomes = []
         
         for i in range(5000):
@@ -591,13 +591,13 @@ class GAscheduler:
             rankedSoulutions = sorted_solutions[:10]
             for solution, courses_with_no_section, penalty, penalty_history in rankedSoulutions:
                 # Copy the solution to avoid modifying the original
-                mutated_solution = solution.copy()
+                mutated_solution = copy.deepcopy(solution)
                 
                 # Select two random days
                 selected_days = random.sample(self.days, 3)
                 
                 # Set the new schedule
-                self.schedule = solution
+                self.schedule = mutated_solution
                 self.penalty = penalty
                 
                 # Append the courses of the selected days to selected_courses
@@ -609,6 +609,7 @@ class GAscheduler:
                 
                 selected_courses = selected_courses + courses_with_no_section
                 random.shuffle(selected_courses)
+                
                 # Decrasing the penalty of leassons that removed
                 for course in selected_courses:
                     for day in selected_days:
@@ -680,11 +681,12 @@ class GAscheduler:
                             if self.assigned == False:
                                 _lessons_with_no_section.append(course)
                             break
-                
-                self.penalty_history = []
+                        
+                # self.courses_with_no_section = _lessons_with_no_section
                 
                 # Add the mutated solution to the new generation
                 new_chromosomes.append((mutated_solution, _lessons_with_no_section, self.penalty, self.penalty_history))
+                self.penalty_history = []
             if i < 100:
                 print(f"New Gen Penalty[{i}]: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2])
                 
@@ -696,7 +698,7 @@ class GAscheduler:
             solutions = solutions[:-len(new_chromosomes)]
             solutions += new_chromosomes
         return new_chromosomes
-            
+    
     def start(self):
 
         print(
@@ -734,7 +736,7 @@ class GAscheduler:
                 print(f'    {time}: {", ".join(lessons_with_out_pipe)}')
 
 
-# ---------------------------------------------------test and debug---------------------------------------------------
+# ---------------------------------------------------start and debug---------------------------------------------------
 # colors= {0: ['mabahes_1'], 1: ['mabahes_2'], 2: ['jabr'], 3: ['kargah_barname_nevisi'], 4: ['kargah_barname_nevisi_pishrafte', 'kargah_barname_nevisi_pishrafte_g2', 'mabani_computer'], 5: ['sakhteman_dade', 'bazyabi', 'gosaste'], 6: ['az_electriki'], 7: ['az_assembly', 'memari'], 8: ['az_memari', 'az_memari_g2'], 9: ['paygah_dade'], 10: ['mabani_hoosh_mohasebati', 'tarahi_algorithm'], 11: ['elm_robot'], 12: ['nazarie_bazi'], 13: ['web_manayi'], 14: ['mohasebat_elmi'], 15: ['barname_nevisi_pishrafte', 'narm_1'], 16: ['zaban_takhasosi', 'ravesh_pajoohesh'], 17: ['nazarie_zaban'], 18: ['compiler'], 19: ['az_system', 'az_system_g2'], 20: ['shabake', 'amar'], 21: ['az_shabake', 'az_shabake_g2'], 22: ['az_madar_e'], 23: ['ravesh_amari'], 24: ['system_amel'], 25: ['mabani_oloom_riazi'], 26: ['mabani_analyze_riazi'], 27: ['mabani_analyze_jabr'], 28: ['mabani_trakibiat'], 29: ['riazi_1'], 30: ['riazi_2']}
 # fields= {'mabahes_1': 'both', 'mabahes_2': 'both', 'jabr': 'both', 'kargah_barname_nevisi': 'both', 'kargah_barname_nevisi_pishrafte': 'both', 'kargah_barname_nevisi_pishrafte_g2': 'both', 'sakhteman_dade': 'both', 'az_electriki': 'first', 'az_assembly': 'first', 'az_memari': 'first', 'az_memari_g2': 'first', 'paygah_dade': 'both', 'bazyabi': 'first', 'mabani_hoosh_mohasebati': 'first', 'elm_robot': 'first', 'nazarie_bazi': 'both', 'web_manayi': 'first', 'mohasebat_elmi': 'first', 'mabani_computer': 'both', 'barname_nevisi_pishrafte': 'both', 'tarahi_algorithm': 'both', 'zaban_takhasosi': 'both', 'nazarie_zaban': 'both', 'memari': 'both', 'narm_1': 'both', 'compiler': 'first', 'az_system': 'first', 'az_system_g2': 'first', 'shabake': 'both', 'amar': 'first', 'gosaste': 'first', 'ravesh_pajoohesh': 'both', 'az_shabake': 'first', 'az_shabake_g2': 'first', 'az_madar_e': 'first', 'ravesh_amari': 'both', 'system_amel': 'both', 'mabani_oloom_riazi': 'second', 'mabani_analyze_riazi': 'second', 'mabani_analyze_jabr': 'second', 'mabani_trakibiat': 'second', 'riazi_1': 'both', 'riazi_2': 'both'}
 # units= {'mabahes_1': 3, 'mabahes_2': 3, 'jabr': 3, 'kargah_barname_nevisi': 1, 'kargah_barname_nevisi_pishrafte': 1, 'kargah_barname_nevisi_pishrafte_g2': 1, 'sakhteman_dade': 3, 'az_electriki': 1, 'az_assembly': 1, 'az_memari': 1, 'az_memari_g2': 1, 'paygah_dade': 3, 'bazyabi': 3, 'mabani_hoosh_mohasebati': 3, 'elm_robot': 3, 'nazarie_bazi': 3, 'web_manayi': 3, 'mohasebat_elmi': 3, 'mabani_computer': 3, 'barname_nevisi_pishrafte': 3, 'tarahi_algorithm': 3, 'zaban_takhasosi': 3, 'nazarie_zaban': 3, 'memari': 3, 'narm_1': 3, 'compiler': 3, 'az_system': 1, 'az_system_g2': 1, 'shabake': 3, 'amar': 3, 'gosaste': 3, 'ravesh_pajoohesh': 2, 'az_shabake': 1, 'az_shabake_g2': 1, 'az_madar_e': 1, 'ravesh_amari': 1, 'system_amel': 3, 'mabani_oloom_riazi': 4, 'mabani_analyze_riazi': 4, 'mabani_analyze_jabr': 4, 'mabani_trakibiat': 4, 'riazi_1': 4, 'riazi_2': 4}
@@ -757,4 +759,4 @@ class GAscheduler:
 #     cpu_protector
 # )
 # s.start()
-# ---------------------------------------------------edn test and debug-----------------------------------------------
+# ---------------------------------------------------end debuging------------------------------------------------------
