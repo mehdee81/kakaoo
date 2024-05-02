@@ -35,6 +35,7 @@ class GAscheduler:
         self.teachers = teachers
         self.zoj_fard = None
         self.courses_with_no_section = []
+        self.courses_with_no_section_mode2 = []
         self.professors_limit_time = professors_limit_time
         self.chromosomes = chromosomes
         self.unit = unit
@@ -42,6 +43,7 @@ class GAscheduler:
         self.cpu_protector = cpu_protector
         self.semesters = semesters
         self.fields = fields
+        self.mode = 1
 
         self.piped_courses_with_out_conditions = []
         for course in self.courses_with_out_conditions:
@@ -113,11 +115,14 @@ class GAscheduler:
     def assign_lesson(self, new_course, group_courses, day, time):
         assign = False
         teachers = self.teachers
-
-        if len(self.schedule[day][time]) > 0:
+        if self.mode == 1:
+            schedule = self.schedule
+        else:
+            schedule = self.best_schedule
+        if len(schedule[day][time]) > 0:
             check_list = []
             fields = self.fields
-            assigned_courses = self.schedule[day][time]
+            assigned_courses = schedule[day][time]
             _append = False
             change_z_f = 0
             for assigned_course in assigned_courses:
@@ -262,8 +267,11 @@ class GAscheduler:
             else:
                 assign = True
 
-            for assigned_course in self.schedule[day][time]:
+            for assigned_course in schedule[day][time]:
                 if new_course in assigned_course or assigned_course in new_course:
+                    if (day,time,new_course) in self.penalty_history:
+                        self.penalty_history.remove((day,time,new_course))
+                        self.penalty -= 1
                     assign = False
                     break
 
@@ -271,11 +279,14 @@ class GAscheduler:
             assign = True
 
         if assign == True:
-            self.schedule[day][time].append(new_course)
+            schedule[day][time].append(new_course)
             self.assigned = True
         else:
             self.assigned = False
-
+    
+        if self.mode == 2:
+            self.best_schedule = schedule
+        
     def assign_lessons(self, courses, group_courses):
         teachers = self.teachers
         teachers_limit_state = self.professors_limit_time
@@ -407,7 +418,16 @@ class GAscheduler:
                         _lessons_with_no_section.append(course)
                     break
 
-        for new_course in self.courses_with_out_conditions:
+        self.courses_with_no_section = _lessons_with_no_section
+        
+    def assign_courses_with_out_conditions(self, courses, courses_with_out_conditions):
+        
+        teachers = self.teachers
+        teachers_limit_state = self.professors_limit_time
+        _lessons_with_no_section = []
+        teachers = self.teachers
+        
+        for new_course in courses_with_out_conditions:
             new_course_teacher = teachers[new_course]
             semesters = self.semesters
             new_course_group = []
@@ -535,8 +555,8 @@ class GAscheduler:
                     if self.assigned == False:
                         _lessons_with_no_section.append(new_course)
                     break
-
-        self.courses_with_no_section = _lessons_with_no_section
+        
+        self.courses_with_no_section_mode2 = _lessons_with_no_section
 
     def make_solution(self):
         solutions = []
@@ -586,7 +606,7 @@ class GAscheduler:
         print("-------------------------------------------mutation started-------------------------------------------")
         new_chromosomes = []
         
-        for i in range(5000):
+        for i in range(1000):
             sorted_solutions = sorted(solutions, key=lambda x: x[2])
             rankedSoulutions = sorted_solutions[:10]
             for solution, courses_with_no_section, penalty, penalty_history in rankedSoulutions:
@@ -682,7 +702,6 @@ class GAscheduler:
                                 _lessons_with_no_section.append(course)
                             break
                         
-                # self.courses_with_no_section = _lessons_with_no_section
                 
                 # Add the mutated solution to the new generation
                 new_chromosomes.append((mutated_solution, _lessons_with_no_section, self.penalty, self.penalty_history))
@@ -714,10 +733,15 @@ class GAscheduler:
         solutions = self.make_solution()
         new_chromosomes = self.mutation(solutions)
         sorted_chromosomes = sorted(new_chromosomes, key=lambda x: x[2])
-
         self.best_schedule = sorted_chromosomes[0][0]
+        self.mode = 2
+        self.assign_courses_with_out_conditions(self.courses, self.courses_with_out_conditions)
+        self.mode = 1
+        
         self.lowest_lessons_with_no_section = sorted_chromosomes[0][1]
+        self.lowest_lessons_with_no_section += self.courses_with_no_section_mode2
         self.best_penalty = sorted_chromosomes[0][2]
+        self.best_penalty += len(self.courses_with_no_section_mode2)
 
         for sorted_result in sorted_chromosomes[:10]:
             print("Penalty of New Chromosomes: ", sorted_result[2])
