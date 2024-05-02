@@ -43,7 +43,7 @@ def schedule(request):
             courses_with_out_conditions.replace(" ", "")
         ).split("-")
         cpu_protector = data.get("cpu_protector")
-        
+        desired_generations = int(data.get("desired_generations"))
         profs_limit = ProfessorsLimit.objects.values("id", "professor", "day", "time")
 
         # Initialize an empty dictionary
@@ -95,8 +95,8 @@ def schedule(request):
                         edges.append((course, ch_course))
 
         my_graph = Graph(edges=edges)
-        colors = my_graph.color_graph_h()
-
+        colors = my_graph.greedy_coloring()
+              
         units = {}
         for course in selected_courses:
             unit = Courses.objects.filter(course=course).values_list("unit", flat=True)
@@ -154,6 +154,7 @@ def schedule(request):
             chromosomes,
             verified_courses_with_out_conditions,
             cpu_protector,
+            desired_generations,
         )
         s.start()
 

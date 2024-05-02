@@ -1,5 +1,5 @@
 import random
-import time
+import time as time_clk
 import copy
 
 
@@ -15,6 +15,7 @@ class GAscheduler:
         chromosomes,
         courses_with_out_conditions,
         cpu_protector,
+        desired_generations,
     ):
         self.days = [
             "Monday",
@@ -41,6 +42,7 @@ class GAscheduler:
         self.unit = unit
         self.courses_with_out_conditions = courses_with_out_conditions
         self.cpu_protector = cpu_protector
+        self.desired_generations = desired_generations
         self.semesters = semesters
         self.fields = fields
         self.mode = 1
@@ -576,21 +578,21 @@ class GAscheduler:
             if (i % 5000 == 0) and (i != 0):
                 if self.cpu_protector == "on":
                     print(f"Chromosome {i}: Pausing for 3 seconds...")
-                    time.sleep(3)
+                    time_clk.sleep(3)
                 else:
                     print(f"Chromosome {i}")
 
             if i % 50000 == 0 and i != 0:
                 if self.cpu_protector == "on":
                     print(f"Chromosome {i}: Pausing for 5 seconds...")
-                    time.sleep(5)
+                    time_clk.sleep(5)
                 else:
                     print(f"Chromosome {i}")
 
             if i % 500000 == 0 and i != 0:
                 if self.cpu_protector == "on":
                     print(f"Chromosome {i}: Pausing for 10 seconds...")
-                    time.sleep(10)
+                    time_clk.sleep(10)
                 else:
                     print(f"Chromosome {i}")
 
@@ -602,48 +604,149 @@ class GAscheduler:
             self.courses_with_no_section = []
         return solutions
 
-    def mutation(self, solutions):
-        print("-------------------------------------------mutation started-------------------------------------------")
-        new_chromosomes = []
+    # def mutation(self, solutions):
+    #     print("-------------------------------------------mutation started-------------------------------------------")
+    #     new_chromosomes = []
         
-        for i in range(1000):
-            sorted_solutions = sorted(solutions, key=lambda x: x[2])
-            rankedSoulutions = sorted_solutions[:10]
-            for solution, courses_with_no_section, penalty, penalty_history in rankedSoulutions:
-                # Copy the solution to avoid modifying the original
-                mutated_solution = copy.deepcopy(solution)
+    #     for i in range(10000):
+    #         sorted_solutions = sorted(solutions, key=lambda x: x[2])
+    #         rankedSoulutions = sorted_solutions[:3]
+    #         for solution, courses_with_no_section, penalty, penalty_history in rankedSoulutions:
+    #             # Copy the solution to avoid modifying the original
+    #             mutated_solution = copy.deepcopy(solution)
                 
-                # Select two random days
-                selected_days = random.sample(self.days, 3)
+    #             # Select two random days
+    #             selected_days = random.sample(self.days, 2)
                 
-                # Set the new schedule
-                self.schedule = mutated_solution
-                self.penalty = penalty
+    #             # Set the new schedule
+    #             self.schedule = mutated_solution
+    #             self.penalty = penalty
                 
-                # Append the courses of the selected days to selected_courses
-                selected_courses = []
-                for day in selected_days:
-                    for tm in self.times:
-                        selected_courses.extend(mutated_solution[day][tm])
+    #             # Append the courses of the selected days to selected_courses
+    #             selected_courses = []
+    #             for day in selected_days:
+    #                 for tm in self.times:
+    #                     selected_courses.extend(mutated_solution[day][tm])
                         
                 
-                selected_courses = selected_courses + courses_with_no_section
+    #             selected_courses = selected_courses + courses_with_no_section
+    #             random.shuffle(selected_courses)
+                
+    #             # Decrasing the penalty of leassons that removed
+    #             for course in selected_courses:
+    #                 for day in selected_days:
+    #                     for tm in self.times:
+    #                         if (day, tm, course) in penalty_history:
+    #                             self.penalty = self.penalty-1 
+                
+                
+    #             # Clear the courses from the selected days
+    #             for day in selected_days:
+    #                 for tm in self.times:
+    #                     mutated_solution[day][tm] = []
+                    
+                
+    #             teachers = self.teachers
+    #             teachers_limit_state = self.professors_limit_time
+    #             _lessons_with_no_section = []
+
+    #             for course in selected_courses:
+    #                 checked_sections = []
+    #                 if course[-2:] == "_f" or course[-2:] == "_z": 
+    #                     teacher = teachers[course[:-2]]
+    #                 else:
+    #                     teacher = teachers[course]
+                        
+    #                 group_courses = self.group_courses
+                    
+    #                 while True:
+    #                     day = random.choice(self.days)
+    #                     time = random.choice(self.times)
+    #                     if len(checked_sections) < len(self.days) * len(self.times):
+    #                         if [day, time] not in checked_sections:
+    #                             checked_sections.append([day, time])
+    #                             if teacher in teachers_limit_state:
+    #                                 if [day, time] in teachers_limit_state[teacher]:
+                                        
+    #                                     if course[-2:] == "_f" or course[-2:] == "_z":
+    #                                         group_course = group_courses[course[:-2]]
+    #                                         course = f"{course[:-2]}{random.choice(['_f','_z'])}"
+    #                                     else:
+    #                                         group_course = group_courses[course]
+                                            
+    #                                     self.assign_lesson(
+    #                                         course,
+    #                                         group_course,
+    #                                         day,
+    #                                         time,
+    #                                     )
+    #                                     if self.assigned == True:
+    #                                         break
+
+    #                             else:
+                                    
+    #                                 if course[-2:] == "_f" or course[-2:] == "_z": 
+    #                                     group_course = group_courses[course[:-2]]
+    #                                     course = f"{course[:-2]}{random.choice(['_f','_z'])}"
+    #                                 else:
+    #                                     group_course = group_courses[course]
+                                        
+    #                                 self.assign_lesson(
+    #                                     course,
+    #                                     group_course,
+    #                                     day,
+    #                                     time,
+    #                                 )
+    #                                 if self.assigned == True:
+    #                                     break
+    #                     else:
+    #                         if self.assigned == False:
+    #                             _lessons_with_no_section.append(course)
+    #                         break
+                        
+                
+    #             # Add the mutated solution to the new generation
+    #             new_chromosomes.append((mutated_solution, _lessons_with_no_section, self.penalty, self.penalty_history))
+    #             self.penalty_history = []
+    #         if i < 100:
+    #             print(f"New Gen Penalty: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2], f"[{i}]")
+                
+    #         elif i % 100 ==  0 and i != 0:
+    #             print(f"New Gen Penalty: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2], f"[{i}]")
+            
+    #         solutions = sorted(solutions, key=lambda x: x[2])
+    #         # Remove the last 10 chromosomes
+    #         solutions = solutions[:-len(new_chromosomes)]
+    #         solutions += new_chromosomes
+    #     return new_chromosomes
+
+
+    def mutation(self, solutions):
+        new_chromosomes = []
+        
+        for i in range(self.desired_generations+1):
+            start_time = time_clk.time()
+            # Select top 3 solutions based on penalty
+            top_solutions = sorted(solutions, key=lambda x: x[2])[:1]
+            
+            for solution, courses_with_no_section, penalty, penalty_history in top_solutions:
+                mutated_solution = copy.deepcopy(solution)
+                selected_days = random.sample(self.days, 1)
+                self.schedule = mutated_solution
+                self.penalty = penalty
+
+                # Combine courses of selected days and courses with no section
+                selected_courses = [course for day in selected_days for tm in self.times for course in mutated_solution[day][tm]] + courses_with_no_section
                 random.shuffle(selected_courses)
-                
-                # Decrasing the penalty of leassons that removed
-                for course in selected_courses:
-                    for day in selected_days:
-                        for tm in self.times:
-                            if (day, tm, course) in penalty_history:
-                                self.penalty = self.penalty-1 
-                
-                
+
+                # Decrease the penalty of lessons that removed
+                self.penalty -= sum((day, tm, course) in penalty_history for course in selected_courses for day in selected_days for tm in self.times)
+
                 # Clear the courses from the selected days
                 for day in selected_days:
                     for tm in self.times:
                         mutated_solution[day][tm] = []
-                    
-                
+
                 teachers = self.teachers
                 teachers_limit_state = self.professors_limit_time
                 _lessons_with_no_section = []
@@ -700,24 +803,23 @@ class GAscheduler:
                         else:
                             if self.assigned == False:
                                 _lessons_with_no_section.append(course)
-                            break
-                        
-                
+                            break 
+
                 # Add the mutated solution to the new generation
                 new_chromosomes.append((mutated_solution, _lessons_with_no_section, self.penalty, self.penalty_history))
                 self.penalty_history = []
-            if i < 100:
-                print(f"New Gen Penalty[{i}]: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2])
-                
-            elif i % 100 ==  0 and i != 0:
-                print(f"New Gen Penalty[{i}]: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2])
+            end_time = time_clk.time()
+            elapsed_time = end_time - start_time
+            # Print penalty for every 100th generation
+            if i % 100 == 0:
+                print(f"New Gen Penalty: ", sorted(new_chromosomes, key=lambda x: x[2])[0][2], f"[{i}]", f"{elapsed_time:.3f} seconds")
+
+            # Replace the worst solutions with new chromosomes
+            solutions = sorted(solutions, key=lambda x: x[2])[:-len(new_chromosomes)] + new_chromosomes
             
-            solutions = sorted(solutions, key=lambda x: x[2])
-            # Remove the last 10 chromosomes
-            solutions = solutions[:-len(new_chromosomes)]
-            solutions += new_chromosomes
+
         return new_chromosomes
-    
+
     def start(self):
 
         print(
@@ -728,7 +830,7 @@ class GAscheduler:
             self.courses_number,
             "Courses",
         )
-        start_time = time.time()
+        start_time = time_clk.time()
 
         solutions = self.make_solution()
         new_chromosomes = self.mutation(solutions)
@@ -746,7 +848,7 @@ class GAscheduler:
         for sorted_result in sorted_chromosomes[:10]:
             print("Penalty of New Chromosomes: ", sorted_result[2])
 
-        end_time = time.time()
+        end_time = time_clk.time()
         elapsed_time = float(end_time - start_time)
         print("elapsed_time: ", elapsed_time, "Seconds")
 

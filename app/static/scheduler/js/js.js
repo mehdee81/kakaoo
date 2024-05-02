@@ -57,8 +57,14 @@ $("#get-data-btn").click(function () {
 
     // Get all checkboxes
     let checkboxes = $(".checkboxes");
+
     // Get chromosomes
     let chromosomes = $("#chromosomes").val();
+
+    
+    // Get desired_generations
+    let desired_generations = $("#desired_generations").val();
+    
 
     // Get courses with out conditions
     var courses_with_out_conditions = coursesWithoutCondition.join("-");
@@ -104,7 +110,8 @@ $("#get-data-btn").click(function () {
                 limited_professors: limited_professors,
                 chromosomes: chromosomes,
                 courses_with_out_conditions: courses_with_out_conditions,
-                cpu_protector: cpu_protector
+                cpu_protector: cpu_protector,
+                desired_generations: desired_generations
             }),
             success: function (data) {
                 if (data.status == "ok") {
@@ -159,21 +166,6 @@ function preLoader() {
             $(".lds-facebook").show();
         });
 }
-// --------------------------------------
-document.getElementById("chromosomes").addEventListener("input", function () {
-    if (this.value < 1) {
-        alert("chromosomes cannot be less than 1");
-        this.value = 1;
-    }
-});
-
-// --------------------------------------
-document.getElementById("chromosomes").addEventListener("input", function () {
-    if (this.value > 100000000) {
-        alert("chromosomes cannot exceed 100000000");
-        this.value = 100000000;
-    }
-});
 // ----------------------------------------------------------
 $(document).ready(function () {
     // When the button is clicked

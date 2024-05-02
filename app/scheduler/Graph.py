@@ -1,3 +1,5 @@
+import random
+
 class Graph:
     def __init__(self, edges):
         self.edges = edges
@@ -17,8 +19,8 @@ class Graph:
             else:
                 self.adj_dict[start] = [dist]
 
-    # harisane
-    def color_graph_h(self):
+    # greedy
+    def greedy_coloring(self):
         num_colors = len(self.adj_dict.keys())
         colors = {node: None for node in self.adj_dict.keys()}
         for node in self.adj_dict.keys():
@@ -37,7 +39,7 @@ class Graph:
         return output_dict
 
     # backtracking
-    def color_graph_b(self):
+    def backtracking_coloring(self):
 
         num_colors = len(self.adj_dict)
 
